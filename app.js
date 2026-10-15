@@ -72,7 +72,9 @@ function updateHero(current, daily) {
 }
 
 function updateMetrics(current, hourly, daily) {
-  const hourIndex = Math.max(0, hourly.time.findIndex((time) => time === current.time));
+  // Current observations can arrive between hourly forecast timestamps; use the next matching forecast hour.
+  const matchedHour = hourly.time.findIndex((time) => time >= current.time);
+  const hourIndex = matchedHour >= 0 ? matchedHour : Math.max(0, hourly.time.length - 1);
   const chance = hourly.precipitation_probability?.[hourIndex] ?? 0;
   const uv = daily.uv_index_max?.[0];
   setMetric("wind", `${number(current.wind_speed_10m, 1)} <small>м/с</small>`, "windBar", current.wind_speed_10m * 4);
@@ -80,7 +82,7 @@ function updateMetrics(current, hourly, daily) {
   setMetric("humidity", `${number(current.relative_humidity_2m)}<small>%</small>`, "humidityBar", current.relative_humidity_2m);
   setMetric("pressure", `${number(current.pressure_msl)} <small>гПа</small>`, "pressureBar", (current.pressure_msl - 950) / 1.1);
   setMetric("uv", number(uv, 1), "uvBar", (uv || 0) * 10);
-  $("uvLabel").textContent = uv < 3 ? "Низкий уровень" : uv < 6 ? "Умеренный уровень" : uv < 8 ? "Высокий уровень" : "Очень высокий уровень";
+  $("uvLabel").textContent = !Number.isFinite(uv) ? "Индекс сейчас недоступен" : uv < 3 ? "Низкий уровень" : uv < 6 ? "Умеренный уровень" : uv < 8 ? "Высокий уровень" : "Очень высокий уровень";
   setMetric("precipitation", `${number(current.precipitation, 1)} <small>мм</small>`, "precipBar", chance);
   $("precipChance").textContent = `Вероятность осадков: ${chance}%`;
   setMetric("gusts", `${number(current.wind_gusts_10m, 1)} <small>м/с</small>`, "gustBar", current.wind_gusts_10m * 3);
@@ -124,10 +126,17 @@ async function loadWeather() {
     daily: "weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max,precipitation_sum"
   });
   try {
-    const response = await fetch(`${API_URL}?${params}`, { cache: "no-store" });
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 12000);
+    let response;
+    try {
+      response = await fetch(`${API_URL}?${params}`, { cache: "no-store", signal: controller.signal });
+    } finally {
+      window.clearTimeout(timeout);
+    }
     if (!response.ok) throw new Error(`Weather API returned ${response.status}`);
     const data = await response.json();
-    if (!data.current || !data.hourly || !data.daily) throw new Error("Weather response is incomplete");
+    if (!data.current || !Array.isArray(data.hourly?.time) || !Array.isArray(data.daily?.time)) throw new Error("Weather response is incomplete");
     updateHero(data.current, data.daily);
     updateMetrics(data.current, data.hourly, data.daily);
     renderHourly(data.hourly, data.current.time);
@@ -137,7 +146,7 @@ async function loadWeather() {
     $("errorMessage").hidden = true;
   } catch (error) {
     console.error("Не удалось обновить погоду:", error);
-    $("statusText").textContent = "Нет связи с погодой";
+    $("statusText").textContent = error.name === "AbortError" ? "Погода отвечает слишком долго" : "Нет связи с погодой";
     $("errorMessage").hidden = false;
     if (!$("temperature").textContent.includes("—")) $("updatedAt").textContent = "Не удалось обновить данные";
   }
