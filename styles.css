@@ -157,3 +157,5 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 @keyframes cloud-drift{from{translate:-8px 0}to{translate:24px 5px}}
 @media(max-width:760px){.sun-disc{width:39px;height:39px}.moon-disc{width:31px;height:31px}.moon-disc:after{left:9px;top:-3px;width:28px;height:28px}.cityline{background-position:54% center}}
 @media(prefers-reduced-motion:reduce){.cloud{animation:none}}
+
+.hero.time-night .cityline:after{content:"";position:absolute;inset:18% 0 28%;opacity:.58;pointer-events:none;background-image:radial-gradient(2px 3px at 65% 58%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 72% 68%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 78% 48%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 83% 62%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 88% 44%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 94% 70%,#ffe4a0 55%,transparent 75%);filter:drop-shadow(0 0 5px rgba(255,210,130,.7));mix-blend-mode:screen}
