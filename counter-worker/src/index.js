@@ -1,14 +1,15 @@
 const WINDOW_MS = 24 * 60 * 60 * 1000;
+const RETENTION_MS = 7 * WINDOW_MS;
 const ALLOWED_ORIGIN = "https://pogodansk.tuqo.ru";
 const BOT_PATTERN = /bot|crawler|spider|slurp|bingpreview|facebookexternalhit|telegrambot|whatsapp|discordbot|uptime|monitoring/i;
 
-function json(data, status = 200, origin = ALLOWED_ORIGIN) {
+function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store",
-      "Access-Control-Allow-Origin": origin,
+      "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
       "Access-Control-Allow-Methods": "GET, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
       "Vary": "Origin",
@@ -53,8 +54,6 @@ export default {
     }
 
     const now = Date.now();
-    const cutoff = now - WINDOW_MS;
-
     try {
       if (url.pathname === "/visit") {
         const userAgent = request.headers.get("User-Agent") || "";
@@ -71,11 +70,17 @@ export default {
 
       const result = await env.DB.prepare(
         "SELECT COUNT(*) AS visitors FROM visitors WHERE last_seen >= ?"
-      ).bind(cutoff).first();
+      ).bind(now - WINDOW_MS).first();
 
       return json({ visitors: Number(result?.visitors || 0), window: "24h" });
     } catch {
       return json({ error: "Counter temporarily unavailable" }, 503);
     }
+  },
+
+  async scheduled(_event, env) {
+    await env.DB.prepare("DELETE FROM visitors WHERE last_seen < ?")
+      .bind(Date.now() - RETENTION_MS)
+      .run();
   }
 };
