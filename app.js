@@ -27,7 +27,8 @@ function windDirection(degrees) {
 
 function setMetric(id, value, barId, percent) {
   $(id).innerHTML = value;
-  $(barId).style.width = `${Math.max(0, Math.min(100, percent))}%`;
+  const safePercent = Number.isFinite(percent) ? Math.max(0, Math.min(100, percent)) : 0;
+  $(barId).style.width = `${safePercent}%`;
 }
 
 function setEffects(kind) {
