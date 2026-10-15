@@ -72,10 +72,14 @@ function updateHero(current, daily) {
   setEffects(info.effect);
 }
 
+function forecastIndexAtOrAfter(times, currentTime) {
+  const index = times.findIndex((time) => time >= currentTime);
+  return index >= 0 ? index : Math.max(0, times.length - 1);
+}
+
 function updateMetrics(current, hourly, daily) {
-  // Current observations can arrive between hourly forecast timestamps; use the next matching forecast hour.
-  const matchedHour = hourly.time.findIndex((time) => time >= current.time);
-  const hourIndex = matchedHour >= 0 ? matchedHour : Math.max(0, hourly.time.length - 1);
+  // If the current time is beyond the supplied forecast window, use its last hour.
+  const hourIndex = forecastIndexAtOrAfter(hourly.time, current.time);
   const chance = hourly.precipitation_probability?.[hourIndex] ?? 0;
   const uv = daily.uv_index_max?.[0];
   setMetric("wind", `${number(current.wind_speed_10m, 1)} <small>м/с</small>`, "windBar", current.wind_speed_10m * 4);
@@ -90,7 +94,7 @@ function updateMetrics(current, hourly, daily) {
 }
 
 function renderHourly(hourly, currentTime) {
-  const start = Math.max(0, hourly.time.findIndex((time) => time >= currentTime));
+  const start = forecastIndexAtOrAfter(hourly.time, currentTime);
   const list = hourly.time.slice(start, start + 24);
   $("hourlyForecast").replaceChildren();
   list.forEach((time, offset) => {
