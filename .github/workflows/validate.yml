@@ -23,7 +23,9 @@ jobs:
           node-version: 22
 
       - name: Check JavaScript syntax
-        run: node --check app.js
+        run: |
+          node --check app.js
+          node --check counter-worker/src/index.js
 
       - name: Validate HTML references and SVG
         run: |
@@ -51,7 +53,6 @@ jobs:
 
           html = Path("index.html").read_text(encoding="utf-8")
           js = Path("app.js").read_text(encoding="utf-8")
-          css = Path("styles.css").read_text(encoding="utf-8")
           parser = PageParser()
           parser.feed(html)
 
