@@ -1,19 +1,38 @@
-# Novosibirsk Weather
+# Север — погода в Новосибирске
 
-Lightweight weather website for Novosibirsk, Russia.
+Лёгкий адаптивный сайт прогноза погоды для Новосибирска. Интерфейс на русском языке, без сборщика и серверной части: HTML, CSS и JavaScript.
 
-## Project goals
+## Возможности
 
-- Responsive Russian-language interface.
-- Weather-aware city panorama and subtle animated effects.
-- Current conditions, hourly forecast, and tomorrow's forecast.
-- Refresh weather data in the browser without reloading the page.
-- Static hosting with automatic deployment from GitHub.
+- Текущая погода: температура, ощущаемая температура, состояние неба и диапазон температуры за день.
+- Восход и закат.
+- Карточки ветра, влажности, атмосферного давления, УФ-индекса, осадков и порывов ветра.
+- Почасовой прогноз на ближайшие 24 часа и прогноз на завтра.
+- Погодные визуальные эффекты, адаптивная вёрстка и поддержка настройки уменьшения анимации.
+- Автоматическое обновление каждые 10 минут.
+- Ограничение ожидания ответа погодного API и сообщение об ошибке при проблемах с сетью.
+- Проверка структуры проекта в GitHub Actions.
 
-## Development
+## Источник погодных данных
 
-The site is being built with plain HTML, CSS, and JavaScript. No server-side runtime is required.
+Данные загружаются непосредственно из браузера с API Open-Meteo (https://open-meteo.com/en/docs). Для прогноза используется местное время Новосибирска (Asia/Novosibirsk). Сайт требует подключения к интернету и доступности API из сети посетителя.
 
-## Status
+## Структура проекта
 
-Initial project setup. Weather provider, attribution, and production hosting configuration are to be verified before launch.
+- `index.html` — разметка страницы.
+- `styles.css` — оформление и адаптивная вёрстка.
+- `app.js` — запросы к API и отображение прогноза.
+- `cityscape.svg` — векторный городской пейзаж.
+- `.github/workflows/validate.yml` — автоматические проверки при изменениях в `develop`.
+
+## Разработка и проверки
+
+Активная разработка ведётся в ветке `develop`. Ветка `main` сохраняется отдельно для будущей публикации.
+
+GitHub Actions проверяет синтаксис JavaScript, соответствие используемых JavaScript ID элементам HTML, отсутствие повторяющихся ID, подключение скрипта и корректность SVG.
+
+Успешная автоматическая проверка не заменяет тестирование в реальном браузере. Перед публикацией нужно отдельно проверить мобильную вёрстку, получение актуальных данных и поведение сайта при недоступности API.
+
+## Статус публикации
+
+Сайт пока находится в разработке. Подключение хостинга, публикация и проверка на реальных устройствах ещё не выполнены.
