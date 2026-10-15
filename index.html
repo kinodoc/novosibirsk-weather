@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b31">
+  <meta name="description" content="Погода в Новосибирске: температура, ветер, осадки и прогноз на ближайшие часы.">
+  <title>Погода в Новосибирске — Север</title>
+  <link rel="preconnect" href="https://api.open-meteo.com">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero weather-clear" id="hero" aria-label="Погода в Новосибирске">
+      <div class="hero-sky" aria-hidden="true"><span class="sun-glow"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span></div>
+      <div class="cityline" aria-hidden="true"><span class="tower"></span><span class="building b1"></span><span class="building b2"></span><span class="building b3"></span><span class="bridge"></span></div>
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Север — погода в Новосибирске"><span class="brand-mark">С</span><span>СЕВЕР<span class="brand-sub">ПОГОДА РЯДОМ</span></span></a>
+        <div class="live-pill"><span class="live-dot"></span><span id="statusText">Загружаем погоду</span></div>
+      </header>
+      <div class="hero-content">
+        <div class="location"><span class="location-pin">⌖</span> НОВОСИБИРСК <span class="timezone">UTC+7</span></div>
+        <p class="date-line" id="dateLine">Сегодня · местное время</p>
+        <div class="current-weather">
+          <div class="temperature-wrap"><span class="temperature" id="temperature">—°</span><span class="feels-like">Ощущается как <b id="feelsLike">—°</b></span></div>
+          <div class="condition-wrap"><div class="weather-symbol" id="weatherSymbol" aria-hidden="true">☀</div><div class="condition" id="condition">Получаем прогноз…</div><div class="high-low" id="highLow">Сегодня —° / —°</div></div>
+        </div>
+        <div class="hero-footer"><span class="sun-times" id="sunTimes">↑ Восход —:— <i></i> ↓ Закат —:—</span><span class="updated" id="updatedAt">Обновление данных…</span></div>
+      </div>
+      <div class="weather-effects" id="weatherEffects" aria-hidden="true"></div>
+    </section>
+
+    <section class="section-block">
+      <div class="section-heading"><div><p class="eyebrow">СЕЙЧАС НА УЛИЦЕ</p><h2>Погода в деталях</h2></div><span class="section-note">Данные обновляются автоматически</span></div>
+      <div class="metrics-grid">
+        <article class="metric-card"><div class="metric-top"><span>Ветер</span><span class="metric-icon">↗</span></div><strong id="wind">— <small>м/с</small></strong><p id="windDirection">Направление —</p><div class="metric-track"><span id="windBar"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>Влажность</span><span class="metric-icon">◌</span></div><strong id="humidity">—<small>%</small></strong><p>Относительная влажность</p><div class="metric-track"><span id="humidityBar"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>Давление</span><span class="metric-icon">⌁</span></div><strong id="pressure">— <small>гПа</small></strong><p>На уровне моря</p><div class="metric-track"><span id="pressureBar"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>УФ-индекс</span><span class="metric-icon">☼</span></div><strong id="uv">—</strong><p id="uvLabel">Ультрафиолетовое излучение</p><div class="metric-track"><span id="uvBar"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>Осадки</span><span class="metric-icon">⌄</span></div><strong id="precipitation">— <small>мм</small></strong><p id="precipChance">За текущий час</p><div class="metric-track"><span id="precipBar"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>Порывы ветра</span><span class="metric-icon">≋</span></div><strong id="gusts">— <small>м/с</small></strong><p>Максимальные порывы</p><div class="metric-track"><span id="gustBar"></span></div></article>
+      </div>
+    </section>
+
+    <section class="section-block forecast-section">
+      <div class="section-heading"><div><p class="eyebrow">БЛИЖАЙШИЕ ЧАСЫ</p><h2>Как изменится погода</h2></div><span class="section-note">Прогноз на 24 часа</span></div>
+      <div class="hourly-scroller" id="hourlyForecast"><div class="loading-card">Загружаем почасовой прогноз…</div></div>
+    </section>
+
+    <section class="tomorrow-card" id="tomorrowCard">
+      <div class="tomorrow-copy"><p class="eyebrow">ЗАВТРА В НОВОСИБИРСКЕ</p><h2 id="tomorrowCondition">Готовим прогноз…</h2><p id="tomorrowSummary">Скоро здесь появится прогноз на весь день.</p></div>
+      <div class="tomorrow-weather"><span id="tomorrowSymbol" aria-hidden="true">☀</span><strong id="tomorrowTemp">—°</strong><span id="tomorrowRange">—° / —°</span></div>
+    </section>
+
+    <footer class="site-footer"><a class="brand footer-brand" href="#"><span class="brand-mark">С</span><span>СЕВЕР<span class="brand-sub">ПОГОДА РЯДОМ</span></span></a><p>Погода в Новосибирске · Данные прогноза предоставлены Open-Meteo</p><p class="footer-update">Автообновление каждые 10 минут</p></footer>
+    <div class="error-message" id="errorMessage" role="status" hidden>Не удалось получить погоду. Проверьте подключение к интернету.</div>
+  </main>
+</body>
+</html>
