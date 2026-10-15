@@ -6,6 +6,9 @@ const LOCATION = { latitude: 55.0084, longitude: 82.9357, timezone: "Asia/Novosi
 let requestInFlight = false;
 let hasLoadedWeather = false;
 let lastSuccessfulUpdate = null;
+let lastWeatherFetchAt = 0;
+let airRequestInFlight = false;
+let lastAirQualityFetchAt = 0;
 let latestWeatherCode = null;
 let latestDailyWeather = null;
 
@@ -245,6 +248,7 @@ async function loadWeather() {
     renderTomorrow(data.daily);
     hasLoadedWeather = true;
     lastSuccessfulUpdate = data.current.time;
+    lastWeatherFetchAt = Date.now();
     $("statusText").textContent = "Данные актуальны";
     document.querySelector(".live-dot")?.classList.remove("is-error", "is-loading");
     $("updatedAt").textContent = `Обновлено в ${timeOnly(data.current.time)}`;
@@ -270,9 +274,17 @@ loadWeather();
 window.setInterval(loadWeather, WEATHER_REFRESH_MS);
 updateAtmosphere();
 window.setInterval(updateAtmosphere, 60 * 1000);
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) updateAtmosphere();
-});
+function refreshWhenPageReturns() {
+  if (document.hidden) return;
+  updateAtmosphere();
+  const now = Date.now();
+  // Mobile browsers throttle timers while a tab is in the background. Refresh stale data on return.
+  if (now - lastWeatherFetchAt >= 5 * 60 * 1000) loadWeather();
+  if (now - lastAirQualityFetchAt >= 5 * 60 * 1000) loadAirQuality();
+}
+
+document.addEventListener("visibilitychange", refreshWhenPageReturns);
+window.addEventListener("pageshow", refreshWhenPageReturns);
 
 const aqiDescription = (value) => {
   if (!Number.isFinite(value)) return "Индекс недоступен";
@@ -285,6 +297,8 @@ const aqiDescription = (value) => {
 };
 
 async function loadAirQuality() {
+  if (airRequestInFlight) return;
+  airRequestInFlight = true;
   const params = new URLSearchParams({
     latitude: LOCATION.latitude,
     longitude: LOCATION.longitude,
@@ -306,6 +320,7 @@ async function loadAirQuality() {
         !Number.isFinite(current.pm10)) {
       throw new Error("Air quality response is incomplete");
     }
+    lastAirQualityFetchAt = Date.now();
     const aqi = current.european_aqi;
     setMetric("airAqi", number(aqi), "airAqiBar", Math.min(100, aqi));
     $("airAqiLabel").textContent = aqiDescription(aqi);
@@ -322,6 +337,7 @@ async function loadAirQuality() {
     if ($("airAqi").textContent.trim() === "—") $("airAqiLabel").textContent = "Данные временно недоступны";
   } finally {
     window.clearTimeout(timeout);
+    airRequestInFlight = false;
   }
 }
 
