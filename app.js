@@ -80,17 +80,18 @@ function forecastIndexAtOrAfter(times, currentTime) {
 function updateMetrics(current, hourly, daily) {
   // If the current time is beyond the supplied forecast window, use its last hour.
   const hourIndex = forecastIndexAtOrAfter(hourly.time, current.time);
-  const chance = hourly.precipitation_probability?.[hourIndex] ?? 0;
+  const rawChance = hourly.precipitation_probability?.[hourIndex];
+  const chance = Number.isFinite(rawChance) ? Math.max(0, Math.min(100, rawChance)) : null;
   const uv = daily.uv_index_max?.[0];
-  setMetric("wind", `${number(current.wind_speed_10m, 1)} <small>м/с</small>`, "windBar", current.wind_speed_10m * 4);
+  setMetric("wind", `${number(current.wind_speed_10m, 1)} <small>м/с</small>`, "windBar", Number.isFinite(current.wind_speed_10m) ? current.wind_speed_10m * 4 : 0);
   $("windDirection").textContent = `Ветер ${windDirection(current.wind_direction_10m)}`;
   setMetric("humidity", `${number(current.relative_humidity_2m)}<small>%</small>`, "humidityBar", current.relative_humidity_2m);
-  setMetric("pressure", `${number(current.pressure_msl)} <small>гПа</small>`, "pressureBar", (current.pressure_msl - 950) / 1.1);
-  setMetric("uv", number(uv, 1), "uvBar", (uv || 0) * 10);
+  setMetric("pressure", `${number(current.pressure_msl)} <small>гПа</small>`, "pressureBar", Number.isFinite(current.pressure_msl) ? (current.pressure_msl - 950) / 1.1 : 0);
+  setMetric("uv", number(uv, 1), "uvBar", Number.isFinite(uv) ? uv * 10 : 0);
   $("uvLabel").textContent = !Number.isFinite(uv) ? "Индекс сейчас недоступен" : uv < 3 ? "Низкий уровень" : uv < 6 ? "Умеренный уровень" : uv < 8 ? "Высокий уровень" : "Очень высокий уровень";
-  setMetric("precipitation", `${number(current.precipitation, 1)} <small>мм</small>`, "precipBar", chance);
-  $("precipChance").textContent = `Вероятность осадков: ${chance}%`;
-  setMetric("gusts", `${number(current.wind_gusts_10m, 1)} <small>м/с</small>`, "gustBar", current.wind_gusts_10m * 3);
+  setMetric("precipitation", `${number(current.precipitation, 1)} <small>мм</small>`, "precipBar", chance ?? 0);
+  $("precipChance").textContent = `Вероятность осадков: ${chance === null ? "—" : `${chance}%`}`;
+  setMetric("gusts", `${number(current.wind_gusts_10m, 1)} <small>м/с</small>`, "gustBar", Number.isFinite(current.wind_gusts_10m) ? current.wind_gusts_10m * 3 : 0);
 }
 
 function renderHourly(hourly, currentTime) {
@@ -114,9 +115,11 @@ function renderTomorrow(daily) {
   $("tomorrowSymbol").textContent = info.icon;
   $("tomorrowTemp").textContent = roundTemp(daily.temperature_2m_max?.[1]);
   $("tomorrowRange").textContent = `${roundTemp(daily.temperature_2m_min?.[1])} / ${roundTemp(daily.temperature_2m_max?.[1])}`;
-  const rain = daily.precipitation_probability_max?.[1] ?? 0;
-  const sum = daily.precipitation_sum?.[1] ?? 0;
-  $("tomorrowSummary").textContent = `Вероятность осадков — ${rain}%. Ожидается ${number(sum, 1)} мм осадков. Восход в ${timeOnly(daily.sunrise?.[1])}, закат в ${timeOnly(daily.sunset?.[1])}.`;
+  const rawRain = daily.precipitation_probability_max?.[1];
+  const rawSum = daily.precipitation_sum?.[1];
+  const rain = Number.isFinite(rawRain) ? `${Math.max(0, Math.min(100, rawRain))}%` : "—";
+  const sum = Number.isFinite(rawSum) ? `${number(rawSum, 1)} мм` : "—";
+  $("tomorrowSummary").textContent = `Вероятность осадков — ${rain}. Ожидается ${sum} осадков. Восход в ${timeOnly(daily.sunrise?.[1])}, закат в ${timeOnly(daily.sunset?.[1])}.`;
 }
 
 async function loadWeather() {
