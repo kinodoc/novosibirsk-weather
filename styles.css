@@ -99,3 +99,5 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 @media(max-width:390px){.brand-sub{font-size:7px}.live-pill{max-width:122px}.hero-content{padding-left:17px;padding-right:17px}.current-weather{gap:15px}.temperature{font-size:82px}.condition{font-size:14px}.high-low{font-size:10px}.sun-times{gap:7px;font-size:10px}.updated{font-size:9px}.metric-card{padding:14px 12px}.metric-card strong{font-size:23px}.tomorrow-card{gap:12px;padding:18px 14px}.tomorrow-copy h2{font-size:15px}.tomorrow-weather strong{font-size:30px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 .live-dot.is-error{background:#ff7d88;box-shadow:0 0 13px rgba(255,125,136,.75);animation:none}
+
+.live-dot.is-loading{background:#a5b3c8;box-shadow:none;animation:none}
