@@ -170,11 +170,13 @@ async function loadWeather() {
     renderTomorrow(data.daily);
     hasLoadedWeather = true;
     $("statusText").textContent = "Данные актуальны";
+    document.querySelector(".live-dot")?.classList.remove("is-error");
     $("updatedAt").textContent = `Обновлено в ${timeOnly(data.current.time)}`;
     $("errorMessage").hidden = true;
   } catch (error) {
     console.error("Не удалось обновить погоду:", error);
     $("statusText").textContent = error.name === "AbortError" ? "Погода отвечает слишком долго" : "Нет связи с погодой";
+    document.querySelector(".live-dot")?.classList.add("is-error");
     $("errorMessage").textContent = hasLoadedWeather
       ? "Не удалось обновить прогноз. На экране оставлены последние успешно полученные данные."
       : "Не удалось получить погоду. Проверьте подключение к интернету и попробуйте позже.";
