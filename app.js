@@ -136,7 +136,7 @@ async function loadWeather() {
     }
     if (!response.ok) throw new Error(`Weather API returned ${response.status}`);
     const data = await response.json();
-    if (!data.current || !Array.isArray(data.hourly?.time) || !Array.isArray(data.daily?.time)) throw new Error("Weather response is incomplete");
+    if (!data.current || typeof data.current.time !== "string" || !Number.isFinite(data.current.temperature_2m) || !Array.isArray(data.hourly?.time) || data.hourly.time.length === 0 || !Array.isArray(data.hourly?.temperature_2m) || !Array.isArray(data.hourly?.weather_code) || !Array.isArray(data.daily?.time) || data.daily.time.length < 2 || !Array.isArray(data.daily?.temperature_2m_max) || !Array.isArray(data.daily?.temperature_2m_min) || !Array.isArray(data.daily?.weather_code)) throw new Error("Weather response is incomplete");
     updateHero(data.current, data.daily);
     updateMetrics(data.current, data.hourly, data.daily);
     renderHourly(data.hourly, data.current.time);
