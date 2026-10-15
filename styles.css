@@ -44,7 +44,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 .cloud:before{width:95px;height:78px;left:36px;bottom:3px}.cloud:after{width:72px;height:67px;left:100px;bottom:0}
 .weather-cloudy .cloud,.weather-rain .cloud,.weather-snow .cloud,.weather-storm .cloud,.weather-fog .cloud{opacity:.95}
 .weather-cloudy .cloud-two,.weather-rain .cloud-two,.weather-snow .cloud-two,.weather-storm .cloud-two{top:43%;right:21%;transform:scale(.8);opacity:.65}
-.cityline{position:absolute;z-index:-1;right:0;bottom:0;width:76%;height:100%;opacity:.9;pointer-events:none;background:linear-gradient(90deg,rgba(6,15,29,.32) 0%,rgba(6,15,29,.02) 35%,rgba(6,15,29,.08) 100%),linear-gradient(0deg,rgba(6,15,29,.62) 0%,rgba(6,15,29,.02) 62%),url("https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Bugrinsky_Bridge_%28May_2025%29_-_0.jpg/1280px-Bugrinsky_Bridge_%28May_2025%29_-_0.jpg") center 46%/cover no-repeat;mask-image:linear-gradient(90deg,transparent 0%,#000 10%);}
+.cityline{position:absolute;z-index:-1;right:0;bottom:0;width:76%;height:100%;opacity:.9;pointer-events:none;background:linear-gradient(90deg,rgba(6,15,29,.32) 0%,rgba(6,15,29,.02) 35%,rgba(6,15,29,.08) 100%),linear-gradient(0deg,rgba(6,15,29,.62) 0%,rgba(6,15,29,.02) 62%),url("./cityscape.svg") center 46%/cover no-repeat;mask-image:linear-gradient(90deg,transparent 0%,#000 10%);}
 .cityline:before{display:none;content:"";position:absolute;inset:20% 0 0;background:linear-gradient(0deg,rgba(6,15,28,.94),rgba(11,24,40,.08));clip-path:polygon(0 40%,7% 40%,7% 19%,13% 19%,13% 55%,20% 55%,20% 28%,28% 28%,28% 44%,36% 44%,36% 7%,42% 7%,42% 38%,49% 38%,49% 24%,57% 24%,57% 47%,64% 47%,64% 12%,70% 12%,70% 38%,77% 38%,77% 28%,84% 28%,84% 53%,91% 53%,91% 36%,100% 36%,100% 100%,0 100%)}
 .cityline>.tower,.cityline>.building,.cityline>.bridge{display:none}.tower{position:absolute;right:28%;bottom:20%;height:63%;width:2px;background:rgba(18,35,52,.8);transform:rotate(2deg)}
 .tower:before{content:"";position:absolute;top:0;left:-9px;width:20px;height:2px;background:inherit;box-shadow:0 9px 0 rgba(18,35,52,.7),0 18px 0 rgba(18,35,52,.6)}
@@ -114,3 +114,46 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .radiation-card strong{font-size:21px;letter-spacing:-.03em}
 .radiation-card a{color:#9ebbd7;text-underline-offset:3px}
 @media(max-width:760px){.environment-section{margin-top:32px}.radiation-card strong{font-size:18px}}
+
+
+/* Live Novosibirsk panorama: season, local solar time and current weather. */
+.hero{--sky-top:#193957;--sky-mid:#668da5;--sky-horizon:#e7b38a;--sun-x:70%;--sun-y:18%;transition:background 1.5s ease,filter 1.5s ease}
+.hero-sky{z-index:0;isolation:isolate}
+.hero:before{z-index:1;pointer-events:none}
+.hero-content,.topbar{z-index:3}
+.cityline{z-index:2;background:linear-gradient(90deg,rgba(6,15,29,.22),transparent 45%),linear-gradient(0deg,rgba(6,15,29,.48),transparent 58%),url("./cityscape.svg") center 46%/cover no-repeat;filter:saturate(.9);transition:filter 1.5s ease,opacity 1.5s ease}
+.sun-glow{z-index:0;right:auto;left:calc(var(--sun-x) - 130px);top:calc(var(--sun-y) - 130px);opacity:.8}
+.sun-disc{position:absolute;z-index:0;left:var(--sun-x);top:var(--sun-y);width:clamp(34px,5vw,58px);height:clamp(34px,5vw,58px);transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8d7,#ffd28a 62%,#f4a96e);box-shadow:0 0 35px 10px rgba(255,202,132,.2);opacity:1;transition:left 1.5s ease,top 1.5s ease,opacity 1s ease}
+.moon-disc{position:absolute;z-index:0;left:var(--sun-x);top:var(--sun-y);width:42px;height:42px;transform:translate(-50%,-50%);border-radius:50%;background:#e0eaf8;box-shadow:0 0 30px rgba(203,225,255,.25);opacity:0;transition:left 1.5s ease,top 1.5s ease,opacity 1s ease}
+.moon-disc:after{content:"";position:absolute;left:12px;top:-4px;width:38px;height:38px;border-radius:50%;background:var(--moon-cutout,#243d58);transition:background 1.5s ease}
+.sky-stars{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity 1.5s ease;background-image:radial-gradient(1.5px 1.5px at 12% 18%,#fff 55%,transparent 70%),radial-gradient(1px 1px at 29% 11%,#fff 55%,transparent 70%),radial-gradient(1.5px 1.5px at 45% 24%,#fff 55%,transparent 70%),radial-gradient(1px 1px at 61% 12%,#fff 55%,transparent 70%),radial-gradient(1.5px 1.5px at 83% 21%,#fff 55%,transparent 70%),radial-gradient(1px 1px at 91% 9%,#fff 55%,transparent 70%)}
+.weather-haze{position:absolute;inset:15% -10% 0;z-index:0;opacity:0;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(224,232,235,.35),transparent);filter:blur(14px);transition:opacity 1.5s ease}
+.cloud{z-index:1;animation:cloud-drift 48s ease-in-out infinite alternate}
+.cloud-two{animation-duration:62s;animation-direction:alternate-reverse}
+.hero.time-night{background:linear-gradient(130deg,#071224 0%,#172b49 58%,#293d5b 100%)}
+.hero.time-dawn{background:linear-gradient(130deg,#263a58 0%,#bd8490 60%,#f0bc91 110%)}
+.hero.time-sunrise{background:linear-gradient(130deg,#31496b 0%,#e49c8c 65%,#f8d3a0 115%)}
+.hero.time-day{background:linear-gradient(130deg,#39749a 0%,#83b8cd 60%,#d4dce0 115%)}
+.hero.time-evening{background:linear-gradient(130deg,#202f50 0%,#a45f77 62%,#f1aa78 115%)}
+.hero.time-night .sun-disc,.hero.time-dawn .moon-disc,.hero.time-sunrise .moon-disc,.hero.time-day .moon-disc,.hero.time-evening .moon-disc{opacity:0}
+.hero.time-night .moon-disc{opacity:.95}
+.hero.time-night .sky-stars{opacity:.9}
+.hero.time-night .sun-glow{opacity:.08}
+.hero.time-dawn .sun-disc,.hero.time-sunrise .sun-disc,.hero.time-day .sun-disc,.hero.time-evening .sun-disc{opacity:1}
+.hero.weather-cloudy .sun-disc,.hero.weather-rain .sun-disc,.hero.weather-storm .sun-disc,.hero.weather-fog .sun-disc,.hero.weather-snow .sun-disc{opacity:.22}
+.hero.weather-cloudy .sky-stars,.hero.weather-rain .sky-stars,.hero.weather-storm .sky-stars,.hero.weather-fog .sky-stars,.hero.weather-snow .sky-stars{opacity:.12}
+.hero.weather-fog .weather-haze{opacity:.85}
+.hero.weather-rain .cityline,.hero.weather-storm .cityline{filter:saturate(.55) brightness(.72)}
+.hero.weather-snow .cityline{filter:saturate(.5) brightness(1.08)}
+.hero.season-spring .cityline{filter:hue-rotate(-8deg) saturate(1.05)}
+.hero.season-summer .cityline{filter:saturate(1.2) brightness(1.08)}
+.hero.season-autumn .cityline{filter:hue-rotate(18deg) saturate(.95)}
+.hero.season-winter .cityline{filter:saturate(.42) brightness(1.13)}
+.hero.season-winter .weather-haze{opacity:.25}
+.hero.time-night .cityline{filter:brightness(.62) saturate(.8)}
+.hero.time-night.weather-clear .cityline,.hero.time-night.weather-cloudy .cityline{filter:brightness(.7) saturate(.8)}
+.hero.weather-rain.time-night .cityline,.hero.weather-storm.time-night .cityline{filter:brightness(.48) saturate(.55)}
+.hero.weather-snow.time-night .cityline{filter:brightness(.68) saturate(.35)}
+@keyframes cloud-drift{from{translate:-8px 0}to{translate:24px 5px}}
+@media(max-width:760px){.sun-disc{width:39px;height:39px}.moon-disc{width:31px;height:31px}.moon-disc:after{left:9px;top:-3px;width:28px;height:28px}.cityline{background-position:54% center}}
+@media(prefers-reduced-motion:reduce){.cloud{animation:none}}
