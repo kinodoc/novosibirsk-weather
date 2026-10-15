@@ -51,7 +51,7 @@ function setEffects(kind) {
 }
 
 function formatDate(dateString) {
-  const date = new Date(dateString);
+  const date = new Date(`${dateString.slice(0, 10)}T12:00:00Z`);
   return new Intl.DateTimeFormat("ru-RU", { weekday: "long", day: "numeric", month: "long", timeZone: LOCATION.timezone }).format(date);
 }
 
