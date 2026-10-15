@@ -6,6 +6,8 @@ const LOCATION = { latitude: 55.0084, longitude: 82.9357, timezone: "Asia/Novosi
 let requestInFlight = false;
 let hasLoadedWeather = false;
 let lastSuccessfulUpdate = null;
+let latestWeatherCode = null;
+let latestDailyWeather = null;
 
 const $ = (id) => document.getElementById(id);
 const number = (value, digits = 0) => Number.isFinite(value) ? value.toFixed(digits).replace(".", ",") : "—";
@@ -61,13 +63,71 @@ function formatDate(dateString) {
   return new Intl.DateTimeFormat("ru-RU", { weekday: "long", day: "numeric", month: "long", timeZone: LOCATION.timezone }).format(date);
 }
 
+function localClockParts(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: LOCATION.timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  }).formatToParts(date);
+  return Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, Number(part.value)]));
+}
+
+function minutesFromLocalTime(value) {
+  if (typeof value !== "string" || !/T\d{2}:\d{2}/.test(value)) return null;
+  const time = value.split("T")[1];
+  return Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
+}
+
+function updateAtmosphere() {
+  const hero = $("hero");
+  if (!hero) return;
+  const now = localClockParts();
+  const minuteOfDay = now.hour * 60 + now.minute;
+  const month = now.month;
+  const season = month === 12 || month <= 2 ? "winter"
+    : month <= 5 ? "spring"
+    : month <= 8 ? "summer" : "autumn";
+  const sunrise = minutesFromLocalTime(latestDailyWeather?.sunrise?.[0]);
+  const sunset = minutesFromLocalTime(latestDailyWeather?.sunset?.[0]);
+  let phase;
+  if (sunrise !== null && sunset !== null) {
+    if (minuteOfDay < sunrise - 60 || minuteOfDay >= sunset + 90) phase = "night";
+    else if (minuteOfDay < sunrise) phase = "dawn";
+    else if (minuteOfDay < sunrise + 90) phase = "sunrise";
+    else if (minuteOfDay < sunset - 60) phase = "day";
+    else phase = "evening";
+  } else {
+    phase = minuteOfDay < 5 * 60 || minuteOfDay >= 22 * 60 ? "night"
+      : minuteOfDay < 7 * 60 ? "dawn"
+      : minuteOfDay < 10 * 60 ? "sunrise"
+      : minuteOfDay < 17 * 60 ? "day" : "evening";
+  }
+  hero.classList.remove("season-winter", "season-spring", "season-summer", "season-autumn",
+    "time-night", "time-dawn", "time-sunrise", "time-day", "time-evening");
+  hero.classList.add(`season-${season}`, `time-${phase}`);
+  const daylightProgress = sunrise !== null && sunset !== null && sunset > sunrise
+    ? Math.max(0, Math.min(1, (minuteOfDay - sunrise) / (sunset - sunrise)))
+    : Math.max(0, Math.min(1, (minuteOfDay - 360) / 720));
+  const sunX = 15 + daylightProgress * 70;
+  const sunY = phase === "night" ? 18
+    : 48 - Math.sin(Math.PI * daylightProgress) * 32;
+  hero.style.setProperty("--sun-x", `${sunX}%`);
+  hero.style.setProperty("--sun-y", `${Math.max(12, sunY)}%`);
+  const cutout = phase === "night" ? "#172b49" : phase === "dawn" || phase === "evening" ? "#bd8490" : "#39749a";
+  hero.style.setProperty("--moon-cutout", cutout);
+  const info = weatherInfo(latestWeatherCode);
+  $("weatherSymbol").textContent = phase === "night" && info.theme === "clear" ? "☾" : info.icon;
+}
+
 function updateHero(current, daily) {
   const info = weatherInfo(current.weather_code);
-  const hour = Number(current.time?.split("T")[1]?.slice(0, 2) || 12);
-  const isNight = hour < 6 || hour >= 21;
-  const theme = isNight && ["clear", "cloudy"].includes(info.theme) ? "night" : info.theme;
-  $("hero").className = `hero weather-${theme}`;
-  $("weatherSymbol").textContent = isNight && info.theme === "clear" ? "☾" : info.icon;
+  latestWeatherCode = current.weather_code;
+  latestDailyWeather = daily;
+  $("hero").className = `hero weather-${info.theme}`;
   $("condition").textContent = info.label;
   $("temperature").textContent = roundTemp(current.temperature_2m);
   $("feelsLike").textContent = roundTemp(current.apparent_temperature);
@@ -75,6 +135,7 @@ function updateHero(current, daily) {
   $("dateLine").textContent = formatDate(current.time);
   $("sunTimes").innerHTML = `↑ Восход ${timeOnly(daily.sunrise?.[0])} <i></i> ↓ Закат ${timeOnly(daily.sunset?.[0])}`;
   setEffects(info.effect);
+  updateAtmosphere();
 }
 
 function isOrderedTimeArray(times, pattern) {
@@ -207,6 +268,11 @@ async function loadWeather() {
 
 loadWeather();
 window.setInterval(loadWeather, WEATHER_REFRESH_MS);
+updateAtmosphere();
+window.setInterval(updateAtmosphere, 60 * 1000);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) updateAtmosphere();
+});
 
 const aqiDescription = (value) => {
   if (!Number.isFinite(value)) return "Индекс недоступен";
