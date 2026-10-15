@@ -129,14 +129,15 @@ async function loadWeather() {
   try {
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 12000);
-    let response;
+    let data;
     try {
-      response = await fetch(`${API_URL}?${params}`, { cache: "no-store", signal: controller.signal });
+      const response = await fetch(`${API_URL}?${params}`, { cache: "no-store", signal: controller.signal });
+      if (!response.ok) throw new Error(`Weather API returned ${response.status}`);
+      data = await response.json();
     } finally {
+      // Keep the timeout active while the response body is being read, not just until headers arrive.
       window.clearTimeout(timeout);
     }
-    if (!response.ok) throw new Error(`Weather API returned ${response.status}`);
-    const data = await response.json();
     const hourly = data.hourly;
     const daily = data.daily;
     const hourlyFields = ["temperature_2m", "weather_code", "precipitation_probability"];
