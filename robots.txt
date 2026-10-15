@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Sitemap: https://pogodansk.tuqo.ru/sitemap.xml
