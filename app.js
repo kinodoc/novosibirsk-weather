@@ -1,4 +1,5 @@
 const API_URL = "https://api.open-meteo.com/v1/forecast";
+const AIR_API_URL = "https://air-quality-api.open-meteo.com/v1/air-quality";
 const WEATHER_REFRESH_MS = 10 * 60 * 1000;
 const LOCATION = { latitude: 55.0084, longitude: 82.9357, timezone: "Asia/Novosibirsk" };
 
@@ -206,3 +207,57 @@ async function loadWeather() {
 
 loadWeather();
 window.setInterval(loadWeather, WEATHER_REFRESH_MS);
+
+const aqiDescription = (value) => {
+  if (!Number.isFinite(value)) return "Индекс недоступен";
+  if (value <= 20) return "Хорошее качество воздуха";
+  if (value <= 40) return "Удовлетворительное качество";
+  if (value <= 60) return "Умеренное загрязнение";
+  if (value <= 80) return "Плохое качество воздуха";
+  if (value <= 100) return "Очень плохое качество";
+  return "Чрезвычайно плохое качество";
+};
+
+async function loadAirQuality() {
+  const params = new URLSearchParams({
+    latitude: LOCATION.latitude,
+    longitude: LOCATION.longitude,
+    timezone: LOCATION.timezone,
+    current: "european_aqi,pm2_5,pm10,nitrogen_dioxide,ozone",
+    hourly: "european_aqi,pm2_5,pm10,nitrogen_dioxide,ozone",
+    forecast_hours: 24
+  });
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 12000);
+  try {
+    const response = await fetch(`${AIR_API_URL}?${params}`, { cache: "no-store", signal: controller.signal });
+    if (!response.ok) throw new Error(`Air quality API returned ${response.status}`);
+    const data = await response.json();
+    const current = data.current;
+    if (!current || typeof current.time !== "string" ||
+        !Number.isFinite(current.european_aqi) ||
+        !Number.isFinite(current.pm2_5) ||
+        !Number.isFinite(current.pm10)) {
+      throw new Error("Air quality response is incomplete");
+    }
+    const aqi = current.european_aqi;
+    setMetric("airAqi", number(aqi), "airAqiBar", Math.min(100, aqi));
+    $("airAqiLabel").textContent = aqiDescription(aqi);
+    $("airUpdatedAt").textContent = `Модельные данные на ${timeOnly(current.time)} · Open-Meteo / CAMS`;
+    setMetric("pm25", `${number(current.pm2_5, 1)} <small>мкг/м³</small>`, "pm25Bar", current.pm2_5 * 2);
+    setMetric("pm10", `${number(current.pm10, 1)} <small>мкг/м³</small>`, "pm10Bar", current.pm10 / 3);
+    setMetric("no2", `${number(current.nitrogen_dioxide, 1)} <small>мкг/м³</small>`, "no2Bar", current.nitrogen_dioxide / 1.5);
+    setMetric("ozone", `${number(current.ozone, 1)} <small>мкг/м³</small>`, "ozoneBar", current.ozone / 1.8);
+    $("airError").hidden = true;
+  } catch (error) {
+    console.error("Не удалось обновить качество воздуха:", error);
+    $("airError").hidden = false;
+    $("airError").textContent = "Не удалось получить свежие данные о качестве воздуха. Повторим попытку через 10 минут.";
+    if ($("airAqi").textContent.trim() === "—") $("airAqiLabel").textContent = "Данные временно недоступны";
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
+loadAirQuality();
+window.setInterval(loadAirQuality, WEATHER_REFRESH_MS);
