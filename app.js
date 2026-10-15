@@ -166,13 +166,13 @@ async function loadWeather() {
     const daily = data.daily;
     const hourlyFields = ["temperature_2m", "weather_code", "precipitation_probability"];
     const dailyFields = ["temperature_2m_max", "temperature_2m_min", "weather_code", "sunrise", "sunset", "uv_index_max", "precipitation_probability_max", "precipitation_sum"];
-    const hourlyInvalid = !isOrderedTimeArray(hourly?.time, /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$/) ||
+    const hourlyInvalid = !isOrderedTimeArray(hourly?.time, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/) ||
       hourlyFields.some((key) => !Array.isArray(hourly[key]) || hourly[key].length < hourly.time.length);
-    const dailyInvalid = !isOrderedTimeArray(daily?.time, /^\\d{4}-\\d{2}-\\d{2}$/) ||
+    const dailyInvalid = !isOrderedTimeArray(daily?.time, /^\d{4}-\d{2}-\d{2}$/) ||
       daily.time.length < 2 ||
       dailyFields.some((key) => !Array.isArray(daily[key]) || daily[key].length < daily.time.length);
     if (!data.current || typeof data.current.time !== "string" ||
-        !/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}$/.test(data.current.time) ||
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(data.current.time) ||
         !Number.isFinite(data.current.temperature_2m) || hourlyInvalid || dailyInvalid) {
       throw new Error("Weather response is incomplete or has invalid time data");
     }
