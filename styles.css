@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root{color-scheme:dark;--bg:#0a1120;--panel:#121e32;--panel-soft:rgba(20,32,52,.82);--text:#f4f7fc;--muted:#a5b3c8;--line:rgba(202,220,246,.12);--accent:#8fd8ff;--radius:22px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse at 50% -15%,#213956 0%,#0a1120 55%);color:var(--text);font-family:Manrope,system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+button,a{-webkit-tap-highlight-color:transparent}
+.app-shell{max-width:1220px;margin:0 auto;padding:24px 26px 18px}
+.hero{position:relative;isolation:isolate;overflow:hidden;min-height:530px;border:1px solid rgba(220,237,255,.17);border-radius:30px;background:linear-gradient(125deg,#172d4b 0%,#365c7b 48%,#e2a87e 130%);box-shadow:0 24px 90px rgba(0,0,0,.28);transition:background 1.4s ease}
+.hero:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(6,15,29,.88) 0%,rgba(7,18,34,.62) 48%,rgba(10,21,36,.05) 100%),linear-gradient(0deg,rgba(8,16,29,.58),transparent 55%)}
+.hero.weather-night{background:linear-gradient(130deg,#081324,#182b49 62%,#3d506b)}
+.hero.weather-cloudy{background:linear-gradient(130deg,#23364c,#70899b 65%,#c5c6c1)}
+.hero.weather-rain{background:linear-gradient(130deg,#101e32,#3e5b74 65%,#8096a4)}
+.hero.weather-snow{background:linear-gradient(130deg,#405b76,#9bb7cb 75%,#d7e5ec)}
+.hero.weather-storm{background:linear-gradient(130deg,#101222,#32384e 60%,#756a7e)}
+.hero.weather-fog{background:linear-gradient(130deg,#5b6d7a,#a8b7bc 75%,#d2d8d5)}
+.topbar{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:27px 32px}
+.brand{display:inline-flex;align-items:center;gap:11px;color:var(--text);font-weight:800;font-size:15px;letter-spacing:.17em;text-decoration:none}
+.brand-mark{display:grid;place-items:center;width:37px;height:37px;border:1px solid rgba(255,255,255,.55);border-radius:12px;font-size:21px;letter-spacing:0;background:rgba(255,255,255,.1);backdrop-filter:blur(8px)}
+.brand-sub{display:block;margin-top:3px;color:#c1d1e4;font-size:8px;font-weight:600;letter-spacing:.23em}
+.live-pill{display:flex;align-items:center;gap:9px;padding:9px 13px;border:1px solid rgba(255,255,255,.2);border-radius:99px;background:rgba(8,20,36,.24);color:#e8f5ff;font-size:11px;backdrop-filter:blur(10px)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#8af0c1;box-shadow:0 0 13px #8af0c1;animation:pulse 2s infinite}
+.hero-content{position:relative;z-index:2;padding:45px 42px 28px;max-width:700px}
+.location{font-size:12px;font-weight:800;letter-spacing:.18em;color:#d7e9f8}
+.location-pin{font-size:19px;vertical-align:-2px;margin-right:7px}
+.timezone{margin-left:7px;padding:4px 7px;border:1px solid rgba(255,255,255,.24);border-radius:6px;font-size:9px;letter-spacing:.08em}
+.date-line{margin:15px 0 0;color:#c6d6e7;font-size:13px}
+.current-weather{display:flex;align-items:center;gap:30px;margin-top:8px}
+.temperature-wrap{display:flex;flex-direction:column}
+.temperature{font-size:clamp(92px,12vw,146px);font-weight:500;letter-spacing:-.105em;line-height:1.12;text-shadow:0 8px 35px rgba(0,0,0,.12)}
+.feels-like{margin-top:0;color:#d3e2f0;font-size:12px}
+.feels-like b{color:white;font-weight:700}
+.condition-wrap{padding-top:14px}
+.weather-symbol{font-size:47px;line-height:1.1;filter:drop-shadow(0 5px 16px rgba(255,255,255,.15))}
+.condition{margin-top:9px;font-size:20px;font-weight:700}
+.high-low{margin-top:6px;color:#d1e0ee;font-size:12px}
+.hero-footer{display:flex;flex-wrap:wrap;align-items:center;gap:15px;margin-top:43px;color:#d0dfec;font-size:11px}
+.sun-times{display:flex;align-items:center;gap:11px}
+.sun-times i{height:13px;border-left:1px solid rgba(255,255,255,.38)}
+.updated{color:#b6c8d9}
+.hero-sky{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.sun-glow{position:absolute;width:260px;height:260px;right:11%;top:8%;border-radius:50%;background:radial-gradient(circle,rgba(255,230,178,.92) 0%,rgba(255,215,157,.38) 24%,rgba(255,207,145,0) 70%);filter:blur(2px);transition:opacity 1s}
+.weather-night .sun-glow{opacity:.15;background:radial-gradient(circle,rgba(207,225,255,.6),transparent 70%)}
+.cloud{position:absolute;width:220px;height:46px;border-radius:99px;background:rgba(245,249,252,.18);filter:blur(9px);right:6%;top:29%;opacity:0;transition:opacity 1s}
+.cloud:before,.cloud:after{content:"";position:absolute;border-radius:50%;background:inherit}
+.cloud:before{width:95px;height:78px;left:36px;bottom:3px}.cloud:after{width:72px;height:67px;left:100px;bottom:0}
+.weather-cloudy .cloud,.weather-rain .cloud,.weather-snow .cloud,.weather-storm .cloud,.weather-fog .cloud{opacity:.95}
+.weather-cloudy .cloud-two,.weather-rain .cloud-two,.weather-snow .cloud-two,.weather-storm .cloud-two{top:43%;right:21%;transform:scale(.8);opacity:.65}
+.cityline{position:absolute;z-index:-1;right:0;bottom:0;width:58%;height:48%;opacity:.68;pointer-events:none}
+.cityline:before{content:"";position:absolute;inset:20% 0 0;background:linear-gradient(0deg,rgba(6,15,28,.94),rgba(11,24,40,.08));clip-path:polygon(0 40%,7% 40%,7% 19%,13% 19%,13% 55%,20% 55%,20% 28%,28% 28%,28% 44%,36% 44%,36% 7%,42% 7%,42% 38%,49% 38%,49% 24%,57% 24%,57% 47%,64% 47%,64% 12%,70% 12%,70% 38%,77% 38%,77% 28%,84% 28%,84% 53%,91% 53%,91% 36%,100% 36%,100% 100%,0 100%)}
+.tower{position:absolute;right:28%;bottom:20%;height:63%;width:2px;background:rgba(18,35,52,.8);transform:rotate(2deg)}
+.tower:before{content:"";position:absolute;top:0;left:-9px;width:20px;height:2px;background:inherit;box-shadow:0 9px 0 rgba(18,35,52,.7),0 18px 0 rgba(18,35,52,.6)}
+.building{position:absolute;bottom:0;background:linear-gradient(90deg,rgba(8,18,31,.8),rgba(16,33,50,.9));border-top:1px solid rgba(218,236,249,.12)}
+.b1{right:5%;width:15%;height:39%;clip-path:polygon(0 15%,100% 0,100% 100%,0 100%)}
+.b2{right:20%;width:14%;height:29%;clip-path:polygon(0 0,100% 12%,100% 100%,0 100%)}
+.b3{right:40%;width:18%;height:24%}
+.bridge{position:absolute;right:0;bottom:10%;width:100%;height:2px;background:rgba(20,37,52,.8);box-shadow:0 8px 0 rgba(20,37,52,.7)}
+.weather-effects{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.rain-drop{position:absolute;top:-18%;width:1px;height:38px;background:linear-gradient(transparent,rgba(223,241,255,.6));animation:rainfall 1.1s linear infinite}
+.snowflake{position:absolute;top:-5%;width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.85);filter:blur(.2px);animation:snowfall linear infinite}
+.section-block{margin-top:38px}
+.section-heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:0 2px 18px}
+.eyebrow{margin:0 0 8px;color:#8ea9c6;font-size:9px;font-weight:800;letter-spacing:.2em}
+h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
+.section-note{padding-bottom:4px;color:#8294ac;font-size:11px}
+.metrics-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.metric-card{min-height:160px;padding:20px 21px 18px;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(145deg,rgba(24,39,61,.94),rgba(14,25,42,.94));box-shadow:0 10px 35px rgba(0,0,0,.09);transition:transform .2s,border-color .2s}
+.metric-card:hover{transform:translateY(-3px);border-color:rgba(143,216,255,.32)}
+.metric-top{display:flex;justify-content:space-between;align-items:center;color:#b8c8dc;font-size:12px}
+.metric-icon{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:rgba(143,216,255,.09);color:var(--accent);font-size:20px}
+.metric-card strong{display:block;margin-top:11px;font-size:28px;letter-spacing:-.05em;font-weight:700}
+.metric-card strong small{font-size:13px;font-weight:600;letter-spacing:0;color:#9db2c9}
+.metric-card p{margin:6px 0 0;color:#8296ae;font-size:10px}
+.metric-track{height:3px;margin-top:16px;border-radius:8px;background:rgba(255,255,255,.07);overflow:hidden}
+.metric-track span{display:block;width:0;height:100%;border-radius:8px;background:linear-gradient(90deg,#5ba9e8,#9ce6ff);transition:width .8s ease}
+.forecast-section{margin-top:42px}
+.hourly-scroller{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:thin;scrollbar-color:#314b68 transparent}
+.hour-card{flex:0 0 105px;display:flex;align-items:center;flex-direction:column;min-height:140px;padding:15px 10px;border:1px solid var(--line);border-radius:18px;background:rgba(19,31,50,.8)}
+.hour-time{color:#9eb1c7;font-size:10px}
+.hour-symbol{margin:15px 0 12px;font-size:25px}
+.hour-temp{font-size:20px;font-weight:700;letter-spacing:-.04em}
+.hour-rain{margin-top:8px;color:#82cfff;font-size:10px}
+.loading-card{padding:25px;color:#a5b3c8;font-size:12px}
+.tomorrow-card{display:flex;align-items:center;justify-content:space-between;gap:25px;margin-top:26px;padding:27px 30px;border:1px solid rgba(143,216,255,.18);border-radius:24px;background:radial-gradient(ellipse at 85% 20%,rgba(76,134,174,.2),transparent 48%),linear-gradient(130deg,#152840,#111d30)}
+.tomorrow-copy h2{font-size:21px}
+.tomorrow-copy>p:last-child{max-width:500px;margin:9px 0 0;color:#93a8c0;font-size:11px;line-height:1.7}
+.tomorrow-weather{display:grid;grid-template-columns:auto auto;align-items:center;column-gap:13px}
+.tomorrow-weather>span:first-child{font-size:35px}
+.tomorrow-weather strong{font-size:43px;font-weight:600;letter-spacing:-.07em}
+.tomorrow-weather>span:last-child{grid-column:2;color:#9db0c5;font-size:10px}
+.site-footer{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:30px 3px 10px;color:#647991;font-size:9px}
+.footer-brand{font-size:11px;letter-spacing:.13em}.footer-brand .brand-mark{width:29px;height:29px;border-radius:9px;font-size:16px}.footer-brand .brand-sub{font-size:6px}
+.site-footer p{margin:0}
+.error-message{position:fixed;right:18px;bottom:18px;z-index:10;max-width:360px;padding:15px 18px;border:1px solid rgba(255,167,167,.25);border-radius:14px;background:#2a1a26;color:#ffd5d5;font-size:12px;box-shadow:0 15px 40px #0005}
+[hidden]{display:none!important}
+@keyframes pulse{50%{opacity:.45;box-shadow:0 0 4px #8af0c1}}
+@keyframes rainfall{to{transform:translate3d(-35px,130vh,0)}}
+@keyframes snowfall{to{transform:translate3d(35px,115vh,0) rotate(180deg)}}
+@media(min-width:1400px){.app-shell{padding-top:32px}.hero{min-height:570px}.hero-content{padding-top:55px}}
+@media(max-width:760px){.app-shell{padding:12px 12px 8px}.hero{min-height:490px;border-radius:23px}.topbar{padding:20px 18px}.brand{font-size:13px}.live-pill{font-size:9px;padding:8px 10px}.hero-content{padding:49px 22px 23px}.temperature{font-size:clamp(82px,22vw,125px)}.current-weather{gap:21px}.condition{font-size:16px}.weather-symbol{font-size:38px}.hero-footer{margin-top:36px;gap:10px}.cityline{width:80%;height:40%;opacity:.52}.sun-glow{right:-5%;top:18%;width:210px;height:210px}.section-block{margin-top:30px}.section-heading{align-items:start}.section-note{max-width:125px;text-align:right;line-height:1.5;font-size:9px}h2{font-size:21px}.metrics-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.metric-card{padding:16px 14px;min-height:148px;border-radius:17px}.metric-card strong{font-size:25px}.metric-card p{font-size:9px}.metric-icon{width:27px;height:27px}.forecast-section{margin-top:32px}.hour-card{flex-basis:87px;min-height:132px}.tomorrow-card{padding:22px 19px;border-radius:20px}.tomorrow-copy h2{font-size:17px}.tomorrow-weather{column-gap:7px}.tomorrow-weather strong{font-size:34px}.tomorrow-weather>span:first-child{font-size:27px}.site-footer{flex-wrap:wrap;justify-content:flex-start;gap:12px}.site-footer p{width:100%;order:3}.footer-update{order:4!important}}
+@media(max-width:390px){.brand-sub{font-size:7px}.live-pill{max-width:122px}.hero-content{padding-left:17px;padding-right:17px}.current-weather{gap:15px}.temperature{font-size:82px}.condition{font-size:14px}.high-low{font-size:10px}.sun-times{gap:7px;font-size:10px}.updated{font-size:9px}.metric-card{padding:14px 12px}.metric-card strong{font-size:23px}.tomorrow-card{gap:12px;padding:18px 14px}.tomorrow-copy h2{font-size:15px}.tomorrow-weather strong{font-size:30px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
