@@ -4,6 +4,7 @@ const LOCATION = { latitude: 55.0084, longitude: 82.9357, timezone: "Asia/Novosi
 
 let requestInFlight = false;
 let hasLoadedWeather = false;
+let lastSuccessfulUpdate = null;
 
 const $ = (id) => document.getElementById(id);
 const number = (value, digits = 0) => Number.isFinite(value) ? value.toFixed(digits).replace(".", ",") : "—";
@@ -145,7 +146,7 @@ async function loadWeather() {
     longitude: LOCATION.longitude,
     timezone: LOCATION.timezone,
     forecast_days: 2,
-    forecast_hours: 24,
+    forecast_hours: 25,
     current: "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m",
     hourly: "temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m",
     daily: "weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max,precipitation_sum"
@@ -181,6 +182,7 @@ async function loadWeather() {
     renderHourly(data.hourly, data.current.time);
     renderTomorrow(data.daily);
     hasLoadedWeather = true;
+    lastSuccessfulUpdate = data.current.time;
     $("statusText").textContent = "Данные актуальны";
     document.querySelector(".live-dot")?.classList.remove("is-error", "is-loading");
     $("updatedAt").textContent = `Обновлено в ${timeOnly(data.current.time)}`;
@@ -194,7 +196,9 @@ async function loadWeather() {
       ? "Не удалось обновить прогноз. На экране оставлены последние успешно полученные данные."
       : "Не удалось получить погоду. Проверьте подключение к интернету и попробуйте позже.";
     $("errorMessage").hidden = false;
-    if (hasLoadedWeather) $("updatedAt").textContent = "Не удалось обновить данные";
+    if (hasLoadedWeather && lastSuccessfulUpdate) {
+      $("updatedAt").textContent = `Последнее обновление в ${timeOnly(lastSuccessfulUpdate)}`;
+    }
   } finally {
     requestInFlight = false;
   }
