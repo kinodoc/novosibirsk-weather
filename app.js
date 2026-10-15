@@ -136,7 +136,18 @@ async function loadWeather() {
     }
     if (!response.ok) throw new Error(`Weather API returned ${response.status}`);
     const data = await response.json();
-    if (!data.current || typeof data.current.time !== "string" || !Number.isFinite(data.current.temperature_2m) || !Array.isArray(data.hourly?.time) || data.hourly.time.length === 0 || !Array.isArray(data.hourly?.temperature_2m) || !Array.isArray(data.hourly?.weather_code) || !Array.isArray(data.daily?.time) || data.daily.time.length < 2 || !Array.isArray(data.daily?.temperature_2m_max) || !Array.isArray(data.daily?.temperature_2m_min) || !Array.isArray(data.daily?.weather_code)) throw new Error("Weather response is incomplete");
+    const hourly = data.hourly;
+    const daily = data.daily;
+    const hourlyFields = ["temperature_2m", "weather_code", "precipitation_probability"];
+    const dailyFields = ["temperature_2m_max", "temperature_2m_min", "weather_code", "sunrise", "sunset", "uv_index_max", "precipitation_probability_max", "precipitation_sum"];
+    const hourlyInvalid = !Array.isArray(hourly?.time) || hourly.time.length === 0 ||
+      hourlyFields.some((key) => !Array.isArray(hourly[key]) || hourly[key].length < hourly.time.length);
+    const dailyInvalid = !Array.isArray(daily?.time) || daily.time.length < 2 ||
+      dailyFields.some((key) => !Array.isArray(daily[key]) || daily[key].length < daily.time.length);
+    if (!data.current || typeof data.current.time !== "string" ||
+        !Number.isFinite(data.current.temperature_2m) || hourlyInvalid || dailyInvalid) {
+      throw new Error("Weather response is incomplete");
+    }
     updateHero(data.current, data.daily);
     updateMetrics(data.current, data.hourly, data.daily);
     renderHourly(data.hourly, data.current.time);
