@@ -43,6 +43,21 @@
       </div>
     </section>
 
+
+    <section class="section-block environment-section" aria-labelledby="environmentTitle">
+      <div class="section-heading"><div><p class="eyebrow">ВОЗДУХ И ОКРУЖАЮЩАЯ СРЕДА</p><h2 id="environmentTitle">Качество воздуха</h2></div><span class="section-note">Модельные данные, обновление каждые 10 минут</span></div>
+      <div class="metrics-grid environment-grid">
+        <article class="metric-card environment-main-card"><div class="metric-top"><span>Индекс качества воздуха (европейский)</span><span class="metric-icon">◉</span></div><strong id="airAqi">—</strong><p id="airAqiLabel">Загружаем данные…</p><div class="metric-track"><span id="airAqiBar"></span></div><p id="airUpdatedAt" class="data-timestamp">Источник: Open-Meteo / CAMS</p></article>
+        <article class="metric-card"><div class="metric-top"><span>Мелкие частицы PM2.5</span><span class="metric-icon">·</span></div><strong id="pm25">— <small>мкг/м³</small></strong><p>Частицы диаметром до 2,5 мкм</p><div class="metric-track"><span id="pm25Bar"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>Частицы PM10</span><span class="metric-icon">◌</span></div><strong id="pm10">— <small>мкг/м³</small></strong><p>Частицы диаметром до 10 мкм</p><div class="metric-track"><span id="pm10Bar"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>Диоксид азота (NO₂)</span><span class="metric-icon">≈</span></div><strong id="no2">— <small>мкг/м³</small></strong><p>Загрязняющий газ</p><div class="metric-track"><span id="no2Bar"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>Озон (O₃)</span><span class="metric-icon">◎</span></div><strong id="ozone">— <small>мкг/м³</small></strong><p>Приземный озон</p><div class="metric-track"><span id="ozoneBar"></span></div></article>
+        <article class="metric-card radiation-card"><div class="metric-top"><span>Радиационный фон</span><span class="metric-icon">☢</span></div><strong id="radiationValue">Нет данных</strong><p id="radiationStatus">Не удалось подтвердить источник оперативных измерений</p><p class="data-timestamp">Официальные сведения: <a href="https://www.meteorf.gov.ru/product/infomaterials/136/" target="_blank" rel="noopener noreferrer">Росгидромет</a></p></article>
+      </div>
+      <p class="environment-disclaimer">Качество воздуха рассчитано по модельным данным CAMS, это не показания локального датчика. Радиационные значения не отображаются без подтверждённых актуальных измерений.</p>
+      <p class="environment-error" id="airError" role="status" hidden>Не удалось обновить данные о качестве воздуха.</p>
+    </section>
+
     <section class="section-block forecast-section">
       <div class="section-heading"><div><p class="eyebrow">БЛИЖАЙШИЕ ЧАСЫ</p><h2>Как изменится погода</h2></div><span class="section-note">Прогноз на 24 часа</span></div>
       <div class="hourly-scroller" id="hourlyForecast"><div class="loading-card">Загружаем почасовой прогноз…</div></div>
