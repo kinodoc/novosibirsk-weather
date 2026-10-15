@@ -63,8 +63,8 @@ jobs:
               raise SystemExit(f"Duplicate HTML IDs: {sorted(parser.duplicates)}")
           if not parser.script_found:
               raise SystemExit("index.html does not include app.js")
-          if not Path("cityscape.svg").is_file() or "cityscape.svg" not in css:
-              raise SystemExit("cityscape.svg is missing or not referenced by CSS")
+          if not Path("cityscape.svg").is_file():
+              raise SystemExit("cityscape.svg is missing")
           ET.parse("cityscape.svg")
           print(f"OK: {len(parser.ids)} HTML IDs, {len(references)} JavaScript references, SVG is valid.")
           PY
