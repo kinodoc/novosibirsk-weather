@@ -2,6 +2,9 @@ const API_URL = "https://api.open-meteo.com/v1/forecast";
 const WEATHER_REFRESH_MS = 10 * 60 * 1000;
 const LOCATION = { latitude: 55.0084, longitude: 82.9357, timezone: "Asia/Novosibirsk" };
 
+let requestInFlight = false;
+let hasLoadedWeather = false;
+
 const $ = (id) => document.getElementById(id);
 const number = (value, digits = 0) => Number.isFinite(value) ? value.toFixed(digits).replace(".", ",") : "—";
 const roundTemp = (value) => Number.isFinite(value) ? `${Math.round(value)}°` : "—°";
@@ -104,7 +107,9 @@ function renderHourly(hourly, currentTime) {
     const card = document.createElement("article");
     card.className = "hour-card";
     const label = offset === 0 ? "Сейчас" : timeOnly(time);
-    card.innerHTML = `<span class="hour-time">${label}</span><span class="hour-symbol" aria-hidden="true">${info.icon}</span><strong class="hour-temp">${roundTemp(hourly.temperature_2m[index])}</strong><span class="hour-rain">☂ ${hourly.precipitation_probability?.[index] ?? 0}%</span>`;
+    const rawChance = hourly.precipitation_probability?.[index];
+    const chance = Number.isFinite(rawChance) ? `${Math.max(0, Math.min(100, rawChance))}%` : "—";
+    card.innerHTML = `<span class="hour-time">${label}</span><span class="hour-symbol" aria-hidden="true">${info.icon}</span><strong class="hour-temp">${roundTemp(hourly.temperature_2m[index])}</strong><span class="hour-rain">☂ ${chance}</span>`;
     $("hourlyForecast").append(card);
   });
 }
@@ -119,10 +124,12 @@ function renderTomorrow(daily) {
   const rawSum = daily.precipitation_sum?.[1];
   const rain = Number.isFinite(rawRain) ? `${Math.max(0, Math.min(100, rawRain))}%` : "—";
   const sum = Number.isFinite(rawSum) ? `${number(rawSum, 1)} мм` : "—";
-  $("tomorrowSummary").textContent = `Вероятность осадков — ${rain}. Ожидается ${sum} осадков. Восход в ${timeOnly(daily.sunrise?.[1])}, закат в ${timeOnly(daily.sunset?.[1])}.`;
+  $("tomorrowSummary").textContent = `Вероятность осадков — ${rain}. Количество осадков: ${sum}. Восход в ${timeOnly(daily.sunrise?.[1])}, закат в ${timeOnly(daily.sunset?.[1])}.`;
 }
 
 async function loadWeather() {
+  if (requestInFlight) return;
+  requestInFlight = true;
   const params = new URLSearchParams({
     latitude: LOCATION.latitude,
     longitude: LOCATION.longitude,
@@ -161,14 +168,20 @@ async function loadWeather() {
     updateMetrics(data.current, data.hourly, data.daily);
     renderHourly(data.hourly, data.current.time);
     renderTomorrow(data.daily);
+    hasLoadedWeather = true;
     $("statusText").textContent = "Данные актуальны";
     $("updatedAt").textContent = `Обновлено в ${timeOnly(data.current.time)}`;
     $("errorMessage").hidden = true;
   } catch (error) {
     console.error("Не удалось обновить погоду:", error);
     $("statusText").textContent = error.name === "AbortError" ? "Погода отвечает слишком долго" : "Нет связи с погодой";
+    $("errorMessage").textContent = hasLoadedWeather
+      ? "Не удалось обновить прогноз. На экране оставлены последние успешно полученные данные."
+      : "Не удалось получить погоду. Проверьте подключение к интернету и попробуйте позже.";
     $("errorMessage").hidden = false;
-    if (!$("temperature").textContent.includes("—")) $("updatedAt").textContent = "Не удалось обновить данные";
+    if (hasLoadedWeather) $("updatedAt").textContent = "Не удалось обновить данные";
+  } finally {
+    requestInFlight = false;
   }
 }
 
