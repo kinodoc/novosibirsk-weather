@@ -1,113 +1,6 @@
 const API_URL = "https://api.open-meteo.com/v1/forecast";
 const AIR_API_URL = "https://air-quality-api.open-meteo.com/v1/air-quality";
 const WEATHER_REFRESH_MS = 10 * 60 * 1000;
-const TRAFFIC_REFRESH_MS = 10 * 60 * 1000;
-const TRAFFIC_TILE_ZOOM = 10;
-let trafficRequestInFlight = false;
-let lastTrafficFetchAt = 0;
-
-function trafficTileCoordinates(latitude, longitude, zoom) {
-  const scale = 2 ** zoom;
-  const x = Math.floor((longitude + 180) / 360 * scale);
-  const latitudeRadians = latitude * Math.PI / 180;
-  const y = Math.floor((1 - Math.asinh(Math.tan(latitudeRadians)) / Math.PI) / 2 * scale);
-  return { x, y };
-}
-
-function trafficColorScore(red, green, blue) {
-  const max = Math.max(red, green, blue);
-  const min = Math.min(red, green, blue);
-  if (max < 65 || max - min < 28) return null;
-  // The provider's traffic tiles use green/yellow/orange/red road strokes.
-  if (green > red * 1.12 && green > blue * 1.25) return 1.5;
-  if (red > 150 && green > 55 && green < 145 && red > green * 1.15) return 7;
-  if (red > 175 && green > 125 && green >= red * 0.55) return 4;
-  if (red > 145 && red > green * 1.55 && red > blue * 1.4) return 9;
-  return null;
-}
-
-function wait(ms) {
-  return new Promise((resolve) => window.setTimeout(resolve, ms));
-}
-
-async function loadTrafficTile(x, y, zoom, signal) {
-  const url = `https://api.1traffic.ru/v2/tiles/jams/${zoom}/${x}/${y}.png?key=demo`;
-  const response = await fetch(url, { mode: "cors", cache: "no-store", signal });
-  if (!response.ok) throw new Error(`Traffic tile returned ${response.status}`);
-  const bitmap = await createImageBitmap(await response.blob());
-  try {
-    const canvas = document.createElement("canvas");
-    canvas.width = bitmap.width;
-    canvas.height = bitmap.height;
-    const context = canvas.getContext("2d", { willReadFrequently: true });
-    context.drawImage(bitmap, 0, 0);
-    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
-    let scoreSum = 0;
-    let roadPixels = 0;
-    for (let i = 0; i < pixels.length; i += 4) {
-      if (pixels[i + 3] < 180) continue;
-      const score = trafficColorScore(pixels[i], pixels[i + 1], pixels[i + 2]);
-      if (score === null) continue;
-      scoreSum += score;
-      roadPixels++;
-    }
-    return { scoreSum, roadPixels };
-  } finally {
-    bitmap.close();
-  }
-}
-
-async function loadTraffic() {
-  if (trafficRequestInFlight) return;
-  trafficRequestInFlight = true;
-  const value = $("trafficValue");
-  const status = $("trafficStatus");
-  const updated = $("trafficUpdatedAt");
-  const bar = $("trafficBar");
-  const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 25000);
-  try {
-    const { x, y } = trafficTileCoordinates(LOCATION.latitude, LOCATION.longitude, TRAFFIC_TILE_ZOOM);
-    let scoreSum = 0;
-    let roadPixels = 0;
-    let loadedTiles = 0;
-    // Stay within the demo key's one-request-per-second limit.
-    for (let dy = -1; dy <= 1; dy++) {
-      for (let dx = -1; dx <= 1; dx++) {
-        if (loadedTiles > 0) await wait(1100);
-        const tile = await loadTrafficTile(x + dx, y + dy, TRAFFIC_TILE_ZOOM, controller.signal);
-        scoreSum += tile.scoreSum;
-        roadPixels += tile.roadPixels;
-        loadedTiles++;
-      }
-    }
-    if (!roadPixels) throw new Error("No traffic-colored road pixels found");
-    const score = Math.max(0, Math.min(10, Math.round(scoreSum / roadPixels * 10) / 10));
-    value.textContent = number(score, 1) + " / 10";
-    status.textContent = score < 2.5 ? "Движение свободное (расчётная оценка)"
-      : score < 4.5 ? "Небольшая загруженность (расчётная оценка)"
-      : score < 6.5 ? "Умеренная загруженность (расчётная оценка)"
-      : score < 8.5 ? "Сильная загруженность (расчётная оценка)"
-      : "Очень сильная загруженность (расчётная оценка)";
-    bar.style.width = `${score * 10}%`;
-    bar.style.background = score < 2.5 ? "#55d6a0" : score < 4.5 ? "#c4e36c" : score < 6.5 ? "#ffd166" : score < 8.5 ? "#ff9b54" : "#ff657a";
-    updated.textContent = `Расчёт по дорожным тайлам · обновлено в ${new Intl.DateTimeFormat("ru-RU", { timeZone: LOCATION.timezone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date())}`;
-    lastTrafficFetchAt = Date.now();
-  } catch (error) {
-    console.error("Не удалось обновить данные о пробках:", error);
-    if (value.textContent.trim() === "—") {
-      value.textContent = "Нет данных";
-      status.textContent = "Не удалось получить актуальную загруженность дорог";
-    } else {
-      status.textContent = "Не удалось обновить; показано последнее значение";
-    }
-    updated.textContent = "Источник: Квазар / 1Traffic";
-  } finally {
-    window.clearTimeout(timeout);
-    trafficRequestInFlight = false;
-  }
-}
-
 const LOCATION = { latitude: 55.0084, longitude: 82.9357, timezone: "Asia/Novosibirsk" };
 
 let requestInFlight = false;
@@ -390,7 +283,6 @@ function refreshWhenPageReturns() {
   // Mobile browsers throttle timers while a tab is in the background. Refresh stale data on return.
   if (now - lastWeatherFetchAt >= 5 * 60 * 1000) loadWeather();
   if (now - lastAirQualityFetchAt >= 5 * 60 * 1000) loadAirQuality();
-  if (now - lastTrafficFetchAt >= 5 * 60 * 1000) loadTraffic();
 }
 
 document.addEventListener("visibilitychange", refreshWhenPageReturns);
@@ -413,8 +305,8 @@ async function loadAirQuality() {
     latitude: LOCATION.latitude,
     longitude: LOCATION.longitude,
     timezone: LOCATION.timezone,
-    current: "european_aqi,pm2_5,pm10,nitrogen_dioxide,ozone",
-    hourly: "european_aqi,pm2_5,pm10,nitrogen_dioxide,ozone",
+    current: "european_aqi",
+    hourly: "european_aqi",
     forecast_hours: 24
   });
   const controller = new AbortController();
@@ -425,9 +317,7 @@ async function loadAirQuality() {
     const data = await response.json();
     const current = data.current;
     if (!current || typeof current.time !== "string" ||
-        !Number.isFinite(current.european_aqi) ||
-        !Number.isFinite(current.pm2_5) ||
-        !Number.isFinite(current.pm10)) {
+        !Number.isFinite(current.european_aqi)) {
       throw new Error("Air quality response is incomplete");
     }
     lastAirQualityFetchAt = Date.now();
@@ -435,10 +325,6 @@ async function loadAirQuality() {
     setMetric("airAqi", number(aqi), "airAqiBar", Math.min(100, aqi));
     $("airAqiLabel").textContent = aqiDescription(aqi);
     $("airUpdatedAt").textContent = `Модельные данные на ${timeOnly(current.time)} · Open-Meteo / CAMS`;
-    setMetric("pm25", `${number(current.pm2_5, 1)} <small>мкг/м³</small>`, "pm25Bar", current.pm2_5 * 2);
-    setMetric("pm10", `${number(current.pm10, 1)} <small>мкг/м³</small>`, "pm10Bar", current.pm10 / 3);
-    setMetric("no2", `${number(current.nitrogen_dioxide, 1)} <small>мкг/м³</small>`, "no2Bar", current.nitrogen_dioxide / 1.5);
-    setMetric("ozone", `${number(current.ozone, 1)} <small>мкг/м³</small>`, "ozoneBar", current.ozone / 1.8);
     $("airError").hidden = true;
   } catch (error) {
     console.error("Не удалось обновить качество воздуха:", error);
@@ -454,10 +340,3 @@ async function loadAirQuality() {
 loadAirQuality();
 window.setInterval(loadAirQuality, WEATHER_REFRESH_MS);
 
-loadTraffic();
-window.setInterval(loadTraffic, TRAFFIC_REFRESH_MS);
-window.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible" && Date.now() - lastTrafficFetchAt > 5 * 60 * 1000) {
-    loadTraffic();
-  }
-});
