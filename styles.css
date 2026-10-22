@@ -159,3 +159,8 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 @media(prefers-reduced-motion:reduce){.cloud{animation:none}}
 
 .hero.time-night .cityline:after{content:"";position:absolute;inset:18% 0 28%;opacity:.58;pointer-events:none;background-image:radial-gradient(2px 3px at 65% 58%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 72% 68%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 78% 48%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 83% 62%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 88% 44%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 94% 70%,#ffe4a0 55%,transparent 75%);filter:drop-shadow(0 0 5px rgba(255,210,130,.7));mix-blend-mode:screen}
+
+.traffic-card{border-color:rgba(143,216,255,.2)}
+.traffic-card strong{font-size:25px;letter-spacing:-.03em}
+.traffic-card .metric-track span{background:#55d6a0}
+@media(max-width:760px){.traffic-card strong{font-size:21px}}
