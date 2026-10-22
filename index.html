@@ -19,6 +19,7 @@
   <meta name="twitter:description" content="Текущая погода, качество воздуха и прогноз на ближайшие 24 часа.">
   <title>Погода в Новосибирске — прогноз на 24 часа</title>
   <link rel="preconnect" href="https://api.open-meteo.com">
+  <link rel="preconnect" href="https://api.1traffic.ru">
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
 </head>
@@ -63,9 +64,9 @@
         <article class="metric-card"><div class="metric-top"><span>Частицы PM10</span><span class="metric-icon">◌</span></div><strong id="pm10">— <small>мкг/м³</small></strong><p>Частицы диаметром до 10 мкм</p><div class="metric-track"><span id="pm10Bar"></span></div></article>
         <article class="metric-card"><div class="metric-top"><span>Диоксид азота (NO₂)</span><span class="metric-icon">≈</span></div><strong id="no2">— <small>мкг/м³</small></strong><p>Загрязняющий газ</p><div class="metric-track"><span id="no2Bar"></span></div></article>
         <article class="metric-card"><div class="metric-top"><span>Озон (O₃)</span><span class="metric-icon">◎</span></div><strong id="ozone">— <small>мкг/м³</small></strong><p>Приземный озон</p><div class="metric-track"><span id="ozoneBar"></span></div></article>
-        <article class="metric-card radiation-card"><div class="metric-top"><span>Радиационный фон</span><span class="metric-icon">☢</span></div><strong id="radiationValue">Нет данных</strong><p id="radiationStatus">Не удалось подтвердить источник оперативных измерений</p><p class="data-timestamp">Официальные сведения: <a href="https://www.meteorf.gov.ru/product/infomaterials/136/" target="_blank" rel="noopener noreferrer">Росгидромет</a></p></article>
+        <article class="metric-card traffic-card"><div class="metric-top"><span>Пробки в Новосибирске</span><span class="metric-icon">🚦</span></div><strong id="trafficValue">—</strong><p id="trafficStatus">Загружаем данные о загруженности дорог…</p><div class="metric-track"><span id="trafficBar"></span></div><p class="data-timestamp" id="trafficUpdatedAt">Источник: Квазар / 1Traffic</p></article>
       </div>
-      <p class="environment-disclaimer">Качество воздуха рассчитано по модельным данным CAMS, это не показания локального датчика. Радиационные значения не отображаются без подтверждённых актуальных измерений.</p>
+      <p class="environment-disclaimer">Качество воздуха рассчитано по модельным данным CAMS, это не показания локального датчика. Индекс пробок — приблизительная оценка по цветам дорожных участков, а не официальный балл поставщика.</p>
       <p class="environment-error" id="airError" role="status" hidden>Не удалось обновить данные о качестве воздуха.</p>
     </section>
 
