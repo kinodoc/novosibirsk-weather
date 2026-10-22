@@ -163,3 +163,11 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 
 /* Only the air-quality index remains in the environment section. */
 .environment-grid{grid-template-columns:minmax(0,1fr);max-width:520px}
+
+
+/* Search-friendly page heading and readable explanatory copy. */
+.location{margin:0;line-height:1.5}
+.seo-copy{max-width:850px;padding:20px 22px;border:1px solid var(--line);border-radius:18px;background:rgba(19,31,50,.58);color:#a5b3c8;font-size:13px;line-height:1.85}
+.seo-copy p{margin:0}
+.seo-copy p+p{margin-top:12px}
+@media(max-width:760px){.seo-copy{padding:17px;font-size:12px;line-height:1.8}}
