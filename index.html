@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101b31">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%23121e32%22/%3E%3Ctext x=%2232%22 y=%2245%22 text-anchor=%22middle%22 font-size=%2245%22 font-family=%22Arial,sans-serif%22 fill=%22%238fd8ff%22%3E%D0%A1%3C/text%3E%3C/svg%3E">
-  <meta name="description" content="Погода в Новосибирске: текущая температура, ощущается как, ветер, влажность, давление, осадки, качество воздуха и прогноз на 24 часа.">
+  <meta name="description" content="Погода в Новосибирске сейчас: температура, ощущается как, ветер, осадки и прогноз на 24 часа. Узнайте погоду на сегодня и завтра и индекс качества воздуха.">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <link rel="canonical" href="https://pogodansk.tuqo.ru/">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Север — погода в Новосибирске">
   <meta property="og:locale" content="ru_RU">
   <meta property="og:title" content="Погода в Новосибирске">
   <meta property="og:description" content="Текущая погода, качество воздуха и прогноз на ближайшие 24 часа в Новосибирске. Данные обновляются автоматически.">
@@ -16,11 +17,23 @@
   <meta property="og:image:alt" content="Бугринский мост в Новосибирске в вечерней подсветке">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Погода в Новосибирске">
-  <meta name="twitter:description" content="Текущая погода, качество воздуха и прогноз на ближайшие 24 часа.">
-  <title>Погода в Новосибирске — прогноз на 24 часа</title>
+  <meta name="twitter:description" content="Погода в Новосибирске сейчас: температура, ветер, осадки, прогноз на 24 часа и индекс качества воздуха.">
+  <meta name="twitter:image" content="https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Bugrinsky_Bridge_%28May_2025%29_-_0.jpg/1280px-Bugrinsky_Bridge_%28May_2025%29_-_0.jpg">
+  <title>Погода в Новосибирске сейчас — прогноз на 24 часа | Север</title>
   <link rel="preconnect" href="https://api.open-meteo.com">
   <link rel="stylesheet" href="styles.css">
-  <script src="app.js?v=d94c08e" defer></script>
+  <script src="app.js?v=d51dfc9" defer></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Север — погода в Новосибирске",
+    "alternateName": "Погода в Новосибирске",
+    "url": "https://pogodansk.tuqo.ru/",
+    "inLanguage": "ru-RU",
+    "description": "Текущая погода в Новосибирске, прогноз на 24 часа и индекс качества воздуха."
+  }
+  </script>
 </head>
 <body>
   <main class="app-shell">
@@ -31,7 +44,7 @@
         <div class="live-pill"><span class="live-dot is-loading"></span><span id="statusText">Загружаем погоду</span></div>
       </header>
       <div class="hero-content">
-        <div class="location"><span class="location-pin">⌖</span> НОВОСИБИРСК <span class="timezone">UTC+7</span></div>
+        <h1 class="location"><span class="location-pin" aria-hidden="true">⌖</span> Погода в Новосибирске <span class="timezone">UTC+7</span></h1>
         <p class="date-line" id="dateLine">Сегодня · местное время</p>
         <div class="current-weather">
           <div class="temperature-wrap"><span class="temperature" id="temperature">—°</span><span class="feels-like">Ощущается как <b id="feelsLike">—°</b></span></div>
@@ -72,6 +85,14 @@
     <section class="tomorrow-card" id="tomorrowCard">
       <div class="tomorrow-copy"><p class="eyebrow">ЗАВТРА В НОВОСИБИРСКЕ</p><h2 id="tomorrowCondition">Готовим прогноз…</h2><p id="tomorrowSummary">Скоро здесь появится прогноз на весь день.</p></div>
       <div class="tomorrow-weather"><span id="tomorrowSymbol" aria-hidden="true">☀</span><strong id="tomorrowTemp">—°</strong><span id="tomorrowRange">—° / —°</span></div>
+    </section>
+
+    <section class="section-block seo-intro" aria-labelledby="seoIntroTitle">
+      <div class="section-heading"><div><p class="eyebrow">ПОГОДА В ГОРОДЕ</p><h2 id="seoIntroTitle">Погода в Новосибирске сейчас и на ближайшие 24 часа</h2></div></div>
+      <div class="seo-copy">
+        <p>Здесь можно посмотреть текущую погоду в Новосибирске: температуру воздуха, ощущаемую температуру, ветер, влажность, атмосферное давление, вероятность осадков, порывы ветра и УФ-индекс. Почасовой прогноз помогает оценить, как погода изменится в течение ближайших суток, а отдельный блок показывает прогноз на завтра.</p>
+        <p>Данные прогноза загружаются из Open-Meteo и автоматически обновляются примерно каждые 10 минут. Время указано для Новосибирска (UTC+7). Индекс качества воздуха основан на модельных данных CAMS и не заменяет измерения локальной станции мониторинга.</p>
+      </div>
     </section>
 
     <footer class="site-footer"><p>Погода в Новосибирске · Данные прогноза предоставлены Open-Meteo</p><p class="footer-update">Автообновление каждые 10 минут</p></footer>
