@@ -48,7 +48,7 @@ jobs:
                       if value in self.ids:
                           self.duplicates.add(value)
                       self.ids.add(value)
-                  if tag == "script" and attrs.get("src") == "app.js":
+                  if tag == "script" and attrs.get("src", "").split("?", 1)[0] == "app.js":
                       self.script_found = True
 
           html = Path("index.html").read_text(encoding="utf-8")
