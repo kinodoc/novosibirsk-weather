@@ -453,3 +453,11 @@ async function loadAirQuality() {
 
 loadAirQuality();
 window.setInterval(loadAirQuality, WEATHER_REFRESH_MS);
+
+loadTraffic();
+window.setInterval(loadTraffic, TRAFFIC_REFRESH_MS);
+window.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && Date.now() - lastTrafficFetchAt > 5 * 60 * 1000) {
+    loadTraffic();
+  }
+});
