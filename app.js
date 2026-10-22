@@ -272,8 +272,6 @@ async function loadWeather() {
 
 loadWeather();
 window.setInterval(loadWeather, WEATHER_REFRESH_MS);
-loadTraffic();
-window.setInterval(loadTraffic, TRAFFIC_REFRESH_MS);
 updateAtmosphere();
 window.setInterval(updateAtmosphere, 60 * 1000);
 function refreshWhenPageReturns() {
