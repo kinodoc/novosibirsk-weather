@@ -169,7 +169,7 @@ function updateAtmosphere() {
   const cutout = phase === "night" ? "#172b49" : phase === "dawn" || phase === "evening" ? "#bd8490" : "#39749a";
   hero.style.setProperty("--moon-cutout", cutout);
   const info = weatherInfo(latestWeatherCode);
-  $("weatherSymbol").textContent = phase === "night" && info.theme === "clear" ? "☾" : info.icon;
+  if (!(phase === "night" && info.theme === "clear")) $("weatherSymbol").textContent = info.icon;
 }
 
 function updateHero(current, daily) {
@@ -638,6 +638,12 @@ function updateMoonPhase() {
   shadow.setAttribute("cx", String(shadowX));
   moon.setAttribute("aria-label", `${phase.name}; освещено ${Math.round(phase.illumination * 100)} процентов`);
   moon.setAttribute("title", `${phase.name} · ${Math.round(phase.illumination * 100)}% освещённости`);
+  const hero = $("hero");
+  const weatherSymbol = $("weatherSymbol");
+  if (hero && weatherSymbol && hero.classList.contains("time-night") && hero.classList.contains("weather-clear")) {
+    const smallShadowX = 32 + (phase.waxing ? -offset : offset);
+    weatherSymbol.innerHTML = `<svg class="weather-moon-icon" viewBox="0 0 64 64" role="img" aria-label="${phase.name}" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="smallMoonSurface" cx="32%" cy="27%" r="76%"><stop offset="0%" stop-color="#fffdf2"/><stop offset="62%" stop-color="#e2e8ef"/><stop offset="100%" stop-color="#aebdce"/></radialGradient></defs><circle cx="32" cy="32" r="29" fill="url(#smallMoonSurface)"/><circle cx="${smallShadowX}" cy="32" r="29" fill="#172b49"/><circle cx="32" cy="32" r="29" fill="none" stroke="#e8f1ff" stroke-opacity=".5" stroke-width="1"/></svg>`;
+  }
 }
 
 function formatEclipseDate(dateString) {
