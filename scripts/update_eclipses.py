@@ -13,9 +13,9 @@ from bs4 import BeautifulSoup
 SOURCE_URL = "https://www.timeanddate.com/eclipse/in/russia/novosibirsk"
 OUTPUT = Path("eclipse-data.json")
 EVENT_RE = re.compile(
-    r"(?P<type>Penumbral|Partial|Total|Annular)\\s+"
-    r"(?P<kind>Lunar|Solar)\\s+Eclipse\\s+"
-    r"(?P<date>[A-Z][a-z]{2,8}\\s+\\d{1,2},\\s+\\d{4})"
+    r"(?P<type>Penumbral|Partial|Total|Annular)\s+"
+    r"(?P<kind>Lunar|Solar)\s+Eclipse\s+"
+    r"(?P<date>[A-Z][a-z]{2,8}\s+\d{1,2},\s+\d{4})"
 )
 TYPE_RU = {
     "Penumbral": "Полутеневое",
@@ -76,7 +76,7 @@ def main() -> None:
         **events,
     }
     OUTPUT.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2) + "\\n",
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
     print(
