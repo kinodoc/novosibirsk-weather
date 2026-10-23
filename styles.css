@@ -276,3 +276,8 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 @media(min-width:1200px){.cityline{height:76%;background-size:100% 100%;opacity:.78}}
 @media(max-width:760px){.cityline{height:57%;background-size:100% 100%;background-position:center bottom;opacity:.72}}
 @media(max-width:420px){.cityline{height:51%;opacity:.65}}
+
+
+/* Lightweight mode: reduce continuous repainting on low-power devices. */
+.cloud-one,.cloud-two{animation:none!important;}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
