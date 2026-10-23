@@ -194,19 +194,32 @@ function renderHourly(hourly, currentTime) {
   });
 }
 
-function renderTomorrow(daily) {
-  const info = weatherInfo(daily.weather_code?.[1]);
-  $("tomorrowCondition").textContent = info.label;
-  $("tomorrowSymbol").textContent = info.icon;
-  $("tomorrowTemp").textContent = roundTemp(daily.temperature_2m_max?.[1]);
-  $("tomorrowRange").textContent = `${roundTemp(daily.temperature_2m_min?.[1])} / ${roundTemp(daily.temperature_2m_max?.[1])}`;
-  const rawRain = daily.precipitation_probability_max?.[1];
-  const rawSum = daily.precipitation_sum?.[1];
-  const rain = Number.isFinite(rawRain) ? `${Math.max(0, Math.min(100, rawRain))}%` : "—";
-  const sum = Number.isFinite(rawSum) ? `${number(rawSum, 1)} мм` : "—";
-  $("tomorrowSummary").textContent = `Вероятность осадков — ${rain}. Количество осадков: ${sum}. Восход в ${timeOnly(daily.sunrise?.[1])}, закат в ${timeOnly(daily.sunset?.[1])}.`;
+function renderDayForecast(daily, index, ids) {
+  const info = weatherInfo(daily.weather_code?.[index]);
+  $(ids.condition).textContent = info.label;
+  $(ids.symbol).textContent = info.icon;
+  $(ids.temp).textContent = roundTemp(daily.temperature_2m_max?.[index]);
+  $(ids.range).textContent = roundTemp(daily.temperature_2m_min?.[index]) + " / " + roundTemp(daily.temperature_2m_max?.[index]);
+  const rawRain = daily.precipitation_probability_max?.[index];
+  const rawSum = daily.precipitation_sum?.[index];
+  const rain = Number.isFinite(rawRain) ? Math.max(0, Math.min(100, rawRain)) + "%" : "—";
+  const sum = Number.isFinite(rawSum) ? number(rawSum, 1) + " мм" : "—";
+  $(ids.summary).textContent = "Вероятность осадков — " + rain + ". Количество осадков: " + sum +
+    ". Восход в " + timeOnly(daily.sunrise?.[index]) + ", закат в " + timeOnly(daily.sunset?.[index]) + ".";
 }
 
+function renderTomorrow(daily) {
+  renderDayForecast(daily, 1, {
+    condition: "tomorrowCondition", symbol: "tomorrowSymbol", temp: "tomorrowTemp",
+    range: "tomorrowRange", summary: "tomorrowSummary"
+  });
+  if ($("dayAfterCondition")) {
+    renderDayForecast(daily, 2, {
+      condition: "dayAfterCondition", symbol: "dayAfterSymbol", temp: "dayAfterTemp",
+      range: "dayAfterRange", summary: "dayAfterSummary"
+    });
+  }
+}
 function numeric(value) {
   const result = Number.parseFloat(value);
   return Number.isFinite(result) ? result : NaN;
