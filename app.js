@@ -671,9 +671,8 @@ async function loadEclipseData() {
   }
 }
 
-updateMoonPhase();
 updateEclipses();
 loadEclipseData();
 window.setInterval(loadEclipseData, 24 * 60 * 60 * 1000);
-window.setInterval(updateMoonPhase, 60 * 60 * 1000);
+
 window.setInterval(updateEclipses, 60 * 60 * 1000);
