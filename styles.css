@@ -200,9 +200,15 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .eclipse-note{margin:12px 4px 0;color:#71859d;font-size:10px;line-height:1.7}
 @media(max-width:760px){.moon-disc{width:36px;height:36px}.eclipse-grid{grid-template-columns:1fr;gap:10px}.eclipse-card{min-height:0;padding:17px;border-radius:19px;gap:14px}.eclipse-icon{flex-basis:52px;width:52px;height:52px;border-radius:16px;font-size:29px}.eclipse-copy h3{font-size:17px}.eclipse-copy>p:not(.eclipse-kind){font-size:11px}}
 
-/* Hide the sun at night; keep the moon independently positioned. */
-.hero.time-night .sun-disc{opacity:0!important}
+/* Sky and city are separate layers: the moon must stay behind the skyline, not in front of buildings. */
+.hero-sky{z-index:0!important;isolation:auto}
+.cityline{z-index:1!important}
+.hero:before{z-index:2!important;pointer-events:none}
+.hero-content,.topbar{z-index:3}
+.hero.time-night .sun-disc{opacity:0!important;visibility:hidden}
 .hero.time-night .sun-glow{opacity:.08!important}
-.hero-sky{z-index:1}
-.moon-disc{position:absolute!important;left:auto!important;right:10%!important;top:25%!important;transform:none!important;z-index:2!important}
-@media(max-width:760px){.moon-disc{right:8%!important;top:25%!important}}
+.moon-disc{position:absolute!important;left:auto!important;right:10%!important;top:18%!important;transform:none!important;z-index:1!important}
+.hero-sky .cloud,.hero-sky .weather-haze,.hero-sky .sky-stars{z-index:0}
+@media(max-width:760px){
+  .moon-disc{right:8%!important;top:25%!important}
+}
