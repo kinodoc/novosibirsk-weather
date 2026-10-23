@@ -542,6 +542,7 @@ const NOVOSIBIRSK_ECLIPSES = {
   lunar: [
     { at: "2027-02-21T06:12:44+07:00", date: "2027-02-21", type: "Полутеневое лунное затмение", time: "06:12", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
     { at: "2027-07-18T23:02:55+07:00", date: "2027-07-18", type: "Полутеневое лунное затмение", time: "23:02", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
+    { at: "2028-01-12T09:56:00+07:00", date: "2028-01-12", type: "Полутеневое лунное затмение", time: "09:56", detail: "Максимум видимой фазы; Луна у горизонта", visibility: "Частично видно в Новосибирске" },
     { at: "2028-07-07T01:19:38+07:00", date: "2028-07-07", type: "Частное лунное затмение", time: "01:19", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
     { at: "2028-12-31T23:51:55+07:00", date: "2028-12-31", type: "Полное лунное затмение", time: "23:51", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
     { at: "2029-12-21T05:41:55+07:00", date: "2029-12-21", type: "Полное лунное затмение", time: "05:41", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
@@ -593,7 +594,7 @@ function formatEclipseDate(dateString) {
 
 function renderNextEclipse(kind, ids) {
   const events = NOVOSIBIRSK_ECLIPSES[kind];
-  const next = events.find((event) => Date.parse(event.at) > Date.now());
+  const next = events.find((event) => Date.parse(event.time ? event.at : event.date + "T23:59:59+07:00") > Date.now());
   if (!next) {
     $(ids.title).textContent = "Дата следующего события уточняется";
     $(ids.details).textContent = "Список событий будет дополнен.";
