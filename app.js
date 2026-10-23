@@ -45,7 +45,7 @@ function setEffects(kind) {
   const root = $("weatherEffects");
   root.replaceChildren();
   if (!kind) return;
-  const count = kind === "rain" ? 70 : 44;
+  const count = kind === "rain" ? 28 : 18;
   for (let i = 0; i < count; i++) {
     const particle = document.createElement("span");
     particle.className = kind === "rain" ? "rain-drop" : "snowflake";
