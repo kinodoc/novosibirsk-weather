@@ -273,7 +273,6 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .hero.time-night .sky-stars{opacity:1!important}
 .hero.time-night .sky-stars .star{filter:drop-shadow(0 0 3px rgba(220,235,255,.95))}
 .hero.time-night .sky-stars .constellation{display:none!important}
-.moon-disc{display:none!important}
 @media(min-width:1200px){.cityline{height:76%;background-size:100% 100%;opacity:.78}}
 @media(max-width:760px){.cityline{height:57%;background-size:100% 100%;background-position:center bottom;opacity:.72}}
 @media(max-width:420px){.cityline{height:51%;opacity:.65}}
