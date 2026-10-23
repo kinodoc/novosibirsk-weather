@@ -225,27 +225,29 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .weather-moon-icon{display:block;width:47px;height:47px;filter:drop-shadow(0 5px 16px rgba(255,255,255,.15))}
 @media(max-width:760px){.weather-moon-icon{width:38px;height:38px}}
 
-/* Use a real Novosibirsk panorama instead of the rough geometric skyline. */
+/* Day/night panoramas: daytime bridge by default, night photograph after sunset. */
 .cityline{
   z-index:0!important;
-  right:0;
-  bottom:0;
-  width:100%;
-  height:66%;
-  opacity:.76;
+  right:0;bottom:0;width:100%;height:66%;opacity:.76;
   background:
-    linear-gradient(90deg,rgba(7,16,31,.5) 0%,rgba(7,16,31,.08) 48%,rgba(7,16,31,.1) 100%),
-    linear-gradient(0deg,rgba(7,16,31,.72) 0%,rgba(7,16,31,.05) 72%),
-    url("https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Bugrinsky_Bridge_%28May_2025%29_-_0.jpg/1280px-Bugrinsky_Bridge_%28May_2025%29_-_0.jpg") center 58%/cover no-repeat;
-  mask-image:none!important;
-  -webkit-mask-image:none!important;
+    linear-gradient(90deg,rgba(7,16,31,.46) 0%,rgba(7,16,31,.05) 48%,rgba(7,16,31,.08) 100%),
+    linear-gradient(0deg,rgba(7,16,31,.48) 0%,rgba(7,16,31,.02) 72%),
+    url("https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/Bugrinsky_Bridge.jpg/1280px-Bugrinsky_Bridge.jpg") center 54%/cover no-repeat;
+  mask-image:none!important;-webkit-mask-image:none!important;
+  transition:filter 1.5s ease,opacity 1.5s ease,background-image 1.5s ease;
 }
 .cityline:after{content:none!important}
-.hero.time-night .cityline{filter:brightness(.62) saturate(.75)}
-.hero.time-night.weather-clear .cityline,.hero.time-night.weather-cloudy .cityline{filter:brightness(.68) saturate(.75)}
-.hero.weather-rain .cityline,.hero.weather-storm .cityline{filter:saturate(.6) brightness(.72)}
-.hero.weather-snow .cityline{filter:saturate(.42) brightness(1.05)}
-@media(max-width:760px){
- .cityline{width:100%;height:56%;opacity:.7;background-position:58% center;background-size:cover}
+.hero.time-night .cityline{
+  background-image:
+    linear-gradient(90deg,rgba(7,16,31,.42) 0%,rgba(7,16,31,.08) 48%,rgba(7,16,31,.12) 100%),
+    linear-gradient(0deg,rgba(7,16,31,.62) 0%,rgba(7,16,31,.06) 72%),
+    url("https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Bugrinsky_Bridge_%28May_2025%29_-_0.jpg/1280px-Bugrinsky_Bridge_%28May_2025%29_-_0.jpg");
+  filter:brightness(.78) saturate(.78);
 }
+.hero.time-dawn .cityline,.hero.time-sunrise .cityline,.hero.time-evening .cityline{
+  filter:brightness(.9) saturate(.9);
+}
+.hero.weather-rain .cityline,.hero.weather-storm .cityline{filter:saturate(.58) brightness(.72)}
+.hero.weather-snow .cityline{filter:saturate(.45) brightness(1.05)}
+@media(max-width:760px){.cityline{width:100%;height:56%;opacity:.7;background-position:58% center;background-size:cover}}
 @media(max-width:600px){.cityline{height:53%;background-position:58% center}}
