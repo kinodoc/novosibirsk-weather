@@ -98,13 +98,7 @@ const SKY_STARS = [
  ["Mirfak",3.405,49.861,1.8],["Algol",3.136,40.956,2.1],["Hamal",2.120,23.462,2.0],["Alpheratz",0.139,29.091,2.1],
  ["Nunki",18.921,-26.297,2.0],["Kaus Australis",18.403,-34.384,1.8],["Antares",16.490,-26.432,1.1],["Rasalhague",17.582,12.560,2.1]
 ];
-const SKY_LINES = [
- [["Dubhe","Merak"],["Merak","Phecda"],["Phecda","Megrez"],["Megrez","Dubhe"],["Megrez","Alioth"],["Alioth","Mizar"],["Mizar","Alkaid"]],
- [["Caph","Schedar"],["Schedar","Gamma Cas"],["Gamma Cas","Ruchbah"],["Ruchbah","Segin"],["Segin","Caph"]],
- [["Vega","Deneb"],["Deneb","Albireo"],["Albireo","Altair"],["Altair","Vega"]],
- [["Betelgeuse","Bellatrix"],["Bellatrix","Mintaka"],["Mintaka","Alnilam"],["Alnilam","Alnitak"],["Alnitak","Saiph"],["Saiph","Rigel"],["Rigel","Mintaka"],["Betelgeuse","Alnilam"]],
- [["Capella","Aldebaran"],["Aldebaran","Elnath"],["Pollux","Castor"]]
-];
+
 function julianDate(date){return date.getTime()/86400000+2440587.5}
 function renderActualNightSky(){
  const host=$("skyStars"); if(!host)return;
