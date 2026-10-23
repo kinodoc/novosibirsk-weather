@@ -535,24 +535,31 @@ loadAirQuality();
 window.setInterval(loadAirQuality, AIR_QUALITY_REFRESH_MS);
 
 
-/* Moon phase is calculated locally; eclipse dates are precomputed for Novosibirsk. */
+/* Moon phase is calculated locally. Eclipse data refreshes from a scheduled public catalog. */
 const LUNAR_MONTH_DAYS = 29.530588853;
 const KNOWN_NEW_MOON_UTC = Date.UTC(2000, 0, 6, 18, 14);
 const NOVOSIBIRSK_ECLIPSES = {
   lunar: [
-    { at: "2027-02-21T06:12:44+07:00", date: "2027-02-21", type: "Полутеневое лунное затмение", time: "06:12", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
-    { at: "2027-07-18T23:02:55+07:00", date: "2027-07-18", type: "Полутеневое лунное затмение", time: "23:02", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
-    { at: "2028-01-12T09:56:00+07:00", date: "2028-01-12", type: "Полутеневое лунное затмение", time: "09:56", detail: "Максимум видимой фазы; Луна у горизонта", visibility: "Частично видно в Новосибирске" },
-    { at: "2028-07-07T01:19:38+07:00", date: "2028-07-07", type: "Частное лунное затмение", time: "01:19", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
-    { at: "2028-12-31T23:51:55+07:00", date: "2028-12-31", type: "Полное лунное затмение", time: "23:51", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
-    { at: "2029-12-21T05:41:55+07:00", date: "2029-12-21", type: "Полное лунное затмение", time: "05:41", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
-    { at: "2030-06-15T01:00:00+07:00", date: "2030-06-15", type: "Частное лунное затмение", time: null, detail: "Время уточняется", visibility: "Видимость подтверждена для Новосибирска" }
+    { date: "2027-02-20", type: "Полутеневое лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2028-01-12", type: "Полутеневое лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2028-07-06", type: "Частное лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2028-12-31", type: "Полное лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2029-12-20", type: "Полное лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2030-06-15", type: "Частное лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2030-12-09", type: "Полутеневое лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2032-04-25", type: "Полное лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2032-10-18", type: "Полное лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2033-04-14", type: "Полное лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2033-10-08", type: "Частное лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2034-04-03", type: "Полутеневое лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2034-09-28", type: "Полутеневое лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2035-08-18", type: "Полутеневое лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" }
   ],
   solar: [
-    { at: "2030-06-01T13:32:00+07:00", date: "2030-06-01", type: "Частное солнечное затмение", time: "13:32", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
-    { at: "2032-11-03T12:00:00+07:00", date: "2032-11-03", type: "Частное солнечное затмение", time: null, detail: "Местное время уточняется", visibility: "Видимость указана в каталоге затмений" },
-    { at: "2034-03-20T12:00:00+07:00", date: "2034-03-20", type: "Частное солнечное затмение", time: null, detail: "Местное время уточняется", visibility: "Видимость указана в каталоге затмений" },
-    { at: "2035-09-02T12:00:00+07:00", date: "2035-09-02", type: "Частное солнечное затмение", time: null, detail: "Местное время уточняется", visibility: "Видимость указана в каталоге затмений" }
+    { date: "2030-06-01", type: "Частное солнечное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2032-11-03", type: "Частное солнечное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2034-03-20", type: "Частное солнечное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
+    { date: "2035-09-02", type: "Частное солнечное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" }
   ]
 };
 
@@ -621,7 +628,41 @@ function updateEclipses() {
   });
 }
 
+async function loadEclipseData() {
+  try {
+    const response = await fetch(
+      "https://raw.githubusercontent.com/kinodoc/novosibirsk-weather/main/eclipse-data.json",
+      { cache: "no-store" }
+    );
+    if (!response.ok) throw new Error(`Eclipse catalog returned HTTP ${response.status}`);
+    const data = await response.json();
+    const nextEvents = {};
+
+    for (const kind of ["lunar", "solar"]) {
+      if (!Array.isArray(data[kind])) throw new Error(`Missing ${kind} eclipse data`);
+      nextEvents[kind] = data[kind]
+        .filter((event) => /^\\d{4}-\\d{2}-\\d{2}$/.test(event.date) && typeof event.type === "string")
+        .map((event) => ({
+          date: event.date,
+          type: event.type,
+          time: null,
+          detail: "Данные из обновляемого каталога",
+          visibility: "Указано для Новосибирска"
+        }));
+      if (!nextEvents[kind].length) throw new Error(`No valid ${kind} eclipses in catalog`);
+    }
+
+    NOVOSIBIRSK_ECLIPSES.lunar = nextEvents.lunar;
+    NOVOSIBIRSK_ECLIPSES.solar = nextEvents.solar;
+    updateEclipses();
+  } catch (error) {
+    console.warn("Не удалось обновить список затмений; используется сохранённый список.", error);
+  }
+}
+
 updateMoonPhase();
 updateEclipses();
+loadEclipseData();
+window.setInterval(loadEclipseData, 24 * 60 * 60 * 1000);
 window.setInterval(updateMoonPhase, 60 * 60 * 1000);
 window.setInterval(updateEclipses, 60 * 60 * 1000);
