@@ -85,6 +85,52 @@ function minutesFromLocalTime(value) {
   return Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
 }
 
+/* Star positions are projected from a small bright-star catalogue for Novosibirsk's actual local sidereal time. */
+const SKY_STARS = [
+ ["Polaris",2.5303,89.264,2.0],["Kochab",14.845,74.156,2.1],["Pherkad",15.345,71.834,3.0],
+ ["Dubhe",11.062,61.751,1.8],["Merak",11.031,56.382,2.4],["Phecda",11.897,53.694,2.4],["Megrez",12.257,57.033,3.3],["Alioth",12.900,55.960,1.8],["Mizar",13.399,54.925,2.2],["Alkaid",13.792,49.313,1.9],
+ ["Schedar",0.675,56.537,2.2],["Caph",0.153,59.150,2.3],["Gamma Cas",0.945,60.717,2.5],["Ruchbah",1.430,60.235,2.7],["Segin",1.907,63.670,3.4],
+ ["Vega",18.615,38.784,0.0],["Deneb",20.690,45.280,1.3],["Altair",19.846,8.868,0.8],["Albireo",19.512,27.960,3.1],
+ ["Capella",5.278,45.998,0.1],["Aldebaran",4.599,16.509,0.9],["Elnath",5.438,28.608,1.7],["Rigel",5.242,-8.202,0.1],["Betelgeuse",5.919,7.407,0.5],["Bellatrix",5.419,6.350,1.6],["Mintaka",5.533,-0.299,2.2],["Alnilam",5.603,-1.202,1.7],["Alnitak",5.679,-1.943,1.8],["Saiph",5.796,-9.670,2.1],
+ ["Procyon",7.655,5.225,0.4],["Sirius",6.752,-16.716,-1.5],["Pollux",7.755,28.026,1.1],["Castor",7.577,31.888,1.6],
+ ["Arcturus",14.261,19.182,0.0],["Spica",13.420,-11.161,1.0],["Regulus",10.139,11.967,1.4],["Denebola",11.818,14.572,2.1],
+ ["Fomalhaut",22.961,-29.622,1.2],["Markab",23.079,15.205,2.5],["Scheat",23.063,28.083,2.4],["Algenib",0.220,15.183,2.8],["Enif",21.736,9.875,2.4],
+ ["Mirfak",3.405,49.861,1.8],["Algol",3.136,40.956,2.1],["Hamal",2.120,23.462,2.0],["Alpheratz",0.139,29.091,2.1],
+ ["Nunki",18.921,-26.297,2.0],["Kaus Australis",18.403,-34.384,1.8],["Antares",16.490,-26.432,1.1],["Rasalhague",17.582,12.560,2.1]
+];
+const SKY_LINES = [
+ [["Dubhe","Merak"],["Merak","Phecda"],["Phecda","Megrez"],["Megrez","Dubhe"],["Megrez","Alioth"],["Alioth","Mizar"],["Mizar","Alkaid"]],
+ [["Caph","Schedar"],["Schedar","Gamma Cas"],["Gamma Cas","Ruchbah"],["Ruchbah","Segin"],["Segin","Caph"]],
+ [["Vega","Deneb"],["Deneb","Albireo"],["Albireo","Altair"],["Altair","Vega"]],
+ [["Betelgeuse","Bellatrix"],["Bellatrix","Mintaka"],["Mintaka","Alnilam"],["Alnilam","Alnitak"],["Alnitak","Saiph"],["Saiph","Rigel"],["Rigel","Mintaka"],["Betelgeuse","Alnilam"]],
+ [["Capella","Aldebaran"],["Aldebaran","Elnath"],["Pollux","Castor"]]
+];
+function julianDate(date){return date.getTime()/86400000+2440587.5}
+function renderActualNightSky(){
+ const host=$("skyStars"); if(!host)return;
+ const now=new Date(), jd=julianDate(now), t=(jd-2451545)/36525;
+ const gmst=(280.46061837+360.98564736629*(jd-2451545)+0.000387933*t*t-t*t*t/38710000+360)%360;
+ const lst=((gmst+LOCATION.longitude)%360+360)%360, lat=LOCATION.latitude*Math.PI/180;
+ const points={};
+ for(const [name,raHours,decDeg,mag] of SKY_STARS){
+  const ha=((lst-raHours*15+540)%360-180)*Math.PI/180, dec=decDeg*Math.PI/180;
+  const sinAlt=Math.sin(lat)*Math.sin(dec)+Math.cos(lat)*Math.cos(dec)*Math.cos(ha);
+  const alt=Math.asin(Math.max(-1,Math.min(1,sinAlt)));
+  if(alt<5*Math.PI/180 || mag>2.35)continue;
+  const az=Math.atan2(-Math.sin(ha)*Math.cos(dec),Math.sin(dec)*Math.cos(lat)-Math.cos(dec)*Math.sin(lat)*Math.cos(ha));
+  const azDeg=(az*180/Math.PI+360)%360;
+  const x=azDeg/360*100, y=61-(alt*180/Math.PI)/90*53;
+  points[name]={x,y,mag};
+ }
+ const ns="http://www.w3.org/2000/svg", svg=document.createElementNS(ns,"svg");
+ svg.setAttribute("viewBox","0 0 1000 530");svg.setAttribute("preserveAspectRatio","none");svg.setAttribute("aria-hidden","true");
+ const lines=document.createElementNS(ns,"g");lines.setAttribute("class","constellation");
+ for(const group of SKY_LINES)for(const [a,b] of group){if(!points[a]||!points[b])continue;let dx=points[a].x-points[b].x;if(Math.abs(dx)>50)continue;const line=document.createElementNS(ns,"line");line.setAttribute("x1",points[a].x*10);line.setAttribute("y1",points[a].y*5.3);line.setAttribute("x2",points[b].x*10);line.setAttribute("y2",points[b].y*5.3);lines.append(line)}
+ svg.append(lines);
+ for(const [name,p] of Object.entries(points)){const c=document.createElementNS(ns,"circle");c.setAttribute("class","star");c.setAttribute("cx",p.x*10);c.setAttribute("cy",p.y*5.3);c.setAttribute("r",Math.max(.7,2.05-p.mag*.48));c.setAttribute("opacity",String(Math.max(.38,1-p.mag*.19)));c.setAttribute("data-star",name);svg.append(c)}
+ host.replaceChildren(svg);
+}
+
 function updateAtmosphere() {
   const hero = $("hero");
   if (!hero) return;
@@ -447,7 +493,9 @@ loadCachedWeather();
 loadWeather();
 window.setInterval(loadWeather, WEATHER_REFRESH_MS);
 updateAtmosphere();
+renderActualNightSky();
 window.setInterval(updateAtmosphere, 60 * 1000);
+window.setInterval(renderActualNightSky, 60 * 1000);
 function refreshWhenPageReturns() {
   if (document.hidden) return;
   updateAtmosphere();
