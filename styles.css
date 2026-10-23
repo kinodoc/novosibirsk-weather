@@ -254,3 +254,26 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
   .cityline{width:100%;height:56%;opacity:.7;background-position:58% center;background-size:cover}
 }
 @media(max-width:600px){.cityline{height:53%;background-position:58% center}}
+
+
+/* Clean, scalable Novosibirsk skyline illustration; no photographic crop. */
+.cityline{
+  z-index:0!important;right:0;bottom:0;width:100%;height:72%;opacity:.82;
+  background-image:
+    linear-gradient(90deg,rgba(7,16,31,.5),rgba(7,16,31,.04) 48%,rgba(7,16,31,.16)),
+    linear-gradient(0deg,rgba(7,16,31,.44),transparent 65%),
+    url("./cityscape.svg");
+  background-position:center bottom;background-size:100% 100%;background-repeat:no-repeat;
+  mask-image:none!important;-webkit-mask-image:none!important;
+  filter:none;transition:opacity 1.5s ease,filter 1.5s ease;
+}
+.hero.time-night .cityline{opacity:.66;filter:brightness(.8) saturate(.8)}
+.hero.weather-rain .cityline,.hero.weather-storm .cityline{filter:saturate(.65) brightness(.78)}
+.hero.weather-snow .cityline{filter:saturate(.5) brightness(1.08)}
+.hero.time-night .sky-stars{opacity:1!important}
+.hero.time-night .sky-stars .star{filter:drop-shadow(0 0 3px rgba(220,235,255,.95))}
+.hero.time-night .sky-stars .constellation{display:none!important}
+.moon-disc{display:none!important}
+@media(min-width:1200px){.cityline{height:76%;background-size:100% 100%;opacity:.78}}
+@media(max-width:760px){.cityline{height:57%;background-size:100% 100%;background-position:center bottom;opacity:.72}}
+@media(max-width:420px){.cityline{height:51%;opacity:.65}}
