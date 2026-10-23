@@ -160,8 +160,8 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 
 
 /* Air-quality section */
-.air-quality-panel{display:grid;grid-template-columns:minmax(190px,.72fr) minmax(0,1.8fr);gap:18px;padding:19px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,rgba(24,39,61,.94),rgba(14,25,42,.94))}
-.air-quality-summary{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-height:230px;padding:18px 20px;border:1px solid rgba(143,216,255,.14);border-radius:19px;background:radial-gradient(ellipse at 20% 0%,rgba(102,188,155,.16),transparent 65%),rgba(7,18,32,.4)}
+.air-quality-panel{display:block;padding:19px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,rgba(24,39,61,.94),rgba(14,25,42,.94))}
+.air-quality-summary{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-height:210px;max-width:560px;padding:18px 20px;border:1px solid rgba(143,216,255,.14);border-radius:19px;background:radial-gradient(ellipse at 20% 0%,rgba(102,188,155,.16),transparent 65%),rgba(7,18,32,.4)}
 .air-quality-label{margin:0;color:#a5b8ce;font-size:11px;line-height:1.6}
 .air-quality-score{margin:9px 0 1px;font-size:clamp(62px,7vw,86px);font-weight:650;line-height:1;letter-spacing:-.08em}
 .air-quality-category{margin-top:8px;font-size:17px}
