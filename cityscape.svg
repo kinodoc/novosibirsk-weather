@@ -1,50 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMax slice">
 <defs>
- <linearGradient id="river" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#7dc5dc" stop-opacity=".08"/><stop offset="1" stop-color="#102a43" stop-opacity=".72"/></linearGradient>
- <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#91c9e5" stop-opacity=".58"/><stop offset="1" stop-color="#244563" stop-opacity=".22"/></linearGradient>
- <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#253e56"/><stop offset="1" stop-color="#0b1a2b"/></linearGradient>
+ <linearGradient id="far" x2="0" y2="1"><stop stop-color="#49647a"/><stop offset="1" stop-color="#1b3045"/></linearGradient>
+ <linearGradient id="stone" x2="0" y2="1"><stop stop-color="#71899a"/><stop offset="1" stop-color="#273d52"/></linearGradient>
+ <linearGradient id="glass" x2="0" y2="1"><stop stop-color="#62869e"/><stop offset="1" stop-color="#1b344b"/></linearGradient>
+ <linearGradient id="water" x2="0" y2="1"><stop stop-color="#385b73" stop-opacity=".72"/><stop offset="1" stop-color="#08182a"/></linearGradient>
+ <pattern id="windows" width="18" height="22" patternUnits="userSpaceOnUse"><rect x="5" y="5" width="5" height="8" rx=".8" fill="#e9c98e" opacity=".28"/></pattern>
+ <pattern id="glassWindows" width="20" height="24" patternUnits="userSpaceOnUse"><rect x="6" y="5" width="7" height="11" rx="1" fill="#a7d9ec" opacity=".45"/></pattern>
 </defs>
-<!-- distant riverbank and city -->
-<path d="M0 330 70 330 70 280 112 280 112 310 160 310 160 250 205 250 205 315 258 315 258 270 300 270 300 330 350 330 350 235 390 235 390 330 430 330 430 285 472 285 472 330 520 330 520 245 558 245 558 330 610 330 610 285 650 285 650 330 700 330 700 260 750 260 750 330 800 330 800 225 850 225 850 330 900 330 900 280 940 280 940 330 1000 330 1000 250 1040 250 1040 330 1100 330 1100 290 1140 290 1140 330 1200 330 1200 500 0 500Z" fill="#1b334a" opacity=".7"/>
-<!-- left bank buildings -->
-<g fill="url(#stone)" stroke="#9cc9e3" stroke-opacity=".17" stroke-width="2">
- <path d="M30 355V280h70v75z"/><path d="M105 355V310h90v-35h54v80z"/>
- <path d="M230 355V250h54v105z"/><path d="M285 355V292h70v63z"/>
- <path d="M365 355V270h65v85z"/><path d="M435 355V300h75v55z"/>
- <path d="M530 355V280h55v75z"/><path d="M590 355V315h95v40z"/>
+<path d="M0 324h55v-46h38v46h28v-65h46v65h33v-38h45v38h40v-58h43v58h42v-75h45v75h35v-44h40v44h44v-66h50v66h38v-40h46v40h46v-56h48v56h43v-76h46v76h39v-48h43v48h39v-65h42v65h39v-42h42v42h45v176H0Z" fill="#152b40" opacity=".85"/>
+<g stroke="#8caec4" stroke-opacity=".24" stroke-width="2">
+ <path d="M24 360V270h105v90Z" fill="url(#stone)"/><path d="M132 360V300h78v-52h74v112Z" fill="url(#glass)"/>
+ <path d="M292 360V278h94v82Z" fill="url(#stone)"/><path d="M390 360V300h75v-42h74v102Z" fill="url(#glass)"/>
+ <path d="M548 360V286h96v74Z" fill="url(#stone)"/><path d="M651 360V306h76v-56h67v110Z" fill="url(#glass)"/>
 </g>
-<!-- recognizable opera-house inspired dome -->
-<g transform="translate(650 250)">
- <path d="M-78 105V53h156v52z" fill="#314b62" stroke="#a8d3e8" stroke-opacity=".38" stroke-width="2"/>
- <path d="M-88 54Q0 15 88 54Z" fill="#7897ac" fill-opacity=".75"/>
- <path d="M-63 53Q0-24 63 53Z" fill="#b1c8d6" fill-opacity=".72" stroke="#d7e8f1" stroke-opacity=".55"/>
- <path d="M0-29V-48" stroke="#e2eef5" stroke-opacity=".7" stroke-width="3"/>
- <path d="M-68 66H68M-68 82H68" stroke="#b8d5e5" stroke-opacity=".35" stroke-width="3"/>
- <g stroke="#a6c4d7" stroke-opacity=".42" stroke-width="3"><path d="M-50 58V103M-25 58V103M0 58V103M25 58V103M50 58V103"/></g>
+<g fill="url(#windows)" opacity=".85"><path d="M24 270h105v90H24z"/><path d="M132 248h152v112H132z"/><path d="M292 278h94v82h-94z"/><path d="M390 258h149v102H390z"/><path d="M548 286h96v74h-96z"/><path d="M651 250h143v110H651z"/></g>
+<!-- Novosibirsk Opera House: broad monumental dome, deliberately no tall spire -->
+<g transform="translate(460 210)">
+ <path d="M-150 150V82Q-150 72-138 72H138Q150 72 150 82V150Z" fill="#263e53" stroke="#a5bfce" stroke-opacity=".52" stroke-width="3"/>
+ <path d="M-162 82Q-135 56-90 50H90Q135 56 162 82Z" fill="#8fa8b8" stroke="#c6d8e2" stroke-opacity=".45" stroke-width="2"/>
+ <path d="M-118 54C-106 8-62-18 0-20C62-18 106 8 118 54Z" fill="url(#stone)" stroke="#c2d3de" stroke-opacity=".65" stroke-width="3"/>
+ <path d="M-100 48C-82 10-45-4 0-6C45-4 82 10 100 48" fill="none" stroke="#d8e4eb" stroke-opacity=".28" stroke-width="3"/>
+ <path d="M-151 90H151M-151 111H151" stroke="#a8c4d5" stroke-opacity=".55" stroke-width="3"/>
+ <g stroke="#a8c4d5" stroke-opacity=".55" stroke-width="4"><path d="M-128 88v61M-96 88v61M-64 88v61M-32 88v61M0 88v61M32 88v61M64 88v61M96 88v61M128 88v61"/></g>
+ <path d="M-145 150H145" stroke="#c0d4df" stroke-opacity=".35" stroke-width="5"/>
+ <g fill="#0f2235"><path d="M-112 100h16v29h-16zM-49 100h16v29h-16zM-8 100H8v29H-8zM33 100h16v29H33zM96 100h16v29H96z"/></g>
 </g>
-<!-- right-bank modern towers -->
-<g stroke="#9ed7f1" stroke-opacity=".3" stroke-width="2">
- <path d="M760 355V170l20-18 20 18v185z" fill="url(#glass)"/>
- <path d="M808 355V205l24-14 24 14v150z" fill="#19344c"/>
- <path d="M865 355V125l31-25 31 25v230z" fill="url(#glass)"/>
- <path d="M930 355V225l20-16 20 16v130z" fill="#29445a"/>
- <path d="M978 355V180l27-20 27 20v175z" fill="url(#glass)"/>
- <path d="M1040 355V245h55v110z" fill="#203b52"/>
- <path d="M1100 355V210l22-13 22 13v145z" fill="url(#glass)"/>
+<g stroke="#9dc3d9" stroke-opacity=".34" stroke-width="2">
+ <path d="M710 360V220l18-16 18 16v140Z" fill="url(#glass)"/><path d="M752 360V180h70v180Z" fill="url(#stone)"/>
+ <path d="M827 360V245l18-14 18 14v115Z" fill="url(#glass)"/><path d="M870 360V150h80v210Z" fill="url(#glass)"/>
+ <path d="M957 360V210h62v150Z" fill="url(#stone)"/><path d="M1026 360V178h74v182Z" fill="url(#glass)"/><path d="M1107 360V238h66v122Z" fill="url(#stone)"/>
 </g>
-<!-- lit windows -->
-<g fill="#bce8f6" opacity=".42">
- <path d="M773 188h5v8h-5zm0 20h5v8h-5zm0 20h5v8h-5zm0 20h5v8h-5zm0 20h5v8h-5z"/>
- <path d="M885 130h7v9h-7zm0 22h7v9h-7zm0 22h7v9h-7zm0 22h7v9h-7zm0 22h7v9h-7zm0 22h7v9h-7zm0 22h7v9h-7z"/>
- <path d="M994 190h7v9h-7zm0 22h7v9h-7zm0 22h7v9h-7zm0 22h7v9h-7zm0 22h7v9h-7z"/>
-</g>
-<!-- river and bridge -->
-<path d="M0 370Q220 340 420 375T820 370T1200 365V500H0Z" fill="url(#river)"/>
-<path d="M0 382Q210 350 420 382T820 378T1200 375" fill="none" stroke="#9ad7ee" stroke-opacity=".25" stroke-width="3"/>
-<path d="M0 405Q230 370 440 402T850 398T1200 390" fill="none" stroke="#83c7e4" stroke-opacity=".14" stroke-width="2"/>
-<path d="M0 360Q300 330 600 365T1200 350" fill="none" stroke="#1a2b3b" stroke-width="14"/>
-<path d="M0 352Q300 322 600 357T1200 342" fill="none" stroke="#8eb4ca" stroke-opacity=".5" stroke-width="3"/>
-<g stroke="#7599b0" stroke-opacity=".45" stroke-width="2"><path d="M120 345v28M250 340v25M380 342v30M510 350v25M640 354v24M770 355v26M900 352v27M1030 347v28"/></g>
-<!-- foreground darkens into the page text area -->
-<path d="M0 320H1200V500H0Z" fill="#071425" opacity=".18"/>
+<g fill="url(#glassWindows)"><path d="M710 204h36v156h-36z"/><path d="M752 180h70v180h-70z"/><path d="M827 231h36v129h-36z"/><path d="M870 150h80v210h-80z"/><path d="M957 210h62v150h-62z"/><path d="M1026 178h74v182h-74z"/><path d="M1107 238h66v122h-66z"/></g>
+<path d="M0 365Q190 346 380 370T770 367T1200 356V500H0Z" fill="url(#water)"/>
+<path d="M0 373Q190 354 380 378T770 375T1200 364" fill="none" stroke="#9dc9df" stroke-opacity=".34" stroke-width="3"/>
+<path d="M0 405Q220 380 430 407T850 400T1200 390" fill="none" stroke="#80b8d2" stroke-opacity=".18" stroke-width="2"/>
+<path d="M0 357Q300 337 600 361T1200 348" fill="none" stroke="#142b40" stroke-width="13"/><path d="M0 351Q300 331 600 355T1200 342" fill="none" stroke="#9bb8ca" stroke-opacity=".56" stroke-width="3"/>
+<g stroke="#7598ad" stroke-opacity=".45" stroke-width="2"><path d="M110 348v24M230 343v26M350 343v28M470 348v25M590 353v25M710 354v24M830 350v26M950 346v27M1070 343v27"/></g>
+<path d="M0 440Q250 412 500 445T1000 435T1200 430V500H0Z" fill="#071426" opacity=".32"/>
 </svg>
