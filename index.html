@@ -21,7 +21,7 @@
   <meta name="twitter:image" content="https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Bugrinsky_Bridge_%28May_2025%29_-_0.jpg/1280px-Bugrinsky_Bridge_%28May_2025%29_-_0.jpg">
   <title>Погода в Новосибирске сейчас и на 3 дня | Север</title>
   <link rel="stylesheet" href="styles.css">
-  <script src="app.js?v=openmeteo-air1" defer></script>
+  <script src="app.js?v=openmeteo-aqi-only1" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -79,14 +79,6 @@
           <strong class="air-quality-category" id="airCategory">Загружаем…</strong>
           <p class="air-quality-advice" id="airAdvice">Получаем последнюю оценку качества воздуха.</p>
           <span class="air-quality-updated" id="airUpdated">Обновление данных…</span>
-        </div>
-        <div class="air-pollutants">
-          <article class="pollutant-card"><span class="pollutant-name">Мелкие частицы PM2.5</span><strong id="airPm25">—</strong><small>мкг/м³</small><div class="pollutant-track"><span id="airPm25Bar"></span></div></article>
-          <article class="pollutant-card"><span class="pollutant-name">Частицы PM10</span><strong id="airPm10">—</strong><small>мкг/м³</small><div class="pollutant-track"><span id="airPm10Bar"></span></div></article>
-          <article class="pollutant-card"><span class="pollutant-name">Озон O₃</span><strong id="airOzone">—</strong><small>мкг/м³</small><div class="pollutant-track"><span id="airOzoneBar"></span></div></article>
-          <article class="pollutant-card"><span class="pollutant-name">Диоксид азота NO₂</span><strong id="airNo2">—</strong><small>мкг/м³</small><div class="pollutant-track"><span id="airNo2Bar"></span></div></article>
-          <article class="pollutant-card"><span class="pollutant-name">Диоксид серы SO₂</span><strong id="airSo2">—</strong><small>мкг/м³</small><div class="pollutant-track"><span id="airSo2Bar"></span></div></article>
-          <article class="pollutant-card"><span class="pollutant-name">Угарный газ CO</span><strong id="airCo">—</strong><small>мкг/м³</small><div class="pollutant-track"><span id="airCoBar"></span></div></article>
         </div>
       </div>
       <p class="air-quality-disclaimer">Оценка основана на моделях Open-Meteo и не заменяет показания наземных измерительных станций. Данные могут отличаться от локальных условий.</p>
