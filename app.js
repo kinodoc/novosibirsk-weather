@@ -490,19 +490,7 @@ function renderAirQuality(data, cached = false) {
   $("airAdvice").textContent = info.advice;
   $("airUpdated").textContent = (cached ? "Сохранённые данные · " : "Время модели · ") + timeOnly(current.time);
   $("airQualityStatus").textContent = cached ? "Последние сохранённые данные" : "Данные Open-Meteo";
-  const pollutants = [
-    ["pm2_5","airPm25","airPm25Bar",75],
-    ["pm10","airPm10","airPm10Bar",100],
-    ["ozone","airOzone","airOzoneBar",120],
-    ["nitrogen_dioxide","airNo2","airNo2Bar",100],
-    ["sulphur_dioxide","airSo2","airSo2Bar",100],
-    ["carbon_monoxide","airCo","airCoBar",10000]
-  ];
-  for (const [key, valueId, barId, scale] of pollutants) {
-    const value = current[key];
-    $(valueId).textContent = Number.isFinite(value) ? number(value, value >= 100 ? 0 : 1) : "—";
-    $(barId).style.width = Number.isFinite(value) ? Math.max(0,Math.min(100,value / scale * 100)) + "%" : "0%";
-  }
+
 }
 
 function loadCachedAirQuality() {
