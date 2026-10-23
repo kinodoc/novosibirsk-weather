@@ -224,7 +224,7 @@ function weatherCodeToWmo(code) {
   return 3;
 }
 
-function parseWttrTime(value) {
+function parseExternalTime(value) {
   const match = String(value || "").trim().match(/^(\d{1,2}):?(\d{2})\s*(AM|PM)?$/i);
   if (!match) return null;
   let hour = Number(match[1]);
@@ -276,8 +276,8 @@ function externalToForecast(source) {
     if (!hours.length) throw new Error("weather provider forecast day has no hourly data");
     const noon = hours.find((hour) => Number(hour.time) === 1200) || hours[Math.floor(hours.length / 2)];
     const astronomy = day.astronomy?.[0] || {};
-    const sunrise = parseWttrTime(astronomy.sunrise);
-    const sunset = parseWttrTime(astronomy.sunset);
+    const sunrise = parseExternalTime(astronomy.sunrise);
+    const sunset = parseExternalTime(astronomy.sunset);
     const rainChances = [];
     const precipAmounts = [];
     const uvValues = [];
