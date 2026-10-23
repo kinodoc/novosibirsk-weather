@@ -458,3 +458,90 @@ function refreshWhenPageReturns() {
 
 document.addEventListener("visibilitychange", refreshWhenPageReturns);
 window.addEventListener("pageshow", refreshWhenPageReturns);
+
+
+const AIR_QUALITY_API_URL = "https://194.87.186.159/weather-api/air-quality";
+const AIR_QUALITY_CACHE_KEY = "sever-air-quality-cache-v1";
+const AIR_QUALITY_REFRESH_MS = 30 * 60 * 1000;
+
+function airQualityInfo(value) {
+  if (!Number.isFinite(value)) return {label:"Нет данных",advice:"Индекс качества воздуха сейчас недоступен.",className:""};
+  if (value <= 20) return {label:"Хорошее",advice:"Качество воздуха благоприятное для обычной активности на улице.",className:"aqi-good"};
+  if (value <= 40) return {label:"Удовлетворительное",advice:"В целом условия приемлемые. Очень чувствительным людям стоит следить за самочувствием.",className:"aqi-fair"};
+  if (value <= 60) return {label:"Умеренное",advice:"Чувствительным людям стоит сократить длительную интенсивную нагрузку на улице.",className:"aqi-moderate"};
+  if (value <= 80) return {label:"Плохое",advice:"Людям с повышенной чувствительностью лучше уменьшить длительную активность на улице.",className:"aqi-poor"};
+  if (value <= 100) return {label:"Очень плохое",advice:"Рекомендуется ограничить продолжительную физическую активность на открытом воздухе.",className:"aqi-very-poor"};
+  return {label:"Крайне плохое",advice:"По возможности сократите пребывание на улице и интенсивную физическую нагрузку.",className:"aqi-extreme"};
+}
+
+function renderAirQuality(data, cached = false) {
+  const current = data?.current;
+  if (!current || !Number.isFinite(current.european_aqi) || typeof current.time !== "string") {
+    throw new Error("Open-Meteo returned incomplete air-quality data");
+  }
+  const info = airQualityInfo(current.european_aqi);
+  const panel = $("airQualitySection");
+  const summary = panel?.querySelector(".air-quality-summary");
+  if (!panel || !summary) return;
+  summary.classList.remove("aqi-good","aqi-fair","aqi-moderate","aqi-poor","aqi-very-poor","aqi-extreme");
+  if (info.className) summary.classList.add(info.className);
+  $("airAqi").textContent = Math.round(current.european_aqi);
+  $("airCategory").textContent = info.label;
+  $("airAdvice").textContent = info.advice;
+  $("airUpdated").textContent = (cached ? "Сохранённые данные · " : "Время модели · ") + timeOnly(current.time);
+  $("airQualityStatus").textContent = cached ? "Последние сохранённые данные" : "Данные Open-Meteo";
+  const pollutants = [
+    ["pm2_5","airPm25","airPm25Bar",75],
+    ["pm10","airPm10","airPm10Bar",100],
+    ["ozone","airOzone","airOzoneBar",120],
+    ["nitrogen_dioxide","airNo2","airNo2Bar",100],
+    ["sulphur_dioxide","airSo2","airSo2Bar",100],
+    ["carbon_monoxide","airCo","airCoBar",10000]
+  ];
+  for (const [key, valueId, barId, scale] of pollutants) {
+    const value = current[key];
+    $(valueId).textContent = Number.isFinite(value) ? number(value, value >= 100 ? 0 : 1) : "—";
+    $(barId).style.width = Number.isFinite(value) ? Math.max(0,Math.min(100,value / scale * 100)) + "%" : "0%";
+  }
+}
+
+function loadCachedAirQuality() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(AIR_QUALITY_CACHE_KEY) || "null");
+    if (cached?.data) renderAirQuality(cached.data, true);
+  } catch (error) {
+    console.warn("Не удалось прочитать сохранённые данные качества воздуха:", error);
+  }
+}
+
+async function loadAirQuality() {
+  try {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 12000);
+    let response;
+    try {
+      response = await fetch(AIR_QUALITY_API_URL, {signal:controller.signal});
+    } finally {
+      window.clearTimeout(timeout);
+    }
+    if (!response.ok) throw new Error("Air-quality API returned " + response.status);
+    const data = await response.json();
+    renderAirQuality(data, false);
+    try {
+      localStorage.setItem(AIR_QUALITY_CACHE_KEY, JSON.stringify({savedAt:Date.now(),data}));
+    } catch (error) {
+      console.warn("Не удалось сохранить качество воздуха локально:", error);
+    }
+  } catch (error) {
+    console.warn("Не удалось обновить качество воздуха:", error);
+    $("airQualityStatus").textContent = "Нет связи с источником";
+    if (!$("airAqi").textContent || $("airAqi").textContent === "—") {
+      $("airCategory").textContent = "Данные пока недоступны";
+      $("airAdvice").textContent = "Не удалось загрузить качество воздуха. Попробуем снова автоматически.";
+    }
+  }
+}
+
+loadCachedAirQuality();
+loadAirQuality();
+window.setInterval(loadAirQuality, AIR_QUALITY_REFRESH_MS);
