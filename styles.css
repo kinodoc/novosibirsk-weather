@@ -44,7 +44,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 .cloud:before{width:95px;height:78px;left:36px;bottom:3px}.cloud:after{width:72px;height:67px;left:100px;bottom:0}
 .weather-cloudy .cloud,.weather-rain .cloud,.weather-snow .cloud,.weather-storm .cloud,.weather-fog .cloud{opacity:.95}
 .weather-cloudy .cloud-two,.weather-rain .cloud-two,.weather-snow .cloud-two,.weather-storm .cloud-two{top:43%;right:21%;transform:scale(.8);opacity:.65}
-.cityline{position:absolute;z-index:-1;right:0;bottom:0;width:76%;height:100%;opacity:.9;pointer-events:none;background:linear-gradient(90deg,rgba(6,15,29,.32) 0%,rgba(6,15,29,.02) 35%,rgba(6,15,29,.08) 100%),linear-gradient(0deg,rgba(6,15,29,.62) 0%,rgba(6,15,29,.02) 62%),url("./cityscape.svg") center 46%/cover no-repeat;mask-image:linear-gradient(90deg,transparent 0%,#000 10%);}
+.cityline{position:absolute;z-index:-1;right:0;bottom:0;width:76%;height:100%;opacity:.9;pointer-events:none;background:linear-gradient(90deg,rgba(6,15,29,.32) 0%,rgba(6,15,29,.02) 35%,rgba(6,15,29,.08) 100%),linear-gradient(0deg,rgba(6,15,29,.62) 0%,rgba(6,15,29,.02) 62%),url("./cityscape.svg?v=citypanorama4") center 46%/cover no-repeat;mask-image:linear-gradient(90deg,transparent 0%,#000 10%);}
 .cityline:before{display:none;content:"";position:absolute;inset:20% 0 0;background:linear-gradient(0deg,rgba(6,15,28,.94),rgba(11,24,40,.08));clip-path:polygon(0 40%,7% 40%,7% 19%,13% 19%,13% 55%,20% 55%,20% 28%,28% 28%,28% 44%,36% 44%,36% 7%,42% 7%,42% 38%,49% 38%,49% 24%,57% 24%,57% 47%,64% 47%,64% 12%,70% 12%,70% 38%,77% 38%,77% 28%,84% 28%,84% 53%,91% 53%,91% 36%,100% 36%,100% 100%,0 100%)}
 .cityline>.tower,.cityline>.building,.cityline>.bridge{display:none}.tower{position:absolute;right:28%;bottom:20%;height:63%;width:2px;background:rgba(18,35,52,.8);transform:rotate(2deg)}
 .tower:before{content:"";position:absolute;top:0;left:-9px;width:20px;height:2px;background:inherit;box-shadow:0 9px 0 rgba(18,35,52,.7),0 18px 0 rgba(18,35,52,.6)}
@@ -110,7 +110,7 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .hero-sky{z-index:0;isolation:isolate}
 .hero:before{z-index:1;pointer-events:none}
 .hero-content,.topbar{z-index:3}
-.cityline{z-index:2;background:linear-gradient(90deg,rgba(6,15,29,.22),transparent 45%),linear-gradient(0deg,rgba(6,15,29,.48),transparent 58%),url("./cityscape.svg") center 46%/cover no-repeat;filter:saturate(.9);transition:filter 1.5s ease,opacity 1.5s ease}
+.cityline{z-index:2;background:linear-gradient(90deg,rgba(6,15,29,.22),transparent 45%),linear-gradient(0deg,rgba(6,15,29,.48),transparent 58%),url("./cityscape.svg?v=citypanorama4") center 46%/cover no-repeat;filter:saturate(.9);transition:filter 1.5s ease,opacity 1.5s ease}
 .sun-glow{z-index:0;right:auto;left:calc(var(--sun-x) - 130px);top:calc(var(--sun-y) - 130px);opacity:.8}
 .sun-disc{position:absolute;z-index:0;left:var(--sun-x);top:var(--sun-y);width:clamp(34px,5vw,58px);height:clamp(34px,5vw,58px);transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8d7,#ffd28a 62%,#f4a96e);box-shadow:0 0 35px 10px rgba(255,202,132,.2);opacity:1;transition:left 1.5s ease,top 1.5s ease,opacity 1s ease}
 .moon-disc{position:absolute;z-index:0;left:var(--sun-x);top:var(--sun-y);width:42px;height:42px;transform:translate(-50%,-50%);border-radius:50%;background:#e0eaf8;box-shadow:0 0 30px rgba(203,225,255,.25);opacity:0;transition:left 1.5s ease,top 1.5s ease,opacity 1s ease}
@@ -217,7 +217,7 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 }
 
 /* Keep the river and architecture legible across screen sizes. */
-.cityline{background-image:linear-gradient(0deg,rgba(6,15,29,.12),transparent 48%),url("./cityscape.svg");background-position:center bottom;background-size:cover;mask-image:none;-webkit-mask-image:none}
+.cityline{background-image:linear-gradient(0deg,rgba(6,15,29,.12),transparent 48%),url("./cityscape.svg?v=citypanorama4");background-position:center bottom;background-size:cover;mask-image:none;-webkit-mask-image:none}
 .hero.time-night .cityline{filter:brightness(.78) saturate(.78)}
 @media(max-width:760px){.cityline{background-position:center bottom;background-size:auto 100%;mask-image:none;-webkit-mask-image:none}}
 
@@ -262,7 +262,7 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
   background-image:
     linear-gradient(90deg,rgba(7,16,31,.5),rgba(7,16,31,.04) 48%,rgba(7,16,31,.16)),
     linear-gradient(0deg,rgba(7,16,31,.44),transparent 65%),
-    url("./cityscape.svg");
+    url("./cityscape.svg?v=citypanorama4");
   background-position:center bottom;background-size:100% 100%;background-repeat:no-repeat;
   mask-image:none!important;-webkit-mask-image:none!important;
   filter:none;transition:opacity 1.5s ease,filter 1.5s ease;
