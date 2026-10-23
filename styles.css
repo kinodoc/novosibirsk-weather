@@ -181,3 +181,21 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .air-quality-disclaimer{max-width:850px;margin:12px 4px 0;color:#71859d;font-size:10px;line-height:1.7}
 @media(max-width:760px){.air-quality-panel{grid-template-columns:1fr;padding:12px;gap:12px;border-radius:20px}.air-quality-summary{min-height:0;padding:18px}.air-quality-score{font-size:66px}.air-pollutants{gap:8px}.pollutant-card{min-height:98px;padding:13px 12px}.pollutant-card strong{font-size:23px}}
 @media(max-width:360px){.air-pollutants{grid-template-columns:1fr}.pollutant-card{min-height:88px}}
+
+
+/* Astronomical moon phase icon and upcoming eclipses. */
+.moon-disc{display:block;width:46px;height:46px;overflow:visible;filter:drop-shadow(0 0 10px rgba(203,225,255,.3));transition:left 1.5s ease,top 1.5s ease,opacity 1s ease}
+.moon-disc:after{display:none}
+.eclipse-section{margin-top:38px}
+.eclipse-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.eclipse-card{display:flex;align-items:center;gap:18px;min-height:174px;padding:22px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,rgba(24,39,61,.94),rgba(14,25,42,.94));box-shadow:0 10px 35px rgba(0,0,0,.09)}
+.lunar-eclipse-card{background:radial-gradient(ellipse at 8% 5%,rgba(143,167,255,.12),transparent 55%),linear-gradient(145deg,rgba(24,39,61,.94),rgba(14,25,42,.94))}
+.solar-eclipse-card{background:radial-gradient(ellipse at 8% 5%,rgba(255,198,116,.12),transparent 55%),linear-gradient(145deg,rgba(24,39,61,.94),rgba(14,25,42,.94))}
+.eclipse-icon{display:grid;place-items:center;flex:0 0 62px;width:62px;height:62px;border:1px solid rgba(255,255,255,.1);border-radius:19px;background:rgba(6,15,29,.32);font-size:34px}
+.eclipse-copy{min-width:0}
+.eclipse-kind{margin:0 0 8px;color:#8ea9c6;font-size:9px;font-weight:800;letter-spacing:.16em}
+.eclipse-copy h3{margin:0;font-size:19px;line-height:1.35;letter-spacing:-.035em}
+.eclipse-copy>p:not(.eclipse-kind){margin:8px 0 0;color:#a5b3c8;font-size:12px;line-height:1.65}
+.eclipse-visibility{display:inline-block;margin-top:11px;padding:5px 8px;border:1px solid rgba(143,216,255,.18);border-radius:99px;color:#a9dfff;font-size:10px}
+.eclipse-note{margin:12px 4px 0;color:#71859d;font-size:10px;line-height:1.7}
+@media(max-width:760px){.moon-disc{width:36px;height:36px}.eclipse-grid{grid-template-columns:1fr;gap:10px}.eclipse-card{min-height:0;padding:17px;border-radius:19px;gap:14px}.eclipse-icon{flex-basis:52px;width:52px;height:52px;border-radius:16px;font-size:29px}.eclipse-copy h3{font-size:17px}.eclipse-copy>p:not(.eclipse-kind){font-size:11px}}
