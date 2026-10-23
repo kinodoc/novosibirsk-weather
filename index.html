@@ -5,21 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101b31">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <meta name="description" content="Погода в Новосибирске сейчас: температура, ощущается как, ветер, осадки и прогноз на 24 часа. Узнайте погоду на сегодня и завтра и индекс качества воздуха.">
+  <meta name="description" content="Погода в Новосибирске сейчас: температура, ветер, осадки и прогноз на сегодня, завтра и послезавтра. Индекс качества воздуха.">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <link rel="canonical" href="https://pogodansk.tuqo.ru/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Север — погода в Новосибирске">
   <meta property="og:locale" content="ru_RU">
   <meta property="og:title" content="Погода в Новосибирске">
-  <meta property="og:description" content="Текущая погода, качество воздуха и прогноз на ближайшие 24 часа в Новосибирске. Данные обновляются автоматически.">
+  <meta property="og:description" content="Текущая погода, качество воздуха и прогноз на сегодня, завтра и послезавтра в Новосибирске.">
   <meta property="og:image" content="https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Bugrinsky_Bridge_%28May_2025%29_-_0.jpg/1280px-Bugrinsky_Bridge_%28May_2025%29_-_0.jpg">
   <meta property="og:image:alt" content="Бугринский мост в Новосибирске в вечерней подсветке">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Погода в Новосибирске">
   <meta name="twitter:description" content="Погода в Новосибирске сейчас: температура, ветер, осадки, прогноз на 24 часа и индекс качества воздуха.">
   <meta name="twitter:image" content="https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Bugrinsky_Bridge_%28May_2025%29_-_0.jpg/1280px-Bugrinsky_Bridge_%28May_2025%29_-_0.jpg">
-  <title>Погода в Новосибирске сейчас — прогноз на 24 часа | Север</title>
+  <title>Погода в Новосибирске сейчас и на 3 дня | Север</title>
   <link rel="preconnect" href="https://api.open-meteo.com">
   <link rel="stylesheet" href="styles.css">
   <script src="app.js?v=d51dfc9" defer></script>
@@ -69,7 +69,7 @@
 
 
     <section class="section-block environment-section" aria-labelledby="environmentTitle">
-      <div class="section-heading"><div><p class="eyebrow">ВОЗДУХ И ОКРУЖАЮЩАЯ СРЕДА</p><h2 id="environmentTitle">Качество воздуха</h2></div><span class="section-note">Модельные данные, обновление каждые 10 минут</span></div>
+      <div class="section-heading"><div><p class="eyebrow">ВОЗДУХ И ОКРУЖАЮЩАЯ СРЕДА</p><h2 id="environmentTitle">Качество воздуха</h2></div><span class="section-note">Модельные данные, обновление каждые 30 минут</span></div>
       <div class="metrics-grid environment-grid">
         <article class="metric-card environment-main-card"><div class="metric-top"><span>Индекс качества воздуха (европейский)</span><span class="metric-icon">◉</span></div><strong id="airAqi">—</strong><p id="airAqiLabel">Загружаем данные…</p><div class="metric-track"><span id="airAqiBar"></span></div><p id="airUpdatedAt" class="data-timestamp">Источник: Open-Meteo / CAMS</p></article>
       </div>
@@ -77,25 +77,26 @@
       <p class="environment-error" id="airError" role="status" hidden>Не удалось обновить данные о качестве воздуха.</p>
     </section>
 
-    <section class="section-block forecast-section">
-      <div class="section-heading"><div><p class="eyebrow">БЛИЖАЙШИЕ ЧАСЫ</p><h2>Как изменится погода</h2></div><span class="section-note">Прогноз на 24 часа</span></div>
-      <div class="hourly-scroller" id="hourlyForecast"><div class="loading-card">Загружаем почасовой прогноз…</div></div>
-    </section>
 
     <section class="tomorrow-card" id="tomorrowCard">
       <div class="tomorrow-copy"><p class="eyebrow">ЗАВТРА В НОВОСИБИРСКЕ</p><h2 id="tomorrowCondition">Готовим прогноз…</h2><p id="tomorrowSummary">Скоро здесь появится прогноз на весь день.</p></div>
       <div class="tomorrow-weather"><span id="tomorrowSymbol" aria-hidden="true">☀</span><strong id="tomorrowTemp">—°</strong><span id="tomorrowRange">—° / —°</span></div>
     </section>
 
+    <section class="tomorrow-card" id="dayAfterCard">
+      <div class="tomorrow-copy"><p class="eyebrow">ПОСЛЕЗАВТРА В НОВОСИБИРСКЕ</p><h2 id="dayAfterCondition">Готовим прогноз…</h2><p id="dayAfterSummary">Скоро здесь появится прогноз на весь день.</p></div>
+      <div class="tomorrow-weather"><span id="dayAfterSymbol" aria-hidden="true">☀</span><strong id="dayAfterTemp">—°</strong><span id="dayAfterRange">—° / —°</span></div>
+    </section>
+
     <section class="section-block seo-intro" aria-labelledby="seoIntroTitle">
-      <div class="section-heading"><div><p class="eyebrow">ПОГОДА В ГОРОДЕ</p><h2 id="seoIntroTitle">Погода в Новосибирске сейчас и на ближайшие 24 часа</h2></div></div>
+      <div class="section-heading"><div><p class="eyebrow">ПОГОДА В ГОРОДЕ</p><h2 id="seoIntroTitle">Погода в Новосибирске сейчас и на ближайшие 3 дня</h2></div></div>
       <div class="seo-copy">
-        <p>Здесь можно посмотреть текущую погоду в Новосибирске: температуру воздуха, ощущаемую температуру, ветер, влажность, атмосферное давление, вероятность осадков, порывы ветра и УФ-индекс. Почасовой прогноз помогает оценить, как погода изменится в течение ближайших суток, а отдельный блок показывает прогноз на завтра.</p>
-        <p>Данные прогноза загружаются из Open-Meteo и автоматически обновляются примерно каждые 10 минут. Время указано для Новосибирска (UTC+7). Индекс качества воздуха основан на модельных данных CAMS и не заменяет измерения локальной станции мониторинга.</p>
+        <p>Здесь можно посмотреть текущую погоду в Новосибирске: температуру воздуха, ощущаемую температуру, ветер, влажность, атмосферное давление, вероятность осадков, порывы ветра и УФ-индекс. Прогноз на сегодня, завтра и послезавтра помогает оценить погоду на ближайшие дни.</p>
+        <p>Данные прогноза загружаются из wttr.in и автоматически обновляются примерно каждые 30 минут. Время указано для Новосибирска (UTC+7). Индекс качества воздуха основан на модельных данных CAMS и не заменяет измерения локальной станции мониторинга.</p>
       </div>
     </section>
 
-    <footer class="site-footer"><p>Погода в Новосибирске · Данные прогноза предоставлены Open-Meteo</p><p class="footer-update">Автообновление каждые 10 минут</p></footer>
+    <footer class="site-footer"><p>Погода в Новосибирске · Источник прогноза погоды: wttr.in · Качество воздуха: Open-Meteo / CAMS</p><p class="footer-update">Автообновление каждые 30 минут</p></footer>
     <div class="error-message" id="errorMessage" role="status" hidden>Не удалось получить погоду. Проверьте подключение к интернету.</div>
   </main>
 </body>
