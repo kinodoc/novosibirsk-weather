@@ -1,6 +1,10 @@
-const API_URL = "https://api.open-meteo.com/v1/forecast";
+const WEATHER_API_URLS = [
+  "https://wttr.in/Novosibirsk?format=j1",
+  "https://wttr.is/Novosibirsk?format=j1"
+];
 const AIR_API_URL = "https://air-quality-api.open-meteo.com/v1/air-quality";
-const WEATHER_REFRESH_MS = 10 * 60 * 1000;
+const WEATHER_REFRESH_MS = 30 * 60 * 1000;
+const WEATHER_CACHE_KEY = "sever-weather-cache-v1";
 const LOCATION = { latitude: 55.0084, longitude: 82.9357, timezone: "Asia/Novosibirsk" };
 
 let requestInFlight = false;
@@ -203,57 +207,191 @@ function renderTomorrow(daily) {
   $("tomorrowSummary").textContent = `Вероятность осадков — ${rain}. Количество осадков: ${sum}. Восход в ${timeOnly(daily.sunrise?.[1])}, закат в ${timeOnly(daily.sunset?.[1])}.`;
 }
 
+function numeric(value) {
+  const result = Number.parseFloat(value);
+  return Number.isFinite(result) ? result : NaN;
+}
+
+function wwoToWmo(code) {
+  const value = Number(code);
+  if (value === 113) return 0;
+  if (value === 116) return 2;
+  if ([119, 122].includes(value)) return 3;
+  if ([143, 248, 260].includes(value)) return 45;
+  if ([176, 263, 266, 281, 284, 293, 296].includes(value)) return 61;
+  if ([299, 302].includes(value)) return 63;
+  if ([305, 308].includes(value)) return 65;
+  if ([311, 314, 317].includes(value)) return 66;
+  if ([179, 323, 326, 368, 371].includes(value)) return 71;
+  if ([182, 185, 320, 329, 332].includes(value)) return 73;
+  if ([335, 338].includes(value)) return 75;
+  if ([350, 362, 365, 374, 377].includes(value)) return 77;
+  if (value === 353) return 80;
+  if (value === 356) return 81;
+  if (value === 359) return 82;
+  if ([200, 386, 389, 392, 395].includes(value)) return 95;
+  return 3;
+}
+
+function parseWttrTime(value) {
+  const match = String(value || "").trim().match(/^(\d{1,2}):?(\d{2})\s*(AM|PM)?$/i);
+  if (!match) return null;
+  let hour = Number(match[1]);
+  const minute = Number(match[2]);
+  const meridiem = match[3]?.toUpperCase();
+  if (meridiem) {
+    if (hour === 12) hour = 0;
+    if (meridiem === "PM") hour += 12;
+  }
+  return String(hour).padStart(2, "0") + ":" + String(minute).padStart(2, "0");
+}
+
+function wttrHourTime(day, item) {
+  const raw = String(item.time ?? "0").padStart(4, "0");
+  return day.date + "T" + raw.slice(0, 2) + ":" + raw.slice(2, 4);
+}
+
+function wttrToForecast(source) {
+  const condition = source.current_condition?.[0];
+  const days = source.weather;
+  if (!condition || !Array.isArray(days) || days.length < 3) {
+    throw new Error("wttr.in returned an incomplete forecast");
+  }
+
+  const now = localClockParts();
+  const currentTime = String(now.year) + "-" + String(now.month).padStart(2, "0") + "-" +
+    String(now.day).padStart(2, "0") + "T" + String(now.hour).padStart(2, "0") + ":" +
+    String(now.minute).padStart(2, "0");
+  const current = {
+    time: currentTime,
+    temperature_2m: numeric(condition.temp_C),
+    apparent_temperature: numeric(condition.FeelsLikeC),
+    relative_humidity_2m: numeric(condition.humidity),
+    precipitation: numeric(condition.precipMM),
+    weather_code: wwoToWmo(condition.weatherCode),
+    pressure_msl: numeric(condition.pressure),
+    wind_speed_10m: numeric(condition.windspeedKmph) / 3.6,
+    wind_direction_10m: numeric(condition.winddirDegree),
+    wind_gusts_10m: numeric(condition.WindGustKmph) / 3.6
+  };
+  const hourly = { time: [], temperature_2m: [], precipitation_probability: [], precipitation: [], weather_code: [], wind_speed_10m: [] };
+  const daily = {
+    time: [], weather_code: [], temperature_2m_max: [], temperature_2m_min: [],
+    sunrise: [], sunset: [], uv_index_max: [], precipitation_probability_max: [], precipitation_sum: []
+  };
+
+  for (const day of days) {
+    const hours = Array.isArray(day.hourly) ? day.hourly : [];
+    if (!hours.length) throw new Error("wttr.in forecast day has no hourly data");
+    const noon = hours.find((hour) => Number(hour.time) === 1200) || hours[Math.floor(hours.length / 2)];
+    const astronomy = day.astronomy?.[0] || {};
+    const sunrise = parseWttrTime(astronomy.sunrise);
+    const sunset = parseWttrTime(astronomy.sunset);
+    const rainChances = [];
+    const precipAmounts = [];
+    const uvValues = [];
+
+    daily.time.push(day.date);
+    daily.weather_code.push(wwoToWmo(noon.weatherCode));
+    daily.temperature_2m_max.push(numeric(day.maxtempC));
+    daily.temperature_2m_min.push(numeric(day.mintempC));
+    daily.sunrise.push(sunrise ? day.date + "T" + sunrise : null);
+    daily.sunset.push(sunset ? day.date + "T" + sunset : null);
+
+    for (const hour of hours) {
+      const chanceRain = numeric(hour.chanceofrain);
+      const chanceSnow = numeric(hour.chanceofsnow);
+      const chance = Number.isFinite(chanceRain) || Number.isFinite(chanceSnow)
+        ? Math.max(Number.isFinite(chanceRain) ? chanceRain : 0, Number.isFinite(chanceSnow) ? chanceSnow : 0)
+        : NaN;
+      const amount = numeric(hour.precipMM);
+      const uv = numeric(hour.uvIndex);
+      if (Number.isFinite(chance)) rainChances.push(chance);
+      if (Number.isFinite(amount)) precipAmounts.push(amount);
+      if (Number.isFinite(uv)) uvValues.push(uv);
+      hourly.time.push(wttrHourTime(day, hour));
+      hourly.temperature_2m.push(numeric(hour.tempC));
+      hourly.precipitation_probability.push(chance);
+      hourly.precipitation.push(amount);
+      hourly.weather_code.push(wwoToWmo(hour.weatherCode));
+      hourly.wind_speed_10m.push(numeric(hour.windspeedKmph) / 3.6);
+    }
+
+    daily.uv_index_max.push(uvValues.length ? Math.max(...uvValues) : NaN);
+    daily.precipitation_probability_max.push(rainChances.length ? Math.max(...rainChances) : NaN);
+    daily.precipitation_sum.push(precipAmounts.length ? precipAmounts.reduce((sum, amount) => sum + amount, 0) : NaN);
+  }
+
+  if (!Number.isFinite(current.temperature_2m)) throw new Error("wttr.in current temperature is missing");
+  return { current: current, hourly: hourly, daily: daily };
+}
+
+function renderWeatherForecast(data, cached = false) {
+  const hourly = data.hourly;
+  const daily = data.daily;
+  const hourlyFields = ["temperature_2m", "weather_code", "precipitation_probability"];
+  const dailyFields = ["temperature_2m_max", "temperature_2m_min", "weather_code", "sunrise", "sunset", "uv_index_max", "precipitation_probability_max", "precipitation_sum"];
+  const hourlyInvalid = !isOrderedTimeArray(hourly?.time, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/) ||
+    hourlyFields.some((key) => !Array.isArray(hourly[key]) || hourly[key].length < hourly.time.length);
+  const dailyInvalid = !isOrderedTimeArray(daily?.time, /^\d{4}-\d{2}-\d{2}$/) ||
+    daily.time.length < 3 ||
+    dailyFields.some((key) => !Array.isArray(daily[key]) || daily[key].length < daily.time.length);
+  if (!data.current || typeof data.current.time !== "string" ||
+      !Number.isFinite(data.current.temperature_2m) || hourlyInvalid || dailyInvalid) {
+    throw new Error("Weather data is incomplete or has invalid time data");
+  }
+
+  updateHero(data.current, data.daily);
+  updateMetrics(data.current, data.hourly, data.daily);
+  renderTomorrow(data.daily);
+  hasLoadedWeather = true;
+  lastSuccessfulUpdate = data.current.time;
+  if (!cached) lastWeatherFetchAt = Date.now();
+  $("statusText").textContent = cached ? "Показан сохранённый прогноз" : "Данные актуальны";
+  document.querySelector(".live-dot")?.classList.remove("is-error", "is-loading");
+  $("updatedAt").textContent = (cached ? "Сохранено ранее · " : "Обновлено · ") + timeOnly(data.current.time);
+  $("errorMessage").hidden = true;
+}
+
+function loadCachedWeather() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY) || "null");
+    if (cached?.data) renderWeatherForecast(cached.data, true);
+  } catch (error) {
+    console.warn("Не удалось прочитать сохранённый прогноз:", error);
+  }
+}
+
 async function loadWeather() {
   if (requestInFlight) return;
   requestInFlight = true;
-  const params = new URLSearchParams({
-    latitude: LOCATION.latitude,
-    longitude: LOCATION.longitude,
-    timezone: LOCATION.timezone,
-    wind_speed_unit: "ms",
-    forecast_days: 2,
-    forecast_hours: 25,
-    current: "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,showers,snowfall,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m",
-    hourly: "temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m",
-    daily: "weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max,precipitation_sum"
-  });
+  let lastError;
   try {
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 12000);
-    let data;
+    let sourceData = null;
+    for (const url of WEATHER_API_URLS) {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 12000);
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error("Weather API returned " + response.status);
+        sourceData = await response.json();
+        break;
+      } catch (error) {
+        lastError = error;
+        console.warn("Не удалось получить погоду с " + url + ":", error);
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    }
+    if (!sourceData) throw lastError || new Error("Weather services are unavailable");
+
+    const forecast = wttrToForecast(sourceData);
+    renderWeatherForecast(forecast, false);
     try {
-      const response = await fetch(`${API_URL}?${params}`, { cache: "no-store", signal: controller.signal });
-      if (!response.ok) throw new Error(`Weather API returned ${response.status}`);
-      data = await response.json();
-    } finally {
-      // Keep the timeout active while the response body is being read, not just until headers arrive.
-      window.clearTimeout(timeout);
+      localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data: forecast }));
+    } catch (error) {
+      console.warn("Не удалось сохранить прогноз локально:", error);
     }
-    const hourly = data.hourly;
-    const daily = data.daily;
-    const hourlyFields = ["temperature_2m", "weather_code", "precipitation_probability"];
-    const dailyFields = ["temperature_2m_max", "temperature_2m_min", "weather_code", "sunrise", "sunset", "uv_index_max", "precipitation_probability_max", "precipitation_sum"];
-    const hourlyInvalid = !isOrderedTimeArray(hourly?.time, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/) ||
-      hourlyFields.some((key) => !Array.isArray(hourly[key]) || hourly[key].length < hourly.time.length);
-    const dailyInvalid = !isOrderedTimeArray(daily?.time, /^\d{4}-\d{2}-\d{2}$/) ||
-      daily.time.length < 2 ||
-      dailyFields.some((key) => !Array.isArray(daily[key]) || daily[key].length < daily.time.length);
-    if (!data.current || typeof data.current.time !== "string" ||
-        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(data.current.time) ||
-        !Number.isFinite(data.current.temperature_2m) || hourlyInvalid || dailyInvalid) {
-      throw new Error("Weather response is incomplete or has invalid time data");
-    }
-    updateHero(data.current, data.daily);
-    updateMetrics(data.current, data.hourly, data.daily);
-    renderHourly(data.hourly, data.current.time);
-    renderTomorrow(data.daily);
-    hasLoadedWeather = true;
-    lastSuccessfulUpdate = data.current.time;
-    lastWeatherFetchAt = Date.now();
-    $("statusText").textContent = "Данные актуальны";
-    document.querySelector(".live-dot")?.classList.remove("is-error", "is-loading");
-    $("updatedAt").textContent = `Обновлено в ${timeOnly(data.current.time)}`;
-    $("errorMessage").hidden = true;
   } catch (error) {
     console.error("Не удалось обновить погоду:", error);
     $("statusText").textContent = error.name === "AbortError" ? "Погода отвечает слишком долго" : "Нет связи с погодой";
@@ -264,13 +402,13 @@ async function loadWeather() {
       : "Не удалось получить погоду. Проверьте подключение к интернету и попробуйте позже.";
     $("errorMessage").hidden = false;
     if (hasLoadedWeather && lastSuccessfulUpdate) {
-      $("updatedAt").textContent = `Последнее обновление в ${timeOnly(lastSuccessfulUpdate)}`;
+      $("updatedAt").textContent = "Последнее успешное обновление · " + timeOnly(lastSuccessfulUpdate);
     }
   } finally {
     requestInFlight = false;
   }
 }
-
+loadCachedWeather();
 loadWeather();
 window.setInterval(loadWeather, WEATHER_REFRESH_MS);
 updateAtmosphere();
@@ -280,7 +418,7 @@ function refreshWhenPageReturns() {
   updateAtmosphere();
   const now = Date.now();
   // Mobile browsers throttle timers while a tab is in the background. Refresh stale data on return.
-  if (now - lastWeatherFetchAt >= 5 * 60 * 1000) loadWeather();
+  if (now - lastWeatherFetchAt >= WEATHER_REFRESH_MS) loadWeather();
   if (now - lastAirQualityFetchAt >= 5 * 60 * 1000) loadAirQuality();
 }
 
