@@ -177,23 +177,6 @@ function updateMetrics(current, hourly, daily) {
   setMetric("gusts", `${number(current.wind_gusts_10m, 1)} <small>м/с</small>`, "gustBar", Number.isFinite(current.wind_gusts_10m) ? current.wind_gusts_10m * 3 : 0);
 }
 
-function renderHourly(hourly, currentTime) {
-  const start = forecastIndexAtOrAfter(hourly.time, currentTime);
-  const list = hourly.time.slice(start, start + 24);
-  $("hourlyForecast").replaceChildren();
-  list.forEach((time, offset) => {
-    const index = start + offset;
-    const info = weatherInfo(hourly.weather_code[index]);
-    const card = document.createElement("article");
-    card.className = "hour-card";
-    const label = offset === 0 ? "Сейчас" : timeOnly(time);
-    const rawChance = hourly.precipitation_probability?.[index];
-    const chance = Number.isFinite(rawChance) ? `${Math.max(0, Math.min(100, rawChance))}%` : "—";
-    card.innerHTML = `<span class="hour-time">${label}</span><span class="hour-symbol" aria-hidden="true">${info.icon}</span><strong class="hour-temp">${roundTemp(hourly.temperature_2m[index])}</strong><span class="hour-rain">☂ ${chance}</span>`;
-    $("hourlyForecast").append(card);
-  });
-}
-
 function renderDayForecast(daily, index, ids) {
   const info = weatherInfo(daily.weather_code?.[index]);
   $(ids.condition).textContent = info.label;
