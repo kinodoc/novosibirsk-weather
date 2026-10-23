@@ -641,7 +641,7 @@ async function loadEclipseData() {
     for (const kind of ["lunar", "solar"]) {
       if (!Array.isArray(data[kind])) throw new Error(`Missing ${kind} eclipse data`);
       nextEvents[kind] = data[kind]
-        .filter((event) => /^\\d{4}-\\d{2}-\\d{2}$/.test(event.date) && typeof event.type === "string")
+        .filter((event) => /^\d{4}-\d{2}-\d{2}$/.test(event.date) && typeof event.type === "string")
         .map((event) => ({
           date: event.date,
           type: event.type,
