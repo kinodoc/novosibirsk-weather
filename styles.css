@@ -199,3 +199,7 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .eclipse-visibility{display:inline-block;margin-top:11px;padding:5px 8px;border:1px solid rgba(143,216,255,.18);border-radius:99px;color:#a9dfff;font-size:10px}
 .eclipse-note{margin:12px 4px 0;color:#71859d;font-size:10px;line-height:1.7}
 @media(max-width:760px){.moon-disc{width:36px;height:36px}.eclipse-grid{grid-template-columns:1fr;gap:10px}.eclipse-card{min-height:0;padding:17px;border-radius:19px;gap:14px}.eclipse-icon{flex-basis:52px;width:52px;height:52px;border-radius:16px;font-size:29px}.eclipse-copy h3{font-size:17px}.eclipse-copy>p:not(.eclipse-kind){font-size:11px}}
+
+/* Keep the moon in a stable decorative position, independent of the sun path. */
+.moon-disc{left:auto!important;right:10%!important;top:25%!important;transform:none!important}
+@media(max-width:760px){.moon-disc{right:8%!important;top:25%!important}}
