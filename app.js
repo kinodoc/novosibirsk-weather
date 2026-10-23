@@ -203,7 +203,7 @@ function numeric(value) {
   return Number.isFinite(result) ? result : NaN;
 }
 
-function wwoToWmo(code) {
+function weatherCodeToWmo(code) {
   const value = Number(code);
   if (value === 113) return 0;
   if (value === 116) return 2;
@@ -237,16 +237,16 @@ function parseWttrTime(value) {
   return String(hour).padStart(2, "0") + ":" + String(minute).padStart(2, "0");
 }
 
-function wttrHourTime(day, item) {
+function externalHourTime(day, item) {
   const raw = String(item.time ?? "0").padStart(4, "0");
   return day.date + "T" + raw.slice(0, 2) + ":" + raw.slice(2, 4);
 }
 
-function wttrToForecast(source) {
+function externalToForecast(source) {
   const condition = source.current_condition?.[0];
   const days = source.weather;
   if (!condition || !Array.isArray(days) || days.length < 3) {
-    throw new Error("wttr.in returned an incomplete forecast");
+    throw new Error("weather provider returned an incomplete forecast");
   }
 
   const now = localClockParts();
@@ -259,7 +259,7 @@ function wttrToForecast(source) {
     apparent_temperature: numeric(condition.FeelsLikeC),
     relative_humidity_2m: numeric(condition.humidity),
     precipitation: numeric(condition.precipMM),
-    weather_code: wwoToWmo(condition.weatherCode),
+    weather_code: weatherCodeToWmo(condition.weatherCode),
     pressure_msl: numeric(condition.pressure),
     wind_speed_10m: numeric(condition.windspeedKmph) / 3.6,
     wind_direction_10m: numeric(condition.winddirDegree),
@@ -273,7 +273,7 @@ function wttrToForecast(source) {
 
   for (const day of days) {
     const hours = Array.isArray(day.hourly) ? day.hourly : [];
-    if (!hours.length) throw new Error("wttr.in forecast day has no hourly data");
+    if (!hours.length) throw new Error("weather provider forecast day has no hourly data");
     const noon = hours.find((hour) => Number(hour.time) === 1200) || hours[Math.floor(hours.length / 2)];
     const astronomy = day.astronomy?.[0] || {};
     const sunrise = parseWttrTime(astronomy.sunrise);
@@ -283,7 +283,7 @@ function wttrToForecast(source) {
     const uvValues = [];
 
     daily.time.push(day.date);
-    daily.weather_code.push(wwoToWmo(noon.weatherCode));
+    daily.weather_code.push(weatherCodeToWmo(noon.weatherCode));
     daily.temperature_2m_max.push(numeric(day.maxtempC));
     daily.temperature_2m_min.push(numeric(day.mintempC));
     daily.sunrise.push(sunrise ? day.date + "T" + sunrise : null);
@@ -300,11 +300,11 @@ function wttrToForecast(source) {
       if (Number.isFinite(chance)) rainChances.push(chance);
       if (Number.isFinite(amount)) precipAmounts.push(amount);
       if (Number.isFinite(uv)) uvValues.push(uv);
-      hourly.time.push(wttrHourTime(day, hour));
+      hourly.time.push(externalHourTime(day, hour));
       hourly.temperature_2m.push(numeric(hour.tempC));
       hourly.precipitation_probability.push(chance);
       hourly.precipitation.push(amount);
-      hourly.weather_code.push(wwoToWmo(hour.weatherCode));
+      hourly.weather_code.push(weatherCodeToWmo(hour.weatherCode));
       hourly.wind_speed_10m.push(numeric(hour.windspeedKmph) / 3.6);
     }
 
@@ -313,7 +313,7 @@ function wttrToForecast(source) {
     daily.precipitation_sum.push(precipAmounts.length ? precipAmounts.reduce((sum, amount) => sum + amount, 0) : NaN);
   }
 
-  if (!Number.isFinite(current.temperature_2m)) throw new Error("wttr.in current temperature is missing");
+  if (!Number.isFinite(current.temperature_2m)) throw new Error("weather provider current temperature is missing");
   return { current: current, hourly: hourly, daily: daily };
 }
 
