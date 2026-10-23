@@ -2,7 +2,6 @@ const WEATHER_API_URLS = [
   "https://wttr.in/Novosibirsk?format=j1",
   "https://wttr.is/Novosibirsk?format=j1"
 ];
-const AIR_API_URL = "https://air-quality-api.open-meteo.com/v1/air-quality";
 const WEATHER_REFRESH_MS = 30 * 60 * 1000;
 const WEATHER_CACHE_KEY = "sever-weather-cache-v1";
 const LOCATION = { latitude: 55.0084, longitude: 82.9357, timezone: "Asia/Novosibirsk" };
@@ -11,8 +10,6 @@ let requestInFlight = false;
 let hasLoadedWeather = false;
 let lastSuccessfulUpdate = null;
 let lastWeatherFetchAt = 0;
-let airRequestInFlight = false;
-let lastAirQualityFetchAt = 0;
 let latestWeatherCode = null;
 let latestDailyWeather = null;
 
@@ -415,61 +412,7 @@ function refreshWhenPageReturns() {
   const now = Date.now();
   // Mobile browsers throttle timers while a tab is in the background. Refresh stale data on return.
   if (now - lastWeatherFetchAt >= WEATHER_REFRESH_MS) loadWeather();
-  if (now - lastAirQualityFetchAt >= WEATHER_REFRESH_MS) loadAirQuality();
 }
 
 document.addEventListener("visibilitychange", refreshWhenPageReturns);
 window.addEventListener("pageshow", refreshWhenPageReturns);
-
-const aqiDescription = (value) => {
-  if (!Number.isFinite(value)) return "Индекс недоступен";
-  if (value <= 20) return "Хорошее качество воздуха";
-  if (value <= 40) return "Удовлетворительное качество";
-  if (value <= 60) return "Умеренное загрязнение";
-  if (value <= 80) return "Плохое качество воздуха";
-  if (value <= 100) return "Очень плохое качество";
-  return "Чрезвычайно плохое качество";
-};
-
-async function loadAirQuality() {
-  if (airRequestInFlight) return;
-  airRequestInFlight = true;
-  const params = new URLSearchParams({
-    latitude: LOCATION.latitude,
-    longitude: LOCATION.longitude,
-    timezone: LOCATION.timezone,
-    current: "european_aqi",
-    hourly: "european_aqi",
-    forecast_hours: 24
-  });
-  const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 12000);
-  try {
-    const response = await fetch(`${AIR_API_URL}?${params}`, { cache: "no-store", signal: controller.signal });
-    if (!response.ok) throw new Error(`Air quality API returned ${response.status}`);
-    const data = await response.json();
-    const current = data.current;
-    if (!current || typeof current.time !== "string" ||
-        !Number.isFinite(current.european_aqi)) {
-      throw new Error("Air quality response is incomplete");
-    }
-    lastAirQualityFetchAt = Date.now();
-    const aqi = current.european_aqi;
-    setMetric("airAqi", number(aqi), "airAqiBar", Math.min(100, aqi));
-    $("airAqiLabel").textContent = aqiDescription(aqi);
-    $("airUpdatedAt").textContent = `Модельные данные на ${timeOnly(current.time)} · Open-Meteo / CAMS`;
-    $("airError").hidden = true;
-  } catch (error) {
-    console.error("Не удалось обновить качество воздуха:", error);
-    $("airError").hidden = false;
-    $("airError").textContent = "Не удалось получить свежие данные о качестве воздуха. Повторим попытку через 30 минут.";
-    if ($("airAqi").textContent.trim() === "—") $("airAqiLabel").textContent = "Данные временно недоступны";
-  } finally {
-    window.clearTimeout(timeout);
-    airRequestInFlight = false;
-  }
-}
-
-loadAirQuality();
-window.setInterval(loadAirQuality, WEATHER_REFRESH_MS);
-
