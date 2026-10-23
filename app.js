@@ -118,9 +118,7 @@ function renderActualNightSky(){
  }
  const ns="http://www.w3.org/2000/svg", svg=document.createElementNS(ns,"svg");
  svg.setAttribute("viewBox","0 0 1000 530");svg.setAttribute("preserveAspectRatio","none");svg.setAttribute("aria-hidden","true");
- const lines=document.createElementNS(ns,"g");lines.setAttribute("class","constellation");
- for(const group of SKY_LINES)for(const [a,b] of group){if(!points[a]||!points[b])continue;let dx=points[a].x-points[b].x;if(Math.abs(dx)>50)continue;const line=document.createElementNS(ns,"line");line.setAttribute("x1",points[a].x*10);line.setAttribute("y1",points[a].y*5.3);line.setAttribute("x2",points[b].x*10);line.setAttribute("y2",points[b].y*5.3);lines.append(line)}
- svg.append(lines);
+ // Stars only; constellation connector lines intentionally removed.
  for(const [name,p] of Object.entries(points)){const c=document.createElementNS(ns,"circle");c.setAttribute("class","star");c.setAttribute("cx",p.x*10);c.setAttribute("cy",p.y*5.3);c.setAttribute("r",Math.max(.7,2.05-p.mag*.48));c.setAttribute("opacity",String(Math.max(.38,1-p.mag*.19)));c.setAttribute("data-star",name);svg.append(c)}
  host.replaceChildren(svg);
 }
