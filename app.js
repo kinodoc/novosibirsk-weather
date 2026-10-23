@@ -432,7 +432,7 @@ function refreshWhenPageReturns() {
   const now = Date.now();
   // Mobile browsers throttle timers while a tab is in the background. Refresh stale data on return.
   if (now - lastWeatherFetchAt >= WEATHER_REFRESH_MS) loadWeather();
-  if (now - lastAirQualityFetchAt >= 5 * 60 * 1000) loadAirQuality();
+  if (now - lastAirQualityFetchAt >= WEATHER_REFRESH_MS) loadAirQuality();
 }
 
 document.addEventListener("visibilitychange", refreshWhenPageReturns);
@@ -479,7 +479,7 @@ async function loadAirQuality() {
   } catch (error) {
     console.error("Не удалось обновить качество воздуха:", error);
     $("airError").hidden = false;
-    $("airError").textContent = "Не удалось получить свежие данные о качестве воздуха. Повторим попытку через 10 минут.";
+    $("airError").textContent = "Не удалось получить свежие данные о качестве воздуха. Повторим попытку через 30 минут.";
     if ($("airAqi").textContent.trim() === "—") $("airAqiLabel").textContent = "Данные временно недоступны";
   } finally {
     window.clearTimeout(timeout);
