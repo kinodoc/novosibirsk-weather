@@ -220,3 +220,7 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .cityline{background-image:linear-gradient(0deg,rgba(6,15,29,.12),transparent 48%),url("./cityscape.svg");background-position:center bottom;background-size:cover;mask-image:none;-webkit-mask-image:none}
 .hero.time-night .cityline{filter:brightness(.78) saturate(.78)}
 @media(max-width:760px){.cityline{background-position:center bottom;background-size:auto 100%;mask-image:none;-webkit-mask-image:none}}
+
+/* The small night icon uses the same calculated lunar phase as the hero moon. */
+.weather-moon-icon{display:block;width:47px;height:47px;filter:drop-shadow(0 5px 16px rgba(255,255,255,.15))}
+@media(max-width:760px){.weather-moon-icon{width:38px;height:38px}}
