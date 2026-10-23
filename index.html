@@ -37,7 +37,28 @@
 <body>
   <main class="app-shell">
     <section class="hero weather-clear" id="hero" aria-label="Погода в Новосибирске">
-      <div class="hero-sky" aria-hidden="true"><span class="sun-glow"></span><span class="sun-disc"></span><span class="sky-stars" id="skyStars"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span><span class="weather-haze"></span></div>
+      <div class="hero-sky" aria-hidden="true"><span class="sun-glow"></span><span class="sun-disc"></span>
+        <svg class="moon-disc" id="moonDisc" viewBox="0 0 64 64" role="img" aria-label="Фаза Луны" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="moonClip"><circle cx="32" cy="32" r="29"/></clipPath>
+          <radialGradient id="moonSurface" cx="32%" cy="27%" r="76%">
+            <stop offset="0%" stop-color="#fffdf2"/>
+            <stop offset="62%" stop-color="#e2e8ef"/>
+            <stop offset="100%" stop-color="#aebdce"/>
+          </radialGradient>
+        </defs>
+        <g clip-path="url(#moonClip)">
+          <circle cx="32" cy="32" r="29" fill="url(#moonSurface)"/>
+          <g fill="#8495a8" opacity=".23">
+            <circle cx="20" cy="20" r="4.5"/><circle cx="42" cy="17" r="2.6"/>
+            <circle cx="44" cy="37" r="6"/><circle cx="24" cy="43" r="3.2"/>
+            <circle cx="15" cy="33" r="1.8"/><circle cx="33" cy="28" r="2.2"/>
+            <circle cx="34" cy="51" r="1.7"/><circle cx="51" cy="25" r="1.4"/>
+          </g>
+          <circle id="moonShadow" cx="32" cy="32" r="29" fill="#172b49"/>
+        </g>
+        <circle cx="32" cy="32" r="29" fill="none" stroke="#e8f1ff" stroke-opacity=".5" stroke-width="1"/>
+      </svg><span class="sky-stars" id="skyStars"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span><span class="weather-haze"></span></div>
       <div class="cityline" aria-hidden="true"><span class="tower"></span><span class="building b1"></span><span class="building b2"></span><span class="building b3"></span><span class="bridge"></span></div>
       <header class="topbar">
         <div class="live-pill"><span class="live-dot is-loading"></span><span id="statusText">Загружаем погоду</span></div>
