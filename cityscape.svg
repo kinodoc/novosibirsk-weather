@@ -1,76 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMax slice">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 620" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Силуэт Новосибирска: Оперный театр, мост через Обь и городские здания">
 <defs>
- <linearGradient id="stone" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a8bfcc"/><stop offset="1" stop-color="#40586b"/></linearGradient>
- <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#7396ab"/><stop offset="1" stop-color="#203a50"/></linearGradient>
- <linearGradient id="river" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#527c96" stop-opacity=".88"/><stop offset=".35" stop-color="#244c68" stop-opacity=".95"/><stop offset="1" stop-color="#081b30"/></linearGradient>
- <linearGradient id="bank" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#263f55"/><stop offset="1" stop-color="#0b1c2e"/></linearGradient>
- <pattern id="warmWindows" width="24" height="25" patternUnits="userSpaceOnUse"><rect x="7" y="7" width="5" height="8" rx="1" fill="#ffd38a" opacity=".55"/></pattern>
- <pattern id="coolWindows" width="27" height="28" patternUnits="userSpaceOnUse"><rect x="7" y="7" width="7" height="10" rx="1" fill="#b9e5f5" opacity=".35"/></pattern>
+ <linearGradient id="skyline" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#7697b3" stop-opacity=".72"/><stop offset="1" stop-color="#243b58" stop-opacity=".96"/></linearGradient>
+ <linearGradient id="river" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#75a9c7" stop-opacity=".46"/><stop offset="1" stop-color="#1c3552" stop-opacity=".12"/></linearGradient>
+ <linearGradient id="bridge" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e0c99d"/><stop offset="1" stop-color="#7e9eb1"/></linearGradient>
+ <g id="windows" fill="#d5e6ef" opacity=".38"><path d="M0 0h8v22H0zM20 0h8v22h-8zM40 0h8v22h-8zM60 0h8v22h-8z"/></g>
 </defs>
-<!-- distant low-rise Novosibirsk skyline -->
-<path d="M0 306h60v-32h48v32h35v-53h60v53h40v-36h48v36h40v-62h57v62h38v-39h50v39h30v-49h55v49h44v-34h45v34h40v-54h54v54h45v-31h48v31h44v-46h54v46h45v-34h51v34h48v-42h55v42h49v-29h47v194H0Z" fill="#172e43" opacity=".9"/>
-<!-- left bank: varied historic and residential blocks, not repeated towers -->
-<g stroke="#8faebe" stroke-opacity=".32" stroke-width="2">
- <path d="M0 365V282h72v-24h36v107Z" fill="url(#stone)"/>
- <path d="M111 365V293h46v-17h44v89Z" fill="url(#glass)"/>
- <path d="M205 365V270h75v95Z" fill="url(#stone)"/>
- <path d="M288 365V303h42v-28h44v90Z" fill="url(#glass)"/>
- <path d="M378 365V286h68v79Z" fill="url(#stone)"/>
- <path d="M453 365V300h50v-22h47v87Z" fill="url(#glass)"/>
+<!-- distant urban silhouette -->
+<g fill="url(#skyline)" opacity=".7">
+ <path d="M0 430V300h72v-45h55v175h44V330h70v100h42V280h67v150h40V345h78v85h36V305h65v125h48V350h80v80h38V290h74v140h42V330h90v100h38V270h68v160h48V320h95v110h35V300h70v130h42V345h72v85h48V315h78v115h40V285h67v145h35V340h73v90h25v190H0z"/>
 </g>
-<g fill="url(#warmWindows)" opacity=".5">
- <path d="M0 258h108v107H0z"/><path d="M111 276h90v89h-90z"/><path d="M205 270h75v95h-75z"/><path d="M288 275h86v90h-86z"/><path d="M378 286h68v79h-68z"/><path d="M453 278h97v87h-97z"/>
+<!-- signature Opera House dome and colonnade -->
+<g transform="translate(475 0)">
+ <path d="M0 455V410h35v-28h26v28h25v-43h22v-28h16v-30h12v-24h12v24h12v30h16v28h22v43h27v-28h25v28h35v45z" fill="#d6e1e6" opacity=".9"/>
+ <path d="M90 340a58 58 0 0 1 116 0z" fill="#d6e1e6" opacity=".88"/>
+ <path d="M82 410h132M72 429h151M102 372v38m20-38v38m20-38v38m20-38v38m20-38v38" stroke="#526d85" stroke-width="5" opacity=".8"/>
+ <path d="M134 284h28v-23h-28zM140 250h16v11h-16z" fill="#d6e1e6"/>
 </g>
-<!-- NOVAT: broad circular dome, drum, monumental twelve-column portico and long wings -->
-<g transform="translate(590 0)">
- <path d="M-184 366V304Q-184 295-171 295H171Q184 295 184 304V366Z" fill="#344f64" stroke="#b4c9d4" stroke-opacity=".5" stroke-width="3"/>
- <path d="M-198 301L-175 282H175L198 301Z" fill="#b1c6d1" stroke="#d7e4e9" stroke-opacity=".48" stroke-width="2"/>
- <path d="M-154 281V251H154V281Z" fill="#647f91" stroke="#c4d6df" stroke-opacity=".48" stroke-width="2"/>
- <!-- dome, recognisable wide and low -->
- <path d="M-151 251C-144 204-105 166-58 150C-37 142-17 138 0 138C17 138 37 142 58 150C105 166 144 204 151 251Z" fill="url(#stone)" stroke="#d3e0e7" stroke-opacity=".7" stroke-width="3"/>
- <path d="M-128 247C-111 203-69 173 0 163C69 173 111 203 128 247" fill="none" stroke="#e0e9ed" stroke-opacity=".35" stroke-width="3"/>
- <path d="M-164 251H164" stroke="#d7e3e9" stroke-opacity=".72" stroke-width="5"/>
- <!-- central drum windows -->
- <g fill="#1c354a" stroke="#b9cbd5" stroke-opacity=".5" stroke-width="2">
-  <path d="M-130 261v17h14v-17zM-99 261v17h14v-17zM-68 261v17h14v-17zM-37 261v17h14v-17zM-7 261v17h14v-17zM24 261v17h14v-17zM55 261v17h14v-17zM86 261v17h14v-17zM117 261v17h14v-17z"/>
- </g>
- <!-- portico roof and twelve strong columns -->
- <path d="M-180 296L-159 283H159L180 296Z" fill="#c2d2da" stroke="#e2ebef" stroke-opacity=".45" stroke-width="2"/>
- <path d="M-167 302H167" stroke="#d6e2e8" stroke-opacity=".6" stroke-width="4"/>
- <g fill="url(#stone)" stroke="#d4e0e6" stroke-opacity=".58" stroke-width="1.5">
-  <path d="M-153 306h14v53h-14zM-125 306h14v53h-14zM-97 306h14v53h-14zM-69 306h14v53h-14zM-41 306h14v53h-14zM-13 306h14v53h-14zM15 306h14v53h-14zM43 306h14v53h-14zM71 306h14v53h-14zM99 306h14v53h-14zM127 306h14v53h-14zM155 306h14v53h-14z"/>
- </g>
- <path d="M-183 360H183V369H-183Z" fill="#8da6b5"/>
- <g fill="#1b3348"><path d="M-176 324h14v24h-14zM-109 324h14v24h-14zM-53 324h14v24h-14zM13 324h14v24H13zM69 324h14v24H69zM136 324h14v24h-14z"/></g>
- <!-- long low side wings -->
- <path d="M-320 366V325H-190V366Z M190 366V325H320V366Z" fill="#405c70" stroke="#a7bdca" stroke-opacity=".42" stroke-width="2"/>
- <g fill="#1a3449" stroke="#a7bdca" stroke-opacity=".3">
-  <path d="M-305 333h18v23h-18zM-274 333h18v23h-18zM-243 333h18v23h-18zM-212 333h18v23h-18zM202 333h18v23h-18zM233 333h18v23h-18zM264 333h18v23h-18zM295 333h18v23h-18z"/>
- </g>
+<!-- recognizable cable-stayed bridge over the Ob -->
+<g>
+ <path d="M0 478Q170 460 310 474T620 472T930 476T1200 468T1440 474V620H0Z" fill="url(#river)"/>
+ <path d="M0 492Q200 480 400 490T800 488T1200 487T1440 490" fill="none" stroke="#b2d1e1" stroke-opacity=".24" stroke-width="3"/>
+ <path d="M80 475L1360 475" stroke="url(#bridge)" stroke-width="12" fill="none"/>
+ <path d="M210 475L245 270L280 475M1110 475L1148 260L1186 475" fill="none" stroke="#d9e5e9" stroke-width="13" stroke-linejoin="round"/>
+ <path d="M245 278L80 466M245 278L170 466M245 278L330 466M245 278L405 466M245 278L480 466M1148 268L900 466M1148 268L980 466M1148 268L1060 466M1148 268L1240 466M1148 268L1320 466M1148 268L1400 466" fill="none" stroke="#b8d0dc" stroke-width="3" stroke-opacity=".86"/>
+ <path d="M0 488H1440" stroke="#e5d8bd" stroke-width="5" opacity=".7"/>
 </g>
-<!-- right-bank buildings with distinct rooflines -->
-<g stroke="#8daec0" stroke-opacity=".35" stroke-width="2">
- <path d="M805 366V288h56v-25h55v103Z" fill="url(#glass)"/>
- <path d="M920 366V245h86v121Z" fill="url(#stone)"/>
- <path d="M1011 366V290l42-23 42 23v76Z" fill="url(#glass)"/>
- <path d="M1103 366V274h65v92Z" fill="url(#stone)"/>
- <path d="M1173 366V310h27v56Z" fill="url(#glass)"/>
-</g>
-<g fill="url(#coolWindows)" opacity=".6">
- <path d="M805 263h111v103H805z"/><path d="M920 245h86v121h-86z"/><path d="M1011 267h84v99h-84z"/><path d="M1103 274h65v92h-65z"/>
-</g>
-<!-- Ob river is a major foreground element, with broad reflections -->
-<path d="M0 375Q185 358 365 375T730 372T1200 365V500H0Z" fill="url(#river)"/>
-<path d="M0 378Q185 361 365 378T730 375T1200 368" fill="none" stroke="#b6d5e3" stroke-opacity=".7" stroke-width="3"/>
-<g fill="none" stroke-linecap="round">
- <path d="M35 397h174M280 408h130M472 393h103M642 414h220M916 395h156M1090 424h72" stroke="#a4d4e9" stroke-opacity=".42" stroke-width="3"/>
- <path d="M94 435h96M246 449h188M520 434h126M716 454h157M950 441h130M1088 464h64" stroke="#6aa9c8" stroke-opacity=".36" stroke-width="2"/>
- <path d="M20 474h205M320 480h110M563 467h180M826 483h127M1000 472h160" stroke="#7ab4d0" stroke-opacity=".28" stroke-width="2"/>
-</g>
-<!-- Bugrinsky Bridge: broad cable-stayed span with one red-arch silhouette -->
-<path d="M0 367Q220 348 410 362T800 359T1200 350" fill="none" stroke="#0b1e31" stroke-width="13"/>
-<path d="M0 361Q220 342 410 356T800 353T1200 344" fill="none" stroke="#9cb9ca" stroke-opacity=".72" stroke-width="3"/>
-<path d="M410 354C425 298 474 273 520 278C566 283 596 321 608 356" fill="none" stroke="#c17b78" stroke-opacity=".8" stroke-width="7"/>
-<path d="M430 354L450 312M458 354L472 294M486 354L493 286M514 354L515 286M542 354L539 293M570 354L559 307M598 354L578 328" stroke="#b7c8d2" stroke-opacity=".55" stroke-width="2"/>
-<path d="M0 500V480Q220 453 430 479T840 477T1200 466V500Z" fill="url(#bank)"/>
+<!-- foreground embankment -->
+<path d="M0 522Q240 508 480 524T960 522T1440 518V620H0Z" fill="#152a43" opacity=".82"/>
+<g fill="#172d46"><path d="M55 522v-44h15v44m15 0v-60h12v60m25 0v-37h16v37m1100 0v-50h15v50m24 0v-62h13v62m28 0v-40h17v40"/></g>
 </svg>
