@@ -1,6 +1,5 @@
 const WEATHER_API_URLS = [
-  "https://wttr.in/Novosibirsk?format=j1",
-  "https://wttr.is/Novosibirsk?format=j1"
+  "https://api.open-meteo.com/v1/forecast?latitude=55.0084&longitude=82.9357&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max,precipitation_sum&timezone=Asia%2FNovosibirsk&forecast_days=3&wind_speed_unit=ms"
 ];
 const WEATHER_REFRESH_MS = 30 * 60 * 1000;
 const WEATHER_CACHE_KEY = "sever-weather-cache-v1";
@@ -318,6 +317,50 @@ function wttrToForecast(source) {
   return { current: current, hourly: hourly, daily: daily };
 }
 
+function openMeteoToForecast(source) {
+  const current = source.current;
+  const hourly = source.hourly;
+  const daily = source.daily;
+  if (!current || !hourly || !daily ||
+      !Array.isArray(hourly.time) || !Array.isArray(daily.time) ||
+      daily.time.length < 3) {
+    throw new Error("Open-Meteo returned an incomplete forecast");
+  }
+  return {
+    current: {
+      time: current.time,
+      temperature_2m: current.temperature_2m,
+      apparent_temperature: current.apparent_temperature,
+      relative_humidity_2m: current.relative_humidity_2m,
+      precipitation: current.precipitation,
+      weather_code: current.weather_code,
+      pressure_msl: current.pressure_msl,
+      wind_speed_10m: current.wind_speed_10m,
+      wind_direction_10m: current.wind_direction_10m,
+      wind_gusts_10m: current.wind_gusts_10m
+    },
+    hourly: {
+      time: hourly.time,
+      temperature_2m: hourly.temperature_2m,
+      precipitation_probability: hourly.precipitation_probability,
+      precipitation: hourly.precipitation,
+      weather_code: hourly.weather_code,
+      wind_speed_10m: hourly.wind_speed_10m
+    },
+    daily: {
+      time: daily.time,
+      weather_code: daily.weather_code,
+      temperature_2m_max: daily.temperature_2m_max,
+      temperature_2m_min: daily.temperature_2m_min,
+      sunrise: daily.sunrise,
+      sunset: daily.sunset,
+      uv_index_max: daily.uv_index_max,
+      precipitation_probability_max: daily.precipitation_probability_max,
+      precipitation_sum: daily.precipitation_sum
+    }
+  };
+}
+
 function renderWeatherForecast(data, cached = false) {
   const hourly = data.hourly;
   const daily = data.daily;
@@ -377,7 +420,7 @@ async function loadWeather() {
     }
     if (!sourceData) throw lastError || new Error("Weather services are unavailable");
 
-    const forecast = wttrToForecast(sourceData);
+    const forecast = openMeteoToForecast(sourceData);
     renderWeatherForecast(forecast, false);
     try {
       localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ savedAt: Date.now(), data: forecast }));
