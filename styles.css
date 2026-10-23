@@ -115,7 +115,7 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .sun-disc{position:absolute;z-index:0;left:var(--sun-x);top:var(--sun-y);width:clamp(34px,5vw,58px);height:clamp(34px,5vw,58px);transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8d7,#ffd28a 62%,#f4a96e);box-shadow:0 0 35px 10px rgba(255,202,132,.2);opacity:1;transition:left 1.5s ease,top 1.5s ease,opacity 1s ease}
 .moon-disc{position:absolute;z-index:0;left:var(--sun-x);top:var(--sun-y);width:42px;height:42px;transform:translate(-50%,-50%);border-radius:50%;background:#e0eaf8;box-shadow:0 0 30px rgba(203,225,255,.25);opacity:0;transition:left 1.5s ease,top 1.5s ease,opacity 1s ease}
 .moon-disc:after{content:"";position:absolute;left:12px;top:-4px;width:38px;height:38px;border-radius:50%;background:var(--moon-cutout,#243d58);transition:background 1.5s ease}
-.sky-stars{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity 1.5s ease;background-image:radial-gradient(1.5px 1.5px at 12% 18%,#fff 55%,transparent 70%),radial-gradient(1px 1px at 29% 11%,#fff 55%,transparent 70%),radial-gradient(1.5px 1.5px at 45% 24%,#fff 55%,transparent 70%),radial-gradient(1px 1px at 61% 12%,#fff 55%,transparent 70%),radial-gradient(1.5px 1.5px at 83% 21%,#fff 55%,transparent 70%),radial-gradient(1px 1px at 91% 9%,#fff 55%,transparent 70%)}
+.sky-stars{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity 1.5s ease;background-image:radial-gradient(1.4px 1.4px at 7% 17%,#fff 55%,transparent 75%),radial-gradient(1px 1px at 13% 31%,#e8f5ff 55%,transparent 75%),radial-gradient(1.5px 1.5px at 19% 12%,#fff 55%,transparent 75%),radial-gradient(1px 1px at 26% 22%,#fff 55%,transparent 75%),radial-gradient(1.4px 1.4px at 32% 8%,#eaf6ff 55%,transparent 75%),radial-gradient(1px 1px at 38% 29%,#fff 55%,transparent 75%),radial-gradient(1.5px 1.5px at 44% 15%,#fff 55%,transparent 75%),radial-gradient(1px 1px at 51% 7%,#eaf6ff 55%,transparent 75%),radial-gradient(1.4px 1.4px at 57% 24%,#fff 55%,transparent 75%),radial-gradient(1px 1px at 64% 13%,#fff 55%,transparent 75%),radial-gradient(1.5px 1.5px at 70% 31%,#eaf6ff 55%,transparent 75%),radial-gradient(1px 1px at 77% 10%,#fff 55%,transparent 75%),radial-gradient(1.4px 1.4px at 84% 20%,#fff 55%,transparent 75%),radial-gradient(1px 1px at 91% 8%,#eaf6ff 55%,transparent 75%),radial-gradient(1.5px 1.5px at 96% 28%,#fff 55%,transparent 75%)}
 .weather-haze{position:absolute;inset:15% -10% 0;z-index:0;opacity:0;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(224,232,235,.35),transparent);filter:blur(14px);transition:opacity 1.5s ease}
 .cloud{z-index:1;animation:cloud-drift 48s ease-in-out infinite alternate}
 .cloud-two{animation-duration:62s;animation-direction:alternate-reverse}
@@ -147,7 +147,13 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 @media(max-width:760px){.sun-disc{width:39px;height:39px}.moon-disc{width:31px;height:31px}.moon-disc:after{left:9px;top:-3px;width:28px;height:28px}.cityline{background-position:54% center}}
 @media(prefers-reduced-motion:reduce){.cloud{animation:none}}
 
-.hero.time-night .cityline:after{content:"";position:absolute;inset:18% 0 28%;opacity:.58;pointer-events:none;background-image:radial-gradient(2px 3px at 65% 58%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 72% 68%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 78% 48%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 83% 62%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 88% 44%,#ffe4a0 55%,transparent 75%),radial-gradient(2px 3px at 94% 70%,#ffe4a0 55%,transparent 75%);filter:drop-shadow(0 0 5px rgba(255,210,130,.7));mix-blend-mode:screen}
+/* Night-only window glow. It fades away with the night class at dawn. */
+.cityline:after{content:"";position:absolute;inset:27% 0 29%;opacity:0;pointer-events:none;transition:opacity 1.5s ease;background-image:
+ repeating-linear-gradient(0deg,transparent 0 11px,rgba(255,205,112,.85) 11px 15px,transparent 15px 23px),
+ repeating-linear-gradient(90deg,transparent 0 12px,rgba(255,220,150,.78) 12px 17px,transparent 17px 27px);
+ background-size:27px 23px;mask-image:linear-gradient(90deg,transparent 0 48%,#000 55% 100%);-webkit-mask-image:linear-gradient(90deg,transparent 0 48%,#000 55% 100%);mix-blend-mode:screen;filter:drop-shadow(0 0 4px rgba(255,205,112,.4))}
+.hero.time-night .sky-stars{opacity:.96}
+.hero.time-night .cityline:after{opacity:.27}
 
 
 
