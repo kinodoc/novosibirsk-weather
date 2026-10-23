@@ -161,7 +161,7 @@ function updateAtmosphere() {
   const cutout = phase === "night" ? "#172b49" : phase === "dawn" || phase === "evening" ? "#bd8490" : "#39749a";
   hero.style.setProperty("--moon-cutout", cutout);
   const info = weatherInfo(latestWeatherCode);
-  if (!(phase === "night" && info.theme === "clear")) $("weatherSymbol").textContent = info.icon;
+  $("weatherSymbol").textContent = phase === "night" && info.theme === "clear" ? "✦" : info.icon;
 }
 
 function updateHero(current, daily) {
@@ -602,41 +602,6 @@ const NOVOSIBIRSK_ECLIPSES = {
     { date: "2035-09-02", type: "Частное солнечное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" }
   ]
 };
-
-function moonPhaseAt(date = new Date()) {
-  const age = ((date.getTime() - KNOWN_NEW_MOON_UTC) / 86400000 % LUNAR_MONTH_DAYS + LUNAR_MONTH_DAYS) % LUNAR_MONTH_DAYS;
-  const fraction = age / LUNAR_MONTH_DAYS;
-  const illumination = (1 - Math.cos(2 * Math.PI * fraction)) / 2;
-  let name;
-  if (fraction < 0.035 || fraction >= 0.965) name = "Новолуние";
-  else if (fraction < 0.215) name = "Растущий серп";
-  else if (fraction < 0.285) name = "Первая четверть";
-  else if (fraction < 0.465) name = "Растущая Луна";
-  else if (fraction < 0.535) name = "Полнолуние";
-  else if (fraction < 0.715) name = "Убывающая Луна";
-  else if (fraction < 0.785) name = "Последняя четверть";
-  else name = "Убывающий серп";
-  return { fraction, illumination, waxing: fraction < 0.5, name };
-}
-
-function updateMoonPhase() {
-  const moon = $("moonDisc");
-  const shadow = $("moonShadow");
-  if (!moon || !shadow) return;
-  const phase = moonPhaseAt();
-  const radius = 29;
-  const offset = 2 * radius * phase.illumination;
-  const shadowX = 32 + (phase.waxing ? -offset : offset);
-  shadow.setAttribute("cx", String(shadowX));
-  moon.setAttribute("aria-label", `${phase.name}; освещено ${Math.round(phase.illumination * 100)} процентов`);
-  moon.setAttribute("title", `${phase.name} · ${Math.round(phase.illumination * 100)}% освещённости`);
-  const hero = $("hero");
-  const weatherSymbol = $("weatherSymbol");
-  if (hero && weatherSymbol && hero.classList.contains("time-night") && hero.classList.contains("weather-clear")) {
-    const smallShadowX = 32 + (phase.waxing ? -offset : offset);
-    weatherSymbol.innerHTML = `<svg class="weather-moon-icon" viewBox="0 0 64 64" role="img" aria-label="${phase.name}" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="smallMoonSurface" cx="32%" cy="27%" r="76%"><stop offset="0%" stop-color="#fffdf2"/><stop offset="62%" stop-color="#e2e8ef"/><stop offset="100%" stop-color="#aebdce"/></radialGradient></defs><circle cx="32" cy="32" r="29" fill="url(#smallMoonSurface)"/><circle cx="${smallShadowX}" cy="32" r="29" fill="#172b49"/><circle cx="32" cy="32" r="29" fill="none" stroke="#e8f1ff" stroke-opacity=".5" stroke-width="1"/></svg>`;
-  }
-}
 
 function formatEclipseDate(dateString) {
   const date = new Date(`${dateString}T12:00:00+07:00`);
