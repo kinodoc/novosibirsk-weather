@@ -533,3 +533,94 @@ async function loadAirQuality() {
 loadCachedAirQuality();
 loadAirQuality();
 window.setInterval(loadAirQuality, AIR_QUALITY_REFRESH_MS);
+
+
+/* Moon phase is calculated locally; eclipse dates are precomputed for Novosibirsk. */
+const LUNAR_MONTH_DAYS = 29.530588853;
+const KNOWN_NEW_MOON_UTC = Date.UTC(2000, 0, 6, 18, 14);
+const NOVOSIBIRSK_ECLIPSES = {
+  lunar: [
+    { at: "2027-02-21T06:12:44+07:00", date: "2027-02-21", type: "Полутеневое лунное затмение", time: "06:12", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
+    { at: "2027-07-18T23:02:55+07:00", date: "2027-07-18", type: "Полутеневое лунное затмение", time: "23:02", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
+    { at: "2028-07-07T01:19:38+07:00", date: "2028-07-07", type: "Частное лунное затмение", time: "01:19", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
+    { at: "2028-12-31T23:51:55+07:00", date: "2028-12-31", type: "Полное лунное затмение", time: "23:51", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
+    { at: "2029-12-21T05:41:55+07:00", date: "2029-12-21", type: "Полное лунное затмение", time: "05:41", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
+    { at: "2030-06-15T01:00:00+07:00", date: "2030-06-15", type: "Частное лунное затмение", time: null, detail: "Время уточняется", visibility: "Видимость подтверждена для Новосибирска" }
+  ],
+  solar: [
+    { at: "2030-06-01T13:32:00+07:00", date: "2030-06-01", type: "Частное солнечное затмение", time: "13:32", detail: "Максимум затмения", visibility: "Видно в Новосибирске" },
+    { at: "2032-11-03T12:00:00+07:00", date: "2032-11-03", type: "Частное солнечное затмение", time: null, detail: "Местное время уточняется", visibility: "Видимость указана в каталоге затмений" },
+    { at: "2034-03-20T12:00:00+07:00", date: "2034-03-20", type: "Частное солнечное затмение", time: null, detail: "Местное время уточняется", visibility: "Видимость указана в каталоге затмений" },
+    { at: "2035-09-02T12:00:00+07:00", date: "2035-09-02", type: "Частное солнечное затмение", time: null, detail: "Местное время уточняется", visibility: "Видимость указана в каталоге затмений" }
+  ]
+};
+
+function moonPhaseAt(date = new Date()) {
+  const age = ((date.getTime() - KNOWN_NEW_MOON_UTC) / 86400000 % LUNAR_MONTH_DAYS + LUNAR_MONTH_DAYS) % LUNAR_MONTH_DAYS;
+  const fraction = age / LUNAR_MONTH_DAYS;
+  const illumination = (1 - Math.cos(2 * Math.PI * fraction)) / 2;
+  let name;
+  if (fraction < 0.035 || fraction >= 0.965) name = "Новолуние";
+  else if (fraction < 0.215) name = "Растущий серп";
+  else if (fraction < 0.285) name = "Первая четверть";
+  else if (fraction < 0.465) name = "Растущая Луна";
+  else if (fraction < 0.535) name = "Полнолуние";
+  else if (fraction < 0.715) name = "Убывающая Луна";
+  else if (fraction < 0.785) name = "Последняя четверть";
+  else name = "Убывающий серп";
+  return { fraction, illumination, waxing: fraction < 0.5, name };
+}
+
+function updateMoonPhase() {
+  const moon = $("moonDisc");
+  const shadow = $("moonShadow");
+  if (!moon || !shadow) return;
+  const phase = moonPhaseAt();
+  const radius = 29;
+  const offset = 2 * radius * phase.illumination;
+  const shadowX = 32 + (phase.waxing ? -offset : offset);
+  shadow.setAttribute("cx", String(shadowX));
+  moon.setAttribute("aria-label", `${phase.name}; освещено ${Math.round(phase.illumination * 100)} процентов`);
+  moon.setAttribute("title", `${phase.name} · ${Math.round(phase.illumination * 100)}% освещённости`);
+}
+
+function formatEclipseDate(dateString) {
+  const date = new Date(`${dateString}T12:00:00+07:00`);
+  return new Intl.DateTimeFormat("ru-RU", {
+    day: "numeric", month: "long", year: "numeric", timeZone: LOCATION.timezone
+  }).format(date);
+}
+
+function renderNextEclipse(kind, ids) {
+  const events = NOVOSIBIRSK_ECLIPSES[kind];
+  const next = events.find((event) => Date.parse(event.at) > Date.now());
+  if (!next) {
+    $(ids.title).textContent = "Дата следующего события уточняется";
+    $(ids.details).textContent = "Список событий будет дополнен.";
+    $(ids.visibility).textContent = "Новосибирск";
+    return;
+  }
+  $(ids.title).textContent = formatEclipseDate(next.date);
+  $(ids.details).textContent = next.time
+    ? `${next.type}. ${next.detail}: ${next.time} по местному времени.`
+    : `${next.type}. ${next.detail}.`;
+  $(ids.visibility).textContent = next.visibility;
+}
+
+function updateEclipses() {
+  renderNextEclipse("lunar", {
+    title: "lunarEclipseTitle",
+    details: "lunarEclipseDetails",
+    visibility: "lunarEclipseVisibility"
+  });
+  renderNextEclipse("solar", {
+    title: "solarEclipseTitle",
+    details: "solarEclipseDetails",
+    visibility: "solarEclipseVisibility"
+  });
+}
+
+updateMoonPhase();
+updateEclipses();
+window.setInterval(updateMoonPhase, 60 * 60 * 1000);
+window.setInterval(updateEclipses, 60 * 60 * 1000);
