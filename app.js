@@ -603,6 +603,36 @@ const NOVOSIBIRSK_ECLIPSES = {
   ]
 };
 
+function moonPhaseAt(date = new Date()) {
+  const age = ((date.getTime() - KNOWN_NEW_MOON_UTC) / 86400000 % LUNAR_MONTH_DAYS + LUNAR_MONTH_DAYS) % LUNAR_MONTH_DAYS;
+  const fraction = age / LUNAR_MONTH_DAYS;
+  const illumination = (1 - Math.cos(2 * Math.PI * fraction)) / 2;
+  let name;
+  if (fraction < 0.035 || fraction >= 0.965) name = "Новолуние";
+  else if (fraction < 0.215) name = "Растущий серп";
+  else if (fraction < 0.285) name = "Первая четверть";
+  else if (fraction < 0.465) name = "Растущая Луна";
+  else if (fraction < 0.535) name = "Полнолуние";
+  else if (fraction < 0.715) name = "Убывающая Луна";
+  else if (fraction < 0.785) name = "Последняя четверть";
+  else name = "Убывающий серп";
+  return { fraction, illumination, waxing: fraction < 0.5, name };
+}
+
+function updateMoonPhase() {
+  const moon = $("moonDisc");
+  const shadow = $("moonShadow");
+  if (!moon || !shadow) return;
+  const phase = moonPhaseAt();
+  const radius = 29;
+  const offset = 2 * radius * phase.illumination;
+  const shadowX = 32 + (phase.waxing ? -offset : offset);
+  shadow.setAttribute("cx", String(shadowX));
+  moon.setAttribute("aria-label", `${phase.name}; освещено ${Math.round(phase.illumination * 100)} процентов`);
+  moon.setAttribute("title", `${phase.name} · ${Math.round(phase.illumination * 100)}% освещённости`);
+}
+
+
 function formatEclipseDate(dateString) {
   const date = new Date(`${dateString}T12:00:00+07:00`);
   return new Intl.DateTimeFormat("ru-RU", {
@@ -671,8 +701,10 @@ async function loadEclipseData() {
   }
 }
 
+updateMoonPhase();
 updateEclipses();
 loadEclipseData();
 window.setInterval(loadEclipseData, 24 * 60 * 60 * 1000);
 
+window.setInterval(updateMoonPhase, 60 * 60 * 1000);
 window.setInterval(updateEclipses, 60 * 60 * 1000);
