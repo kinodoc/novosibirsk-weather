@@ -171,7 +171,6 @@ function updateMetrics(current, hourly, daily) {
   $("uvLabel").textContent = !Number.isFinite(uv) ? "Индекс сейчас недоступен" : uv < 3 ? "Низкий уровень" : uv < 6 ? "Умеренный уровень" : uv < 8 ? "Высокий уровень" : "Очень высокий уровень";
   setMetric("precipitation", `${number(current.precipitation, 1)} <small>мм</small>`, "precipBar", chance ?? 0);
   $("precipChance").textContent = `Вероятность осадков: ${chance === null ? "—" : `${chance}%`}`;
-  setMetric("gusts", `${number(current.wind_gusts_10m, 1)} <small>м/с</small>`, "gustBar", Number.isFinite(current.wind_gusts_10m) ? current.wind_gusts_10m * 3 : 0);
 }
 
 function renderDayForecast(daily, index, ids) {
