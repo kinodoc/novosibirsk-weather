@@ -20,7 +20,7 @@
   <meta name="twitter:description" content="Погода в Новосибирске сейчас, температура, ветер, влажность, осадки и прогноз на три дня.">
   <meta name="twitter:image" content="https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Bugrinsky_Bridge_%28May_2025%29_-_0.jpg/1280px-Bugrinsky_Bridge_%28May_2025%29_-_0.jpg">
   <title>Погода в Новосибирске сейчас и на 3 дня | Север</title>
-  <link rel="stylesheet" href="styles.css?v=moon-fix4">
+  <link rel="stylesheet" href="styles.css?v=moon-fix5">
   <script src="app.js?v=eclipse-auto1" defer></script>
   <script type="application/ld+json">
   {
@@ -37,7 +37,8 @@
 <body>
   <main class="app-shell">
     <section class="hero weather-clear" id="hero" aria-label="Погода в Новосибирске">
-      <div class="hero-sky" aria-hidden="true"><span class="sun-glow"></span><span class="sun-disc"></span><svg class="moon-disc" id="moonDisc" viewBox="0 0 64 64" role="img" aria-label="Фаза Луны" xmlns="http://www.w3.org/2000/svg">
+      <div class="hero-sky" aria-hidden="true"><span class="sun-glow"></span><span class="sun-disc"></span><span class="sky-stars"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span><span class="weather-haze"></span></div>
+      <svg class="moon-disc" id="moonDisc" viewBox="0 0 64 64" role="img" aria-label="Фаза Луны" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <clipPath id="moonClip"><circle cx="32" cy="32" r="29"/></clipPath>
           <radialGradient id="moonSurface" cx="32%" cy="27%" r="76%">
@@ -57,7 +58,7 @@
           <circle id="moonShadow" cx="32" cy="32" r="29" fill="#172b49"/>
         </g>
         <circle cx="32" cy="32" r="29" fill="none" stroke="#e8f1ff" stroke-opacity=".5" stroke-width="1"/>
-      </svg><span class="sky-stars"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span><span class="weather-haze"></span></div>
+      </svg>
       <div class="cityline" aria-hidden="true"><span class="tower"></span><span class="building b1"></span><span class="building b2"></span><span class="building b3"></span><span class="bridge"></span></div>
       <header class="topbar">
         <div class="live-pill"><span class="live-dot is-loading"></span><span id="statusText">Загружаем погоду</span></div>
