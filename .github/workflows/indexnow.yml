@@ -1,0 +1,41 @@
+name: IndexNow URL submission
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - "index.html"
+      - "app.js"
+      - "styles.css"
+      - "robots.txt"
+      - "sitemap.xml"
+      - "favicon.svg"
+      - "cityscape.svg"
+      - "9b2c6f4d8e1a7c305f6b9d2e4a8c1f73.txt"
+      - "scripts/indexnow-submit.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Wait for hosting to publish changes
+        run: sleep 30
+      - name: Verify IndexNow key file is publicly available
+        env:
+          SITE_URL: https://pogodansk.tuqo.ru/
+          INDEXNOW_KEY: 9b2c6f4d8e1a7c305f6b9d2e4a8c1f73
+        run: |
+          node -e 'const u = new URL("/" + process.env.INDEXNOW_KEY + ".txt", process.env.SITE_URL); fetch(u).then(async r => { const t = (await r.text()).trim(); if (!r.ok || t !== process.env.INDEXNOW_KEY) { console.error("IndexNow key file check failed:", r.status); process.exit(1); } console.log("IndexNow key file is publicly available."); }).catch(e => { console.error(e); process.exit(1); })'
+      - name: Submit changed URL to IndexNow
+        env:
+          SITE_URL: https://pogodansk.tuqo.ru/
+          INDEXNOW_KEY: 9b2c6f4d8e1a7c305f6b9d2e4a8c1f73
+        run: node scripts/indexnow-submit.mjs
