@@ -16,6 +16,17 @@ const $ = (id) => document.getElementById(id);
 const number = (value, digits = 0) => Number.isFinite(value) ? value.toFixed(digits).replace(".", ",") : "—";
 const roundTemp = (value) => Number.isFinite(value) ? `${Math.round(value)}°` : "—°";
 const timeOnly = (value) => value && value.includes("T") ? value.split("T")[1].slice(0, 5) : "—:—";
+function cacheAgeLabel(savedAt) {
+  if (!Number.isFinite(savedAt) || savedAt <= 0) return "возраст неизвестен";
+  const ageMs = Math.max(0, Date.now() - savedAt);
+  const minutes = Math.floor(ageMs / 60000);
+  if (minutes < 1) return "только что";
+  if (minutes < 60) return `${minutes} мин. назад`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} ч. назад`;
+  const days = Math.floor(hours / 24);
+  return `${days} дн. назад`;
+}
 
 function weatherInfo(code) {
   if (code === 0) return { label: "Ясно", icon: "☀", theme: "clear", effect: "" };
@@ -301,7 +312,7 @@ function openMeteoToForecast(source) {
   };
 }
 
-function renderWeatherForecast(data, cached = false) {
+function renderWeatherForecast(data, cached = false, cacheSavedAt = null) {
   const hourly = data.hourly;
   const daily = data.daily;
   const hourlyFields = ["temperature_2m", "weather_code", "precipitation_probability"];
@@ -322,16 +333,20 @@ function renderWeatherForecast(data, cached = false) {
   hasLoadedWeather = true;
   lastSuccessfulUpdate = data.current.time;
   if (!cached) lastWeatherFetchAt = Date.now();
-  $("statusText").textContent = cached ? "Показан сохранённый прогноз" : "Данные актуальны";
+  const cacheAge = cached ? cacheAgeLabel(cacheSavedAt) : "";
+  const cacheIsOld = cached && (!Number.isFinite(cacheSavedAt) || Date.now() - cacheSavedAt > 6 * 60 * 60 * 1000);
+  $("statusText").textContent = cached
+    ? (cacheIsOld ? `Сохранённый прогноз устарел · ${cacheAge}` : `Сохранённый прогноз · ${cacheAge}`)
+    : "Данные актуальны";
   document.querySelector(".live-dot")?.classList.remove("is-error", "is-loading");
-  $("updatedAt").textContent = (cached ? "Сохранено ранее · " : "Обновлено · ") + timeOnly(data.current.time);
+  $("updatedAt").textContent = (cached ? `Сохранено ${cacheAge} · ` : "Обновлено · ") + timeOnly(data.current.time);
   $("errorMessage").hidden = true;
 }
 
 function loadCachedWeather() {
   try {
     const cached = JSON.parse(localStorage.getItem(WEATHER_CACHE_KEY) || "null");
-    if (cached?.data) renderWeatherForecast(cached.data, true);
+    if (cached?.data) renderWeatherForecast(cached.data, true, cached.savedAt);
   } catch (error) {
     console.warn("Не удалось прочитать сохранённый прогноз:", error);
   }
@@ -416,7 +431,7 @@ function airQualityInfo(value) {
   return {label:"Крайне плохое",advice:"По возможности сократите пребывание на улице и интенсивную физическую нагрузку.",className:"aqi-extreme"};
 }
 
-function renderAirQuality(data, cached = false) {
+function renderAirQuality(data, cached = false, cacheSavedAt = null) {
   const current = data?.current;
   if (!current || !Number.isFinite(current.european_aqi) || typeof current.time !== "string") {
     throw new Error("Open-Meteo returned incomplete air-quality data");
@@ -430,15 +445,19 @@ function renderAirQuality(data, cached = false) {
   $("airAqi").textContent = Math.round(current.european_aqi);
   $("airCategory").textContent = info.label;
   $("airAdvice").textContent = info.advice;
-  $("airUpdated").textContent = (cached ? "Сохранённые данные · " : "Время модели · ") + timeOnly(current.time);
-  $("airQualityStatus").textContent = cached ? "Последние сохранённые данные" : "Данные Open-Meteo";
+  const cacheAge = cached ? cacheAgeLabel(cacheSavedAt) : "";
+  const cacheIsOld = cached && (!Number.isFinite(cacheSavedAt) || Date.now() - cacheSavedAt > 3 * 60 * 60 * 1000);
+  $("airUpdated").textContent = (cached ? `Сохранено ${cacheAge} · ` : "Время модели · ") + timeOnly(current.time);
+  $("airQualityStatus").textContent = cached
+    ? (cacheIsOld ? `Сохранённые данные устарели · ${cacheAge}` : `Сохранённые данные · ${cacheAge}`)
+    : "Данные Open-Meteo";
 
 }
 
 function loadCachedAirQuality() {
   try {
     const cached = JSON.parse(localStorage.getItem(AIR_QUALITY_CACHE_KEY) || "null");
-    if (cached?.data) renderAirQuality(cached.data, true);
+    if (cached?.data) renderAirQuality(cached.data, true, cached.savedAt);
   } catch (error) {
     console.warn("Не удалось прочитать сохранённые данные качества воздуха:", error);
   }
