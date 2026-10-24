@@ -190,6 +190,8 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .cityline{z-index:2!important}
 .hero-content,.topbar{z-index:3}
 .hero.time-night .sun-disc{opacity:0!important;visibility:hidden}
+.hero.sunset-passed .sun-disc{opacity:0!important;visibility:hidden}
+.hero.sunset-passed .sun-glow{opacity:.08!important}
 .hero.time-night .sun-glow{opacity:.08!important}
 .moon-disc{position:absolute!important;display:block;left:var(--moon-x,89%)!important;right:auto!important;top:var(--moon-y,20%)!important;transform:translate(-50%,-50%)!important;z-index:1!important;pointer-events:none;opacity:0;transition:left 1.5s ease,top 1.5s ease,opacity 1s ease}
 @media(max-width:760px){
