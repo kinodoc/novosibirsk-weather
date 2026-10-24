@@ -14,8 +14,6 @@ button,a{-webkit-tap-highlight-color:transparent}
 .hero.weather-fog{background:linear-gradient(130deg,#5b6d7a,#a8b7bc 75%,#d2d8d5)}
 .topbar{position:relative;z-index:3;display:flex;align-items:center;justify-content:flex-end;padding:27px 32px}
 .brand{display:inline-flex;align-items:center;gap:11px;color:var(--text);font-weight:800;font-size:15px;letter-spacing:.17em;text-decoration:none}
-.brand-mark{display:grid;place-items:center;width:37px;height:37px;border:1px solid rgba(255,255,255,.55);border-radius:12px;font-size:21px;letter-spacing:0;background:rgba(255,255,255,.1);backdrop-filter:blur(8px)}
-.brand-sub{display:block;margin-top:3px;color:#c1d1e4;font-size:8px;font-weight:600;letter-spacing:.23em}
 .live-pill{display:flex;align-items:center;gap:9px;padding:9px 13px;border:1px solid rgba(255,255,255,.2);border-radius:99px;background:rgba(8,20,36,.24);color:#e8f5ff;font-size:11px;backdrop-filter:blur(10px)}
 .live-dot{width:7px;height:7px;border-radius:50%;background:#8af0c1;box-shadow:0 0 13px #8af0c1;animation:pulse 2s infinite}
 .hero-content{position:relative;z-index:2;padding:45px 42px 28px;max-width:700px}
@@ -71,14 +69,6 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .metric-card p{margin:6px 0 0;color:#8296ae;font-size:10px}
 .metric-track{height:3px;margin-top:16px;border-radius:8px;background:rgba(255,255,255,.07);overflow:hidden}
 .metric-track span{display:block;width:0;height:100%;border-radius:8px;background:linear-gradient(90deg,#5ba9e8,#9ce6ff);transition:width .8s ease}
-.forecast-section{margin-top:42px}
-.hourly-scroller{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:thin;scrollbar-color:#314b68 transparent}
-.hour-card{flex:0 0 105px;display:flex;align-items:center;flex-direction:column;min-height:140px;padding:15px 10px;border:1px solid var(--line);border-radius:18px;background:rgba(19,31,50,.8)}
-.hour-time{color:#9eb1c7;font-size:10px}
-.hour-symbol{margin:15px 0 12px;font-size:25px}
-.hour-temp{font-size:20px;font-weight:700;letter-spacing:-.04em}
-.hour-rain{margin-top:8px;color:#82cfff;font-size:10px}
-.loading-card{padding:25px;color:#a5b3c8;font-size:12px}
 .tomorrow-card{display:flex;align-items:center;justify-content:space-between;gap:25px;margin-top:26px;padding:27px 30px;border:1px solid rgba(143,216,255,.18);border-radius:24px;background:radial-gradient(ellipse at 85% 20%,rgba(76,134,174,.2),transparent 48%),linear-gradient(130deg,#152840,#111d30)}
 .tomorrow-copy h2{font-size:21px}
 .tomorrow-copy>p:last-child{max-width:500px;margin:9px 0 0;color:#93a8c0;font-size:11px;line-height:1.7}
@@ -86,8 +76,7 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .tomorrow-weather>span:first-child{font-size:35px}
 .tomorrow-weather strong{font-size:43px;font-weight:600;letter-spacing:-.07em}
 .tomorrow-weather>span:last-child{grid-column:2;color:#9db0c5;font-size:10px}
-.site-footer{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:30px 3px 10px;color:#647991;font-size:9px}
-.footer-brand{font-size:11px;letter-spacing:.13em}.footer-brand .brand-mark{width:29px;height:29px;border-radius:9px;font-size:16px}.footer-brand .brand-sub{font-size:6px}
+.site-footer{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:30px 3px 10px;color:#647991;font-size:9px}.footer-brand .brand-mark{width:29px;height:29px;border-radius:9px;font-size:16px}.footer-brand .brand-sub{font-size:6px}
 .site-footer p{margin:0}
 .error-message{position:fixed;right:18px;bottom:18px;z-index:10;max-width:360px;padding:15px 18px;border:1px solid rgba(255,167,167,.25);border-radius:14px;background:#2a1a26;color:#ffd5d5;font-size:12px;box-shadow:0 15px 40px #0005}
 [hidden]{display:none!important}
@@ -101,8 +90,7 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .live-dot.is-error{background:#ff7d88;box-shadow:0 0 13px rgba(255,125,136,.75);animation:none}
 
 .live-dot.is-loading{background:#a5b3c8;box-shadow:none;animation:none}
-
-.photo-credit{font-size:10px;color:#71839b}.photo-credit a{color:#9ebbd7;text-decoration:underline;text-underline-offset:3px}
+.photo-credit a{color:#9ebbd7;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:600px){.cityline{width:100%;height:75%;opacity:.65;background-position:54% center}.hero-content{padding-top:35px}.topbar{padding:20px 20px}}
 
 /* Live Novosibirsk panorama: season, local solar time and current weather. */
@@ -157,8 +145,6 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 
 /* Search-friendly page heading and readable explanatory copy. */
 .location{margin:0;line-height:1.5}
-.seo-copy{max-width:850px;padding:20px 22px;border:1px solid var(--line);border-radius:18px;background:rgba(19,31,50,.58);color:#a5b3c8;font-size:13px;line-height:1.85}
-.seo-copy p{margin:0}
 .seo-copy p+p{margin-top:12px}
 @media(max-width:760px){.seo-copy{padding:17px;font-size:12px;line-height:1.8}}
 
@@ -175,13 +161,6 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .air-quality-summary.aqi-fair{border-color:rgba(188,218,112,.34);background:radial-gradient(ellipse at 20% 0%,rgba(188,218,112,.15),transparent 65%),rgba(7,18,32,.4)}
 .air-quality-summary.aqi-moderate{border-color:rgba(255,194,105,.38);background:radial-gradient(ellipse at 20% 0%,rgba(255,194,105,.15),transparent 65%),rgba(7,18,32,.4)}
 .air-quality-summary.aqi-poor,.air-quality-summary.aqi-very-poor,.air-quality-summary.aqi-extreme{border-color:rgba(255,125,136,.35);background:radial-gradient(ellipse at 20% 0%,rgba(255,125,136,.14),transparent 65%),rgba(7,18,32,.4)}
-.air-pollutants{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.pollutant-card{display:grid;grid-template-columns:minmax(0,1fr) auto;align-content:center;column-gap:8px;min-height:105px;padding:15px 16px;border:1px solid var(--line);border-radius:17px;background:rgba(7,18,32,.32)}
-.pollutant-name{grid-column:1/-1;color:#a5b8ce;font-size:11px}
-.pollutant-card strong{align-self:end;margin-top:9px;font-size:25px;letter-spacing:-.05em}
-.pollutant-card small{align-self:end;padding-bottom:4px;color:#8296ae;font-size:10px}
-.pollutant-track{grid-column:1/-1;height:3px;margin-top:11px;overflow:hidden;border-radius:8px;background:rgba(255,255,255,.07)}
-.pollutant-track span{display:block;width:0;height:100%;border-radius:8px;background:linear-gradient(90deg,#65c6a2,#c2e6a1);transition:width .7s ease}
 .air-quality-disclaimer{max-width:850px;margin:12px 4px 0;color:#71859d;font-size:10px;line-height:1.7}
 @media(max-width:760px){.air-quality-panel{grid-template-columns:1fr;padding:12px;gap:12px;border-radius:20px}.air-quality-summary{min-height:0;padding:18px}.air-quality-score{font-size:66px}.air-pollutants{gap:8px}.pollutant-card{min-height:98px;padding:13px 12px}.pollutant-card strong{font-size:23px}}
 @media(max-width:360px){.air-pollutants{grid-template-columns:1fr}.pollutant-card{min-height:88px}}
@@ -222,7 +201,6 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 @media(max-width:760px){.cityline{background-position:center bottom;background-size:auto 100%;mask-image:none;-webkit-mask-image:none}}
 
 /* The small night icon uses the same calculated lunar phase as the hero moon. */
-.weather-moon-icon{display:block;width:47px;height:47px;filter:drop-shadow(0 5px 16px rgba(255,255,255,.15))}
 @media(max-width:760px){.weather-moon-icon{width:38px;height:38px}}
 
 /* Clean, scalable Novosibirsk skyline illustration; no photographic crop. */
