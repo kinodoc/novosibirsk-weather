@@ -202,12 +202,26 @@ function updateHero(current, daily) {
   updateAtmosphere();
 }
 
+function isValidDateString(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
+
+function isValidDateTimeString(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) return false;
+  const [date, time] = value.split("T");
+  const [hour, minute] = time.split(":").map(Number);
+  return isValidDateString(date) && hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59;
+}
+
 function isOrderedTimeArray(times, pattern) {
   return Array.isArray(times) &&
     times.length > 0 &&
     times.every((time, index) =>
       typeof time === "string" &&
       pattern.test(time) &&
+      (time.includes("T") ? isValidDateTimeString(time) : isValidDateString(time)) &&
       (index === 0 || time >= times[index - 1])
     );
 }
@@ -322,9 +336,7 @@ function renderWeatherForecast(data, cached = false, cacheSavedAt = null) {
   const dailyInvalid = !isOrderedTimeArray(daily?.time, /^\d{4}-\d{2}-\d{2}$/) ||
     daily.time.length < 3 ||
     dailyFields.some((key) => !Array.isArray(daily[key]) || daily[key].length < daily.time.length);
-  const currentTimeValid = typeof data.current?.time === "string" &&
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(data.current.time) &&
-    Number.isFinite(Date.parse(`${data.current.time}:00Z`));
+  const currentTimeValid = isValidDateTimeString(data.current?.time);
   if (!data.current || !currentTimeValid ||
       !Number.isFinite(data.current.temperature_2m) || hourlyInvalid || dailyInvalid) {
     throw new Error("Weather data is incomplete or has invalid time data");
