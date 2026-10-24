@@ -658,14 +658,16 @@ function renderNextEclipse(kind, ids) {
   if (!next) {
     $(ids.title).textContent = "Дата следующего события уточняется";
     $(ids.details).textContent = "Список событий будет дополнен.";
-    $(ids.visibility).textContent = "Новосибирск";
+    $(ids.visibility).textContent = "";
+    $(ids.visibility).hidden = true;
     return;
   }
   $(ids.title).textContent = formatEclipseDate(next.date);
   $(ids.details).textContent = next.time
     ? `${next.type}. ${next.detail}: ${next.time} по местному времени.`
     : `${next.type}. ${next.detail}.`;
-  $(ids.visibility).textContent = next.visibility;
+  $(ids.visibility).textContent = next.visibility || "";
+  $(ids.visibility).hidden = !next.visibility;
 }
 
 function updateEclipses() {
@@ -700,7 +702,7 @@ async function loadEclipseData() {
           type: event.type,
           time: null,
           detail: "Данные из обновляемого каталога",
-          visibility: "Указано для Новосибирска"
+          visibility: ""
         }));
       if (!nextEvents[kind].length) throw new Error(`No valid ${kind} eclipses in catalog`);
     }
