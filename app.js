@@ -218,8 +218,26 @@ function daylightChangeLabel(daily) {
   yesterdayDate.setUTCDate(yesterdayDate.getUTCDate() - 1);
   const yesterdayKey = yesterdayDate.toISOString().slice(0, 10);
   const yesterdayIndex = daily.time?.indexOf(yesterdayKey) ?? -1;
-  if (yesterdayIndex < 0) return "Сравнение со вчерашним днём недоступно";
-  const yesterday = daylightMinutes(daily, yesterdayIndex);
+  let yesterday = yesterdayIndex >= 0 ? daylightMinutes(daily, yesterdayIndex) : null;
+
+  // The forecast API may only return today and future days. In that case,
+  // calculate yesterday's daylight locally using the same solar-position library.
+  if (yesterday === null && window.SunCalc) {
+    const date = new Date(`${yesterdayKey}T12:00:00+07:00`);
+    const times = SunCalc.getTimes(date, LOCATION.latitude, LOCATION.longitude);
+    const localMinutes = (value) => {
+      if (!(value instanceof Date) || !Number.isFinite(value.getTime())) return null;
+      const parts = new Intl.DateTimeFormat("en-GB", {
+        timeZone: LOCATION.timezone, hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+      }).formatToParts(value);
+      const hour = Number(parts.find((part) => part.type === "hour")?.value);
+      const minute = Number(parts.find((part) => part.type === "minute")?.value);
+      return Number.isFinite(hour) && Number.isFinite(minute) ? hour * 60 + minute : null;
+    };
+    const sunrise = localMinutes(times.sunrise);
+    const sunset = localMinutes(times.sunset);
+    if (sunrise !== null && sunset !== null && sunset > sunrise) yesterday = sunset - sunrise;
+  }
   if (yesterday === null) return "Сравнение со вчерашним днём недоступно";
   const difference = today - yesterday;
   if (difference === 0) return "Световой день — без изменений со вчера";
