@@ -33,6 +33,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 .hero-footer{display:flex;flex-wrap:wrap;align-items:center;gap:15px;margin-top:43px;color:#d0dfec;font-size:11px}
 .sun-times{display:flex;align-items:center;gap:11px}
 .sun-times i{height:13px;border-left:1px solid rgba(255,255,255,.38)}
+.daylight-change{color:#e5eef8;font-size:11px;line-height:1.5}
 .updated{color:#b6c8d9}
 .hero-sky{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
 .sun-glow{position:absolute;width:260px;height:260px;right:11%;top:8%;border-radius:50%;background:radial-gradient(circle,rgba(255,230,178,.92) 0%,rgba(255,215,157,.38) 24%,rgba(255,207,145,0) 70%);filter:blur(2px);transition:opacity 1s}
