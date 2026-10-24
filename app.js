@@ -332,10 +332,16 @@ function renderWeatherForecast(data, cached = false, cacheSavedAt = null) {
   const hourlyFields = ["temperature_2m", "weather_code", "precipitation_probability"];
   const dailyFields = ["temperature_2m_max", "temperature_2m_min", "weather_code", "sunrise", "sunset", "uv_index_max", "precipitation_probability_max", "precipitation_sum"];
   const hourlyInvalid = !isOrderedTimeArray(hourly?.time, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/) ||
-    hourlyFields.some((key) => !Array.isArray(hourly[key]) || hourly[key].length < hourly.time.length);
+    hourlyFields.some((key) => !Array.isArray(hourly[key]) || hourly[key].length < hourly.time.length) ||
+    hourlyFields.some((key) => Array.isArray(hourly[key]) &&
+      hourly[key].slice(0, hourly.time.length).some((value) => value !== null && !Number.isFinite(value)));
   const dailyInvalid = !isOrderedTimeArray(daily?.time, /^\d{4}-\d{2}-\d{2}$/) ||
     daily.time.length < 3 ||
-    dailyFields.some((key) => !Array.isArray(daily[key]) || daily[key].length < daily.time.length);
+    dailyFields.some((key) => !Array.isArray(daily[key]) || daily[key].length < daily.time.length) ||
+    ["temperature_2m_max", "temperature_2m_min", "weather_code", "uv_index_max", "precipitation_probability_max", "precipitation_sum"].some((key) =>
+      Array.isArray(daily[key]) && daily[key].slice(0, daily.time.length).some((value) => value !== null && !Number.isFinite(value))) ||
+    ["sunrise", "sunset"].some((key) =>
+      Array.isArray(daily[key]) && daily[key].slice(0, daily.time.length).some((value) => value !== null && (typeof value !== "string" || !isValidDateTimeString(value))));
   const currentTimeValid = isValidDateTimeString(data.current?.time);
   if (!data.current || !currentTimeValid ||
       !Number.isFinite(data.current.temperature_2m) || hourlyInvalid || dailyInvalid) {
