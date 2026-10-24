@@ -213,33 +213,31 @@ function daylightMinutes(daily, index) {
 
 function daylightChangeLabel(daily) {
   const today = daylightMinutes(daily, 0);
-  const yesterdayDate = new Date(`${daily.time?.[0]}T12:00:00Z`);
-  if (today === null || !Number.isFinite(yesterdayDate.getTime())) return "Продолжительность светового дня";
-  yesterdayDate.setUTCDate(yesterdayDate.getUTCDate() - 1);
-  const yesterdayKey = yesterdayDate.toISOString().slice(0, 10);
+  const firstDate = daily.time?.[0];
+  const date = new Date(`${firstDate}T12:00:00Z`);
+  if (today === null || !Number.isFinite(date.getTime())) return "Продолжительность светового дня";
+
+  date.setUTCDate(date.getUTCDate() - 1);
+  const yesterdayKey = date.toISOString().slice(0, 10);
   const yesterdayIndex = daily.time?.indexOf(yesterdayKey) ?? -1;
   let yesterday = yesterdayIndex >= 0 ? daylightMinutes(daily, yesterdayIndex) : null;
 
-  // The forecast API may only return today and future days. In that case,
-  // calculate yesterday's daylight locally using the same solar-position library.
-  if (yesterday === null && window.SunCalc) {
-    const date = new Date(`${yesterdayKey}T12:00:00+07:00`);
-    const times = SunCalc.getTimes(date, LOCATION.latitude, LOCATION.longitude);
-    const localMinutes = (value) => {
-      if (!(value instanceof Date) || !Number.isFinite(value.getTime())) return null;
-      const parts = new Intl.DateTimeFormat("en-GB", {
-        timeZone: LOCATION.timezone, hour: "2-digit", minute: "2-digit", hourCycle: "h23"
-      }).formatToParts(value);
-      const hour = Number(parts.find((part) => part.type === "hour")?.value);
-      const minute = Number(parts.find((part) => part.type === "minute")?.value);
-      return Number.isFinite(hour) && Number.isFinite(minute) ? hour * 60 + minute : null;
-    };
-    const sunrise = localMinutes(times.sunrise);
-    const sunset = localMinutes(times.sunset);
-    if (sunrise !== null && sunset !== null && sunset > sunrise) yesterday = sunset - sunrise;
+  // Do not depend on the external SunCalc CDN: estimate yesterday's daylight
+  // from solar declination and Novosibirsk latitude when the API omits it.
+  if (yesterday === null) {
+    const dayOfYear = Math.floor((Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) -
+      Date.UTC(date.getUTCFullYear(), 0, 0)) / 86400000);
+    const latitude = LOCATION.latitude * Math.PI / 180;
+    const declination = 0.4091 * Math.sin((2 * Math.PI / 365) * dayOfYear - 1.405);
+    const hourAngleCos = (Math.sin(-0.833 * Math.PI / 180) -
+      Math.sin(latitude) * Math.sin(declination)) /
+      (Math.cos(latitude) * Math.cos(declination));
+    if (Number.isFinite(hourAngleCos) && hourAngleCos >= -1 && hourAngleCos <= 1) {
+      yesterday = 2 * Math.acos(hourAngleCos) * 720 / Math.PI;
+    }
   }
-  if (yesterday === null) return "Сравнение со вчерашним днём недоступно";
-  const difference = today - yesterday;
+  if (yesterday === null || !Number.isFinite(yesterday)) return "Сравнение со вчерашним днём недоступно";
+  const difference = Math.round(today - yesterday);
   if (difference === 0) return "Световой день — без изменений со вчера";
   const minutes = Math.abs(difference);
   const duration = minutes >= 60
