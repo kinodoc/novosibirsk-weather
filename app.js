@@ -226,6 +226,18 @@ function isOrderedTimeArray(times, pattern) {
     );
 }
 
+function areSunTimesValid(date, sunrise, sunset) {
+  if (sunrise === null && sunset === null) return true;
+  if (!isValidDateTimeString(sunrise) || !isValidDateTimeString(sunset)) return false;
+  if (sunrise.slice(0, 10) !== date || sunset.slice(0, 10) !== date) return false;
+  const sunriseMinutes = minutesFromLocalTime(sunrise);
+  const sunsetMinutes = minutesFromLocalTime(sunset);
+  const daylightMinutes = sunsetMinutes - sunriseMinutes;
+  return sunriseMinutes >= 0 && sunriseMinutes < 12 * 60 &&
+    sunsetMinutes > 12 * 60 && sunsetMinutes < 24 * 60 &&
+    daylightMinutes >= 5 * 60 && daylightMinutes <= 19 * 60;
+}
+
 function forecastIndexAtOrAfter(times, currentTime) {
   const index = times.findIndex((time) => time >= currentTime);
   return index >= 0 ? index : Math.max(0, times.length - 1);
@@ -341,7 +353,8 @@ function renderWeatherForecast(data, cached = false, cacheSavedAt = null) {
     ["temperature_2m_max", "temperature_2m_min", "weather_code", "uv_index_max", "precipitation_probability_max", "precipitation_sum"].some((key) =>
       Array.isArray(daily[key]) && daily[key].slice(0, daily.time.length).some((value) => value !== null && !Number.isFinite(value))) ||
     ["sunrise", "sunset"].some((key) =>
-      Array.isArray(daily[key]) && daily[key].slice(0, daily.time.length).some((value) => value !== null && (typeof value !== "string" || !isValidDateTimeString(value))));
+      Array.isArray(daily[key]) && daily[key].slice(0, daily.time.length).some((value) => value !== null && (typeof value !== "string" || !isValidDateTimeString(value)))) ||
+    daily.time.some((date, index) => !areSunTimesValid(date, daily.sunrise[index], daily.sunset[index]));
   const currentTimeValid = isValidDateTimeString(data.current?.time);
   if (!data.current || !currentTimeValid ||
       !Number.isFinite(data.current.temperature_2m) || hourlyInvalid || dailyInvalid) {
