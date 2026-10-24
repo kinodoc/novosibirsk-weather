@@ -117,9 +117,21 @@ function renderActualNightSky(){
   points[name]={x,y,mag};
  }
  const ns="http://www.w3.org/2000/svg", svg=document.createElementNS(ns,"svg");
+ const width=Math.max(host.clientWidth,1), height=Math.max(host.clientHeight,1);
  svg.setAttribute("viewBox","0 0 1000 530");svg.setAttribute("preserveAspectRatio","none");svg.setAttribute("aria-hidden","true");
- // Stars only; constellation connector lines intentionally removed.
- for(const [name,p] of Object.entries(points)){const c=document.createElementNS(ns,"circle");c.setAttribute("class","star");c.setAttribute("cx",p.x*10);c.setAttribute("cy",p.y*5.3);c.setAttribute("r",Math.max(.7,2.05-p.mag*.48));c.setAttribute("opacity",String(Math.max(.38,1-p.mag*.19)));c.setAttribute("data-star",name);svg.append(c)}
+ // Keep stars circular in CSS pixels even when the SVG is stretched on narrow mobile screens.
+ for(const [name,p] of Object.entries(points)){
+  const radius=Math.max(.8,2.05-p.mag*.48);
+  const star=document.createElementNS(ns,"ellipse");
+  star.setAttribute("class","star");
+  star.setAttribute("cx",p.x*10);
+  star.setAttribute("cy",p.y*5.3);
+  star.setAttribute("rx",radius*1000/width);
+  star.setAttribute("ry",radius*530/height);
+  star.setAttribute("opacity",String(Math.max(.38,1-p.mag*.19)));
+  star.setAttribute("data-star",name);
+  svg.append(star);
+ }
  host.replaceChildren(svg);
 }
 
