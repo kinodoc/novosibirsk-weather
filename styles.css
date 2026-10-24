@@ -236,3 +236,17 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 
 /* The Moon is shown only while its calculated altitude is above the horizon. */
 .hero.moon-above-horizon .moon-disc{opacity:.95!important}
+
+/* Seasonal astronomical calendar */
+.season-events-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px;padding:24px;border:1px solid rgba(143,216,255,.18);border-radius:22px;background:radial-gradient(ellipse at 10% 0%,rgba(143,216,255,.12),transparent 55%),linear-gradient(145deg,rgba(24,39,61,.94),rgba(14,25,42,.94))}
+.season-next{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:8px 16px 8px 4px}
+.season-next-label{color:#8fd8ff;font-size:10px;letter-spacing:.12em;font-weight:700}
+.season-next strong{margin-top:12px;font-size:clamp(20px,3vw,28px);line-height:1.2}
+.season-next>span:nth-of-type(2){margin-top:10px;color:#c6d5e6;font-size:14px}
+.season-next p{margin:8px 0 0;color:#8fd8ff;font-size:13px}
+.season-events-list{display:grid;align-content:center;gap:0}
+.season-event-row{display:flex;justify-content:space-between;gap:16px;padding:13px 2px;border-bottom:1px solid rgba(255,255,255,.08);color:#b9c8d9;font-size:12px}
+.season-event-row:last-child{border-bottom:0}
+.season-event-row strong{color:#f1f6fc;font-size:12px;white-space:nowrap}
+.season-events-note{margin:12px 2px 0;color:#8296ae;font-size:10px;line-height:1.6}
+@media(max-width:760px){.season-events-panel{grid-template-columns:1fr;gap:10px;padding:18px;border-radius:19px}.season-next{padding:2px 0 15px;border-bottom:1px solid rgba(255,255,255,.08)}.season-next strong{font-size:22px}.season-event-row{padding:12px 0}}
