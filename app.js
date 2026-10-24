@@ -187,6 +187,32 @@ function updateAtmosphere() {
   $("weatherSymbol").textContent = phase === "night" && info.theme === "clear" ? "✦" : info.icon;
 }
 
+function daylightMinutes(daily, index) {
+  const sunrise = minutesFromLocalTime(daily.sunrise?.[index]);
+  const sunset = minutesFromLocalTime(daily.sunset?.[index]);
+  if (sunrise === null || sunset === null || sunset <= sunrise) return null;
+  return sunset - sunrise;
+}
+
+function daylightChangeLabel(daily) {
+  const today = daylightMinutes(daily, 0);
+  const yesterdayDate = new Date(`${daily.time?.[0]}T12:00:00Z`);
+  if (today === null || !Number.isFinite(yesterdayDate.getTime())) return "Продолжительность светового дня";
+  yesterdayDate.setUTCDate(yesterdayDate.getUTCDate() - 1);
+  const yesterdayKey = yesterdayDate.toISOString().slice(0, 10);
+  const yesterdayIndex = daily.time?.indexOf(yesterdayKey) ?? -1;
+  if (yesterdayIndex < 0) return "Сравнение со вчерашним днём недоступно";
+  const yesterday = daylightMinutes(daily, yesterdayIndex);
+  if (yesterday === null) return "Сравнение со вчерашним днём недоступно";
+  const difference = today - yesterday;
+  if (difference === 0) return "Световой день — без изменений со вчера";
+  const minutes = Math.abs(difference);
+  const duration = minutes >= 60
+    ? `${Math.floor(minutes / 60)} ч ${minutes % 60 ? `${minutes % 60} мин` : ""}`.trim()
+    : `${minutes} мин`;
+  return `Световой день ${difference > 0 ? "длиннее" : "короче"} на ${duration}, чем вчера`;
+}
+
 function updateHero(current, daily) {
   const info = weatherInfo(current.weather_code);
   latestWeatherCode = current.weather_code;
@@ -198,6 +224,8 @@ function updateHero(current, daily) {
   $("highLow").textContent = `Сегодня ${roundTemp(daily.temperature_2m_min?.[0])} / ${roundTemp(daily.temperature_2m_max?.[0])}`;
   $("dateLine").textContent = formatDate(current.time);
   $("sunTimes").innerHTML = `↑ Восход ${timeOnly(daily.sunrise?.[0])} <i></i> ↓ Закат ${timeOnly(daily.sunset?.[0])}`;
+  const daylightChange = $("daylightChange");
+  if (daylightChange) daylightChange.textContent = daylightChangeLabel(daily);
   setEffects(info.effect);
   updateAtmosphere();
 }
