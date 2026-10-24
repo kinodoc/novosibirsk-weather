@@ -1,0 +1,52 @@
+name: SEO and search monitoring
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  push:
+    branches: [develop]
+    paths:
+      - "index.html"
+      - "robots.txt"
+      - "sitemap.xml"
+      - "scripts/**"
+      - ".github/workflows/seo-monitor.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seo-monitor
+  cancel-in-progress: false
+
+jobs:
+  technical-seo:
+    name: Uptime and technical SEO
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check live site
+        env:
+          SITE_URL: https://pogodansk.tuqo.ru/
+        run: node scripts/seo-check.mjs
+
+  search-performance:
+    name: Search Console and Bing report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch search performance data
+        env:
+          SITE_URL: https://pogodansk.tuqo.ru/
+          GSC_SITE_URL: ${{ vars.GSC_SITE_URL }}
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+          BING_SITE_URL: ${{ vars.BING_SITE_URL }}
+          BING_WEBMASTER_API_KEY: ${{ secrets.BING_WEBMASTER_API_KEY }}
+        run: node scripts/search-monitor.mjs

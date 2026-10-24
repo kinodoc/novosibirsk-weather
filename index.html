@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101b31">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <meta name="google-site-verification" content="dani8sxB1Vaa4XkYgZTJ8GFpLPdVYdMhVzWsOFTJ67k" />
+  <meta name="description" content="Узнайте погоду в Новосибирске сейчас и на 3 дня: температура, ощущается как, ветер, влажность, давление, осадки, УФ-индекс и качество воздуха. Восход, закат и световой день.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://pogodansk.tuqo.ru/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Погода в Новосибирске">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:title" content="Погода в Новосибирске сейчас и на 3 дня">
+  <meta property="og:description" content="Текущая погода и прогноз на 3 дня в Новосибирске: температура, ветер, осадки, качество воздуха, восход и закат.">
+  <meta property="og:url" content="https://pogodansk.tuqo.ru/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Погода в Новосибирске сейчас и на 3 дня">
+  <meta name="twitter:description" content="Погода сейчас и прогноз на 3 дня: температура, ветер, осадки, качество воздуха, восход и закат.">
+  <title>Погода в Новосибирске сейчас и на 3 дня</title>
+  <link rel="stylesheet" href="styles.css?v=seo1">
+  <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.js" defer></script>
+  <script src="app.js?v=seo1" defer></script>
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Погода в Новосибирске",
+    "alternateName": "Погода в Новосибирске",
+    "url": "https://pogodansk.tuqo.ru/",
+    "inLanguage": "ru-RU",
+    "description": "Текущая погода в Новосибирске и прогноз на три дня."
+  }
+  </script>
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero weather-clear" id="hero" aria-label="Погода в Новосибирске">
+      <div class="hero-sky" aria-hidden="true"><span class="sun-glow"></span><span class="sun-disc"></span>
+        <svg class="moon-disc" id="moonDisc" viewBox="0 0 64 64" role="img" aria-label="Фаза Луны" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="moonClip"><circle cx="32" cy="32" r="29"/></clipPath>
+          <radialGradient id="moonSurface" cx="32%" cy="27%" r="76%">
+            <stop offset="0%" stop-color="#fffdf2"/>
+            <stop offset="62%" stop-color="#e2e8ef"/>
+            <stop offset="100%" stop-color="#aebdce"/>
+          </radialGradient>
+        </defs>
+        <g clip-path="url(#moonClip)">
+          <circle cx="32" cy="32" r="29" fill="url(#moonSurface)"/>
+          <g fill="#8495a8" opacity=".23">
+            <circle cx="20" cy="20" r="4.5"/><circle cx="42" cy="17" r="2.6"/>
+            <circle cx="44" cy="37" r="6"/><circle cx="24" cy="43" r="3.2"/>
+            <circle cx="15" cy="33" r="1.8"/><circle cx="33" cy="28" r="2.2"/>
+            <circle cx="34" cy="51" r="1.7"/><circle cx="51" cy="25" r="1.4"/>
+          </g>
+          <circle id="moonShadow" cx="32" cy="32" r="29" fill="#172b49"/>
+        </g>
+        <circle cx="32" cy="32" r="29" fill="none" stroke="#e8f1ff" stroke-opacity=".5" stroke-width="1"/>
+      </svg><span class="sky-stars" id="skyStars"></span><span class="cloud cloud-one"></span><span class="cloud cloud-two"></span><span class="weather-haze"></span></div>
+      <div class="cityline" aria-hidden="true"><span class="tower"></span><span class="building b1"></span><span class="building b2"></span><span class="building b3"></span><span class="bridge"></span></div>
+      <header class="topbar">
+        <div class="live-pill"><span class="live-dot is-loading"></span><span id="statusText">Загружаем погоду</span></div>
+      </header>
+      <div class="hero-content">
+        <h1 class="location"><span class="location-pin" aria-hidden="true">⌖</span> Погода в Новосибирске <span class="timezone">UTC+7</span></h1>
+        <p class="date-line" id="dateLine">Сегодня · местное время</p>
+        <div class="current-weather">
+          <div class="temperature-wrap"><span class="temperature" id="temperature">—°</span><span class="feels-like">Ощущается как <b id="feelsLike">—°</b></span></div>
+          <div class="condition-wrap"><div class="weather-symbol" id="weatherSymbol" aria-hidden="true">☀</div><div class="condition" id="condition">Получаем прогноз…</div><div class="high-low" id="highLow">Сегодня —° / —°</div></div>
+        </div>
+        <div class="hero-footer"><span class="sun-times" id="sunTimes">↑ Восход —:— <i></i> ↓ Закат —:—</span><span class="daylight-change" id="daylightChange">Продолжительность светового дня</span><span class="updated" id="updatedAt">Обновление данных…</span></div>
+      </div>
+      <div class="weather-effects" id="weatherEffects" aria-hidden="true"></div>
+    </section>
+
+    <section class="section-block">
+      <div class="section-heading"><div><p class="eyebrow">СЕЙЧАС НА УЛИЦЕ</p><h2>Погода в деталях</h2></div></div>
+      <div class="metrics-grid">
+        <article class="metric-card"><div class="metric-top"><span>Ветер</span><span class="metric-icon">↗</span></div><strong id="wind">— <small>м/с</small></strong><p id="windDirection">Направление —</p><div class="metric-track"><span id="windBar"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>Влажность</span><span class="metric-icon">◌</span></div><strong id="humidity">—<small>%</small></strong><p>Относительная влажность</p><div class="metric-track"><span id="humidityBar"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>Давление</span><span class="metric-icon">⌁</span></div><strong id="pressure">— <small>гПа</small></strong><p>На уровне моря</p><div class="metric-track"><span id="pressureBar"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>УФ-индекс (макс.)</span><span class="metric-icon">☼</span></div><strong id="uv">—</strong><p id="uvLabel">Максимум за день</p><div class="metric-track"><span id="uvBar"></span></div></article>
+        <article class="metric-card"><div class="metric-top"><span>Осадки</span><span class="metric-icon">⌄</span></div><strong id="precipitation">— <small>мм</small></strong><p id="precipChance">Вероятность осадков</p><div class="metric-track"><span id="precipBar"></span></div></article>
+      </div>
+    </section>
+
+
+
+    <section class="section-block air-quality-section" id="airQualitySection" aria-labelledby="airQualityTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">ЧЕМ МЫ ДЫШИМ</p><h2 id="airQualityTitle">Качество воздуха в Новосибирске</h2></div>
+        <span class="section-note" id="airQualityStatus">Загружаем данные…</span>
+      </div>
+      <div class="air-quality-panel">
+        <div class="air-quality-summary">
+          <p class="air-quality-label">Европейский индекс качества воздуха</p>
+          <div class="air-quality-score" id="airAqi">—</div>
+          <strong class="air-quality-category" id="airCategory">Загружаем…</strong>
+          <p class="air-quality-advice" id="airAdvice">Получаем последнюю оценку качества воздуха.</p>
+          <span class="air-quality-updated" id="airUpdated">Обновление данных…</span>
+        </div>
+      </div>
+      <p class="air-quality-disclaimer">Оценка основана на моделях Open-Meteo и не заменяет показания наземных измерительных станций. Данные могут отличаться от локальных условий.</p>
+    </section>
+
+    <section class="tomorrow-card" id="tomorrowCard">
+      <div class="tomorrow-copy"><p class="eyebrow">ЗАВТРА В НОВОСИБИРСКЕ</p><h2 id="tomorrowCondition">Готовим прогноз…</h2><p id="tomorrowSummary">Скоро здесь появится прогноз на весь день.</p></div>
+      <div class="tomorrow-weather"><span id="tomorrowSymbol" aria-hidden="true">☀</span><strong id="tomorrowTemp">—°</strong><span id="tomorrowRange">—° / —°</span></div>
+    </section>
+
+    <section class="tomorrow-card" id="dayAfterCard">
+      <div class="tomorrow-copy"><p class="eyebrow">ПОСЛЕЗАВТРА В НОВОСИБИРСКЕ</p><h2 id="dayAfterCondition">Готовим прогноз…</h2><p id="dayAfterSummary">Скоро здесь появится прогноз на весь день.</p></div>
+      <div class="tomorrow-weather"><span id="dayAfterSymbol" aria-hidden="true">☀</span><strong id="dayAfterTemp">—°</strong><span id="dayAfterRange">—° / —°</span></div>
+    </section>
+
+    <section class="section-block season-events-section" id="seasonEvents" aria-labelledby="seasonEventsTitle">
+      <div class="section-heading"><div><p class="eyebrow">АСТРОНОМИЧЕСКИЙ КАЛЕНДАРЬ</p><h2 id="seasonEventsTitle">Равноденствия и солнцестояния</h2></div></div>
+      <article class="season-events-panel">
+        <div class="season-next"><span class="season-next-label">БЛИЖАЙШЕЕ СОБЫТИЕ</span><strong id="seasonNextName">Рассчитываем…</strong><span id="seasonNextDate">—</span><p id="seasonNextCountdown">—</p></div>
+        <div class="season-events-list" id="seasonEventsList" aria-live="polite"></div>
+      </article>
+      <p class="season-events-note">Время рассчитано по астрономической модели и указано по Новосибирску.</p>
+    </section>
+
+    <section class="section-block eclipse-section" id="eclipseSection" aria-labelledby="eclipseTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">АСТРОНОМИЧЕСКИЕ СОБЫТИЯ</p><h2 id="eclipseTitle">Ближайшие затмения в Новосибирске</h2></div>
+        
+      </div>
+      <div class="eclipse-grid">
+        <article class="eclipse-card lunar-eclipse-card" aria-labelledby="lunarEclipseTitle">
+          <div class="eclipse-icon lunar-eclipse-icon" aria-hidden="true">🌑</div>
+          <div class="eclipse-copy">
+            <p class="eclipse-kind">ЛУННОЕ ЗАТМЕНИЕ</p>
+            <h3 id="lunarEclipseTitle">Загружаем событие…</h3>
+            <p id="lunarEclipseDetails">Проверяем дату и время для Новосибирска.</p>
+            <span class="eclipse-visibility" id="lunarEclipseVisibility">Видимость уточняется</span>
+          </div>
+        </article>
+        <article class="eclipse-card solar-eclipse-card" aria-labelledby="solarEclipseTitle">
+          <div class="eclipse-icon solar-eclipse-icon" aria-hidden="true">☀️</div>
+          <div class="eclipse-copy">
+            <p class="eclipse-kind">СОЛНЕЧНОЕ ЗАТМЕНИЕ</p>
+            <h3 id="solarEclipseTitle">Загружаем событие…</h3>
+            <p id="solarEclipseDetails">Проверяем дату и время для Новосибирска.</p>
+            <span class="eclipse-visibility" id="solarEclipseVisibility">Видимость уточняется</span>
+          </div>
+        </article>
+      </div>
+      <p class="eclipse-note">Список обновляется автоматически раз в месяц по каталогу затмений для Новосибирска. Фактическое наблюдение зависит от облачности и условий на горизонте. <a href="https://www.timeanddate.com/eclipse/in/russia/novosibirsk" target="_blank" rel="noopener noreferrer">Источник данных</a>.</p>
+    </section>
+
+    <footer class="site-footer"><p>Погода в Новосибирске · Прогноз на 3 дня</p></footer>
+    <div class="error-message" id="errorMessage" role="status" hidden>Не удалось получить погоду. Проверьте подключение к интернету.</div>
+  </main>
+</body>
+</html>
