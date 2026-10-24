@@ -445,15 +445,10 @@ function loadCachedAirQuality() {
 }
 
 async function loadAirQuality() {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 12000);
   try {
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 12000);
-    let response;
-    try {
-      response = await fetch(AIR_QUALITY_API_URL, {signal:controller.signal});
-    } finally {
-      window.clearTimeout(timeout);
-    }
+    const response = await fetch(AIR_QUALITY_API_URL, {signal:controller.signal});
     if (!response.ok) throw new Error("Air-quality API returned " + response.status);
     const data = await response.json();
     renderAirQuality(data, false);
@@ -464,11 +459,15 @@ async function loadAirQuality() {
     }
   } catch (error) {
     console.warn("Не удалось обновить качество воздуха:", error);
-    $("airQualityStatus").textContent = "Нет связи с источником";
+    $("airQualityStatus").textContent = error.name === "AbortError"
+      ? "Источник отвечает слишком долго"
+      : "Нет связи с источником";
     if (!$("airAqi").textContent || $("airAqi").textContent === "—") {
       $("airCategory").textContent = "Данные пока недоступны";
       $("airAdvice").textContent = "Не удалось загрузить качество воздуха. Попробуем снова автоматически.";
     }
+  } finally {
+    window.clearTimeout(timeout);
   }
 }
 
