@@ -28,6 +28,54 @@ function cacheAgeLabel(savedAt) {
   return `${days} дн. назад`;
 }
 
+function updateSeasonEvents() {
+  const names = [
+    { month: 2, day: 20, name: "Весеннее равноденствие" },
+    { month: 5, day: 21, name: "Летнее солнцестояние" },
+    { month: 8, day: 22, name: "Осеннее равноденствие" },
+    { month: 11, day: 21, name: "Зимнее солнцестояние" }
+  ];
+  const now = new Date();
+  const today = new Date(new Intl.DateTimeFormat("en-CA", {
+    timeZone: LOCATION.timezone, year: "numeric", month: "2-digit", day: "2-digit"
+  }).format(now) + "T00:00:00Z");
+  const events = [];
+  for (let year = today.getUTCFullYear(); year <= today.getUTCFullYear() + 1; year++) {
+    for (const item of names) {
+      const date = new Date(Date.UTC(year, item.month, item.day));
+      events.push({ ...item, year, date, days: Math.round((date - today) / 86400000) });
+    }
+  }
+  events.sort((a, b) => a.date - b.date);
+  const next = events.find((event) => event.days >= 0);
+  if (!next) return;
+  const nextName = $("seasonNextName");
+  const nextDate = $("seasonNextDate");
+  const countdown = $("seasonNextCountdown");
+  if (nextName) nextName.textContent = next.name;
+  if (nextDate) nextDate.textContent = new Intl.DateTimeFormat("ru-RU", {
+    timeZone: LOCATION.timezone, day: "numeric", month: "long", year: "numeric"
+  }).format(next.date);
+  if (countdown) countdown.textContent = next.days === 0 ? "Сегодня" :
+    next.days === 1 ? "Остался 1 день" : `Осталось ${next.days} ${next.days % 10 >= 2 && next.days % 10 <= 4 && !(next.days % 100 >= 12 && next.days % 100 <= 14) ? "дня" : "дней"}`;
+  const list = $("seasonEventsList");
+  if (list) {
+    list.replaceChildren();
+    for (const event of events.filter((item) => item.days >= 0).slice(0, 4)) {
+      const row = document.createElement("div");
+      row.className = "season-event-row";
+      const label = document.createElement("span");
+      label.textContent = event.name;
+      const value = document.createElement("strong");
+      value.textContent = new Intl.DateTimeFormat("ru-RU", {
+        timeZone: LOCATION.timezone, day: "numeric", month: "short"
+      }).format(event.date);
+      row.append(label, value);
+      list.append(row);
+    }
+  }
+}
+
 function weatherInfo(code) {
   if (code === 0) return { label: "Ясно", icon: "☀", theme: "clear", effect: "" };
   if (code === 1) return { label: "Преимущественно ясно", icon: "🌤", theme: "clear", effect: "" };
@@ -759,6 +807,7 @@ async function loadEclipseData() {
   }
 }
 
+updateSeasonEvents();
 updateMoonPhase();
 updateEclipses();
 loadEclipseData();
