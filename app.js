@@ -173,14 +173,18 @@ function updateAtmosphere() {
   hero.classList.remove("season-winter", "season-spring", "season-summer", "season-autumn",
     "time-night", "time-dawn", "time-sunrise", "time-day", "time-evening");
   hero.classList.add(`season-${season}`, `time-${phase}`);
-  const daylightProgress = sunrise !== null && sunset !== null && sunset > sunrise
+  const hasSolarTimes = sunrise !== null && sunset !== null && sunset > sunrise;
+  const daylightProgress = hasSolarTimes
     ? Math.max(0, Math.min(1, (minuteOfDay - sunrise) / (sunset - sunrise)))
     : Math.max(0, Math.min(1, (minuteOfDay - 360) / 720));
-  const sunX = 15 + daylightProgress * 70;
-  const sunY = phase === "night" ? 18
-    : 48 - Math.sin(Math.PI * daylightProgress) * 32;
+  // Anchor the sun to the horizon before sunrise and after sunset; keep the halo on the same center.
+  const sunX = 12 + daylightProgress * 76;
+  const sunY = phase === "night" ? 64
+    : hasSolarTimes && minuteOfDay < sunrise ? 64
+    : hasSolarTimes && minuteOfDay >= sunset ? 64
+    : 52 - Math.sin(Math.PI * daylightProgress) * 34;
   hero.style.setProperty("--sun-x", `${sunX}%`);
-  hero.style.setProperty("--sun-y", `${Math.max(12, sunY)}%`);
+  hero.style.setProperty("--sun-y", `${Math.max(14, Math.min(64, sunY))}%`);
   const cutout = phase === "night" ? "#172b49" : phase === "dawn" || phase === "evening" ? "#bd8490" : "#39749a";
   hero.style.setProperty("--moon-cutout", cutout);
   const info = weatherInfo(latestWeatherCode);
