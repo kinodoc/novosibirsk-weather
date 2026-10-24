@@ -573,10 +573,12 @@ function updateEclipses() {
 }
 
 async function loadEclipseData() {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 12000);
   try {
     const response = await fetch(
       "https://raw.githubusercontent.com/kinodoc/novosibirsk-weather/main/eclipse-data.json",
-      { cache: "no-store" }
+      { cache: "no-store", signal: controller.signal }
     );
     if (!response.ok) throw new Error(`Eclipse catalog returned HTTP ${response.status}`);
     const data = await response.json();
@@ -600,7 +602,14 @@ async function loadEclipseData() {
     NOVOSIBIRSK_ECLIPSES.solar = nextEvents.solar;
     updateEclipses();
   } catch (error) {
-    console.warn("Не удалось обновить список затмений; используется сохранённый список.", error);
+    console.warn(
+      error.name === "AbortError"
+        ? "Истёк тайм-аут обновления каталога затмений; используется сохранённый список."
+        : "Не удалось обновить список затмений; используется сохранённый список.",
+      error
+    );
+  } finally {
+    window.clearTimeout(timeout);
   }
 }
 
