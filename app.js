@@ -435,6 +435,7 @@ window.addEventListener("pageshow", refreshWhenPageReturns);
 const AIR_QUALITY_API_URL = "https://194.87.186.159/weather-api/air-quality";
 const AIR_QUALITY_CACHE_KEY = "sever-air-quality-cache-v1";
 const AIR_QUALITY_REFRESH_MS = 30 * 60 * 1000;
+let airQualityRequestInFlight = false;
 
 function airQualityInfo(value) {
   if (!Number.isFinite(value)) return {label:"Нет данных",advice:"Индекс качества воздуха сейчас недоступен.",className:""};
@@ -479,6 +480,8 @@ function loadCachedAirQuality() {
 }
 
 async function loadAirQuality() {
+  if (airQualityRequestInFlight) return;
+  airQualityRequestInFlight = true;
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), 12000);
   try {
@@ -502,6 +505,7 @@ async function loadAirQuality() {
     }
   } finally {
     window.clearTimeout(timeout);
+    airQualityRequestInFlight = false;
   }
 }
 
