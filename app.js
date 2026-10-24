@@ -322,7 +322,10 @@ function renderWeatherForecast(data, cached = false, cacheSavedAt = null) {
   const dailyInvalid = !isOrderedTimeArray(daily?.time, /^\d{4}-\d{2}-\d{2}$/) ||
     daily.time.length < 3 ||
     dailyFields.some((key) => !Array.isArray(daily[key]) || daily[key].length < daily.time.length);
-  if (!data.current || typeof data.current.time !== "string" ||
+  const currentTimeValid = typeof data.current?.time === "string" &&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(data.current.time) &&
+    Number.isFinite(Date.parse(`${data.current.time}:00Z`));
+  if (!data.current || !currentTimeValid ||
       !Number.isFinite(data.current.temperature_2m) || hourlyInvalid || dailyInvalid) {
     throw new Error("Weather data is incomplete or has invalid time data");
   }
