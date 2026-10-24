@@ -228,3 +228,7 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 /* Lightweight mode: reduce continuous repainting on low-power devices. */
 .cloud-one,.cloud-two{animation:none!important;}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Keep the solar halo centered on the sun on desktop and mobile. */
+.sun-glow{left:var(--sun-x);top:var(--sun-y);right:auto;width:clamp(180px,38vw,260px);height:clamp(180px,38vw,260px);transform:translate(-50%,-50%)}
+@media(max-width:760px){.sun-glow{width:210px;height:210px}}
