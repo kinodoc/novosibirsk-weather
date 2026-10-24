@@ -262,7 +262,7 @@ function updateAtmosphere() {
   hero.classList.remove("season-winter", "season-spring", "season-summer", "season-autumn",
     "time-night", "time-dawn", "time-sunrise", "time-day", "time-evening");
   hero.classList.add(`season-${season}`, `time-${phase}`);
-  hero.classList.toggle("sunset-passed", hasSunsetTime(sunset) && minuteOfDay >= sunset);
+  hero.classList.toggle("sunset-passed", sunset !== null && minuteOfDay >= sunset);
   const hasSolarTimes = sunrise !== null && sunset !== null && sunset > sunrise;
   const daylightProgress = hasSolarTimes
     ? Math.max(0, Math.min(1, (minuteOfDay - sunrise) / (sunset - sunrise)))
