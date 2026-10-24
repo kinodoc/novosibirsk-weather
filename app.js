@@ -191,10 +191,10 @@ function updateAtmosphere() {
   if (window.SunCalc && $("moonDisc")) {
     const moonPosition = SunCalc.getMoonPosition(new Date(), 55.0084, 82.9357);
     const moonAltitude = moonPosition.altitude;
-    const moonAzimuth = ((moonPosition.azimuth * 180 / Math.PI) + 360) % 360;
-    // Map the eastern-to-western sky across the hero. Keep the Moon hidden below the horizon.
-    const moonVisible = moonAltitude > -0.01 && moonAzimuth >= 35 && moonAzimuth <= 325;
-    const moonX = 50 + Math.max(-1, Math.min(1, (moonAzimuth - 180) / 145)) * 39;
+    const moonAzimuth = moonPosition.azimuth; // SunCalc: 0=south, negative=east, positive=west.
+    // Map the visible southern sky from east to west across the hero.
+    const moonVisible = moonAltitude > 0 && Math.abs(moonAzimuth) <= Math.PI / 2;
+    const moonX = 50 + Math.max(-1, Math.min(1, moonAzimuth / (Math.PI / 2))) * 39;
     const moonY = 57 - Math.max(0, Math.min(1, moonAltitude / (Math.PI / 2))) * 43;
     hero.style.setProperty("--moon-x", `${moonX}%`);
     hero.style.setProperty("--moon-y", `${Math.max(13, Math.min(66, moonY))}%`);
