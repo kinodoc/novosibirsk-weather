@@ -606,14 +606,23 @@ async function loadEclipseData() {
     for (const kind of ["lunar", "solar"]) {
       if (!Array.isArray(data[kind])) throw new Error(`Missing ${kind} eclipse data`);
       nextEvents[kind] = data[kind]
-        .filter((event) => /^\d{4}-\d{2}-\d{2}$/.test(event.date) && typeof event.type === "string")
+        .filter((event) => {
+          if (!event || typeof event !== "object" ||
+              typeof event.date !== "string" ||
+              !/^\d{4}-\d{2}-\d{2}$/.test(event.date) ||
+              typeof event.type !== "string" || !event.type.trim()) return false;
+          const parsedDate = new Date(`${event.date}T00:00:00Z`);
+          return Number.isFinite(parsedDate.getTime()) &&
+            parsedDate.toISOString().slice(0, 10) === event.date;
+        })
         .map((event) => ({
           date: event.date,
-          type: event.type,
+          type: event.type.trim(),
           time: null,
           detail: "Данные из обновляемого каталога",
           visibility: ""
-        }));
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
       if (!nextEvents[kind].length) throw new Error(`No valid ${kind} eclipses in catalog`);
     }
 
