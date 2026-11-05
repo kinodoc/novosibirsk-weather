@@ -33,7 +33,27 @@ jobs:
           SITE_URL: https://pogodansk.tuqo.ru/
           INDEXNOW_KEY: 9b2c6f4d8e1a7c305f6b9d2e4a8c1f73
         run: |
-          node -e 'const u = new URL("/" + process.env.INDEXNOW_KEY + ".txt", process.env.SITE_URL); fetch(u).then(async r => { const t = (await r.text()).trim(); if (!r.ok || t !== process.env.INDEXNOW_KEY) { console.error("IndexNow key file check failed:", r.status); process.exit(1); } console.log("IndexNow key file is publicly available."); }).catch(e => { console.error(e); process.exit(1); })'
+          node --input-type=module <<'NODE'
+          const url = new URL("/" + process.env.INDEXNOW_KEY + ".txt", process.env.SITE_URL);
+          let lastError;
+          for (let attempt = 1; attempt <= 5; attempt++) {
+            try {
+              const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+              const text = (await response.text()).trim();
+              if (response.ok && text === process.env.INDEXNOW_KEY) {
+                console.log("IndexNow key file is publicly available.");
+                process.exit(0);
+              }
+              lastError = new Error(`HTTP ${response.status}; key content mismatch or unavailable`);
+            } catch (error) {
+              lastError = error;
+            }
+            console.warn(`Key-file check ${attempt}/5 failed: ${lastError.message}`);
+            if (attempt < 5) await new Promise(resolve => setTimeout(resolve, attempt * 10000));
+          }
+          console.error("IndexNow key-file verification failed after retries:", lastError);
+          process.exit(1);
+          NODE
       - name: Submit changed URL to IndexNow
         env:
           SITE_URL: https://pogodansk.tuqo.ru/
