@@ -86,9 +86,17 @@ async function bingWebmaster() {
 for (const [name, fn] of [["Google Search Console", googleSearchConsole], ["Bing Webmaster Tools", bingWebmaster]]) {
   try { await fn(); }
   catch (error) {
-    warnings.push(`${name}: ${error.message}`);
-    lines.push(`- ❌ ${name}: ${error.message}`);
-    console.error(`${name}: ${error.message}`);
+    const disabledGoogleApi =
+      name === "Google Search Console" &&
+      /Search Console API has not been used.*or it is disabled/i.test(error.message);
+    if (disabledGoogleApi) {
+      lines.push("- ⚠️ Google Search Console: API отключён в Google Cloud. Включите Search Console API для проекта сервисного аккаунта; остальные проверки продолжаются.");
+      console.warn(`${name}: API disabled in Google Cloud; report recorded as a warning.`);
+    } else {
+      warnings.push(`${name}: ${error.message}`);
+      lines.push(`- ❌ ${name}: ${error.message}`);
+      console.error(`${name}: ${error.message}`);
+    }
   }
 }
 
