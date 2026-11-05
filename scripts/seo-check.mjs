@@ -2,17 +2,32 @@ const SITE_URL = (process.env.SITE_URL || "https://pogodansk.tuqo.ru/").replace(
 const TIMEOUT_MS = 15000;
 
 async function get(url) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-  try {
-    return await fetch(url, {
-      redirect: "follow",
-      signal: controller.signal,
-      headers: { "user-agent": "NovosibirskWeather-SEO-Monitor/1.0" }
-    });
-  } finally {
-    clearTimeout(timer);
+  let lastError;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    try {
+      const response = await fetch(url, {
+        redirect: "follow",
+        signal: controller.signal,
+        headers: { "user-agent": "NovosibirskWeather-SEO-Monitor/1.0" }
+      });
+      if ([502, 503, 504, 429].includes(response.status) && attempt < 3) {
+        console.warn(`Temporary HTTP ${response.status} for ${url}; retry ${attempt}/3.`);
+        await new Promise(resolve => setTimeout(resolve, attempt * 5000));
+        continue;
+      }
+      return response;
+    } catch (error) {
+      lastError = error;
+      if (attempt === 3) throw error;
+      console.warn(`Request attempt ${attempt}/3 failed for ${url}: ${error.message}`);
+      await new Promise(resolve => setTimeout(resolve, attempt * 5000));
+    } finally {
+      clearTimeout(timer);
+    }
   }
+  throw lastError || new Error("Request failed after retries");
 }
 
 function assert(condition, message) {
