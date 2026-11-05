@@ -3,6 +3,11 @@ name: Update Novosibirsk eclipse data
 on:
   schedule:
     - cron: "17 5 1 * *"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/update_eclipses.py"
+      - ".github/workflows/update-eclipses.yml"
   workflow_dispatch:
 
 permissions:
