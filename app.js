@@ -732,9 +732,26 @@ const NOVOSIBIRSK_ECLIPSES = {
 };
 
 function moonPhaseAt(date = new Date()) {
-  const age = ((date.getTime() - KNOWN_NEW_MOON_UTC) / 86400000 % LUNAR_MONTH_DAYS + LUNAR_MONTH_DAYS) % LUNAR_MONTH_DAYS;
-  const fraction = age / LUNAR_MONTH_DAYS;
-  const illumination = (1 - Math.cos(2 * Math.PI * fraction)) / 2;
+  let fraction;
+  let illumination;
+  let waxing;
+
+  // SunCalc is already loaded for the Moon's position. Use its astronomical
+  // illumination and phase instead of a fixed 2000 epoch and a mean lunar month,
+  // which drifted by about 15 hours from the real November 2026 new moon.
+  const lunar = window.SunCalc?.getMoonIllumination?.(date);
+  if (lunar && Number.isFinite(lunar.phase) && Number.isFinite(lunar.fraction)) {
+    fraction = ((lunar.phase % 1) + 1) % 1;
+    illumination = Math.max(0, Math.min(1, lunar.fraction));
+    waxing = fraction < 0.5;
+  } else {
+    // Fallback for cases where the external SunCalc script cannot be loaded.
+    const age = ((date.getTime() - KNOWN_NEW_MOON_UTC) / 86400000 % LUNAR_MONTH_DAYS + LUNAR_MONTH_DAYS) % LUNAR_MONTH_DAYS;
+    fraction = age / LUNAR_MONTH_DAYS;
+    illumination = (1 - Math.cos(2 * Math.PI * fraction)) / 2;
+    waxing = fraction < 0.5;
+  }
+
   let name;
   if (fraction < 0.035 || fraction >= 0.965) name = "Новолуние";
   else if (fraction < 0.215) name = "Растущий серп";
@@ -744,7 +761,7 @@ function moonPhaseAt(date = new Date()) {
   else if (fraction < 0.715) name = "Убывающая Луна";
   else if (fraction < 0.785) name = "Последняя четверть";
   else name = "Убывающий серп";
-  return { fraction, illumination, waxing: fraction < 0.5, name };
+  return { fraction, illumination, waxing, name };
 }
 
 function updateMoonPhase() {
