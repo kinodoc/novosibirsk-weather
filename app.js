@@ -751,6 +751,18 @@ function updateMoonPhase() {
   const phase = moonPhaseAt(new Date());
   if (!phase) return;
 
+  // Refresh the Moon's actual position in the local sky along with its phase.
+  const hero = $("hero");
+  if (hero) {
+    const southOffset = ((phase.azimuth - 180 + 540) % 360) - 180;
+    const moonVisible = phase.altitude > 0 && Math.abs(southOffset) <= 90;
+    const moonX = 50 + Math.max(-1, Math.min(1, southOffset / 90)) * 39;
+    const moonY = 57 - Math.max(0, Math.min(1, phase.altitude / 90)) * 43;
+    hero.style.setProperty("--moon-x", `${moonX}%`);
+    hero.style.setProperty("--moon-y", `${Math.max(13, Math.min(66, moonY))}%`);
+    hero.classList.toggle("moon-above-horizon", moonVisible);
+  }
+
   const radius = 29;
   // For a spherical Moon, the terminator's projected semi-width is
   // R * |cos(phase angle)|: 0 at quarter, R near new/full moon.
@@ -875,5 +887,5 @@ updateEclipses();
 loadEclipseData();
 window.setInterval(loadEclipseData, 24 * 60 * 60 * 1000);
 
-window.setInterval(updateMoonPhase, 60 * 60 * 1000);
+window.setInterval(updateMoonPhase, 5 * 60 * 1000);
 window.setInterval(updateEclipses, 60 * 60 * 1000);
