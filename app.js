@@ -229,8 +229,18 @@ function renderActualNightSky(){
  const gmst=(280.46061837+360.98564736629*(jd-2451545)+0.000387933*t*t-t*t*t/38710000+360)%360;
  const lst=((gmst+LOCATION.longitude)%360+360)%360, lat=LOCATION.latitude*Math.PI/180;
  const points={};
+ // Precess J2000 catalogue coordinates to the observation date (Meeus).
+ const zeta=(2306.2181*t+0.30188*t*t+0.017998*t*t*t)/3600*Math.PI/180;
+ const z=(2306.2181*t+1.09468*t*t+0.018203*t*t*t)/3600*Math.PI/180;
+ const theta=(2004.3109*t-0.42665*t*t-0.041833*t*t*t)/3600*Math.PI/180;
  for(const [name,raHours,decDeg,mag] of SKY_STARS){
-  const ha=((lst-raHours*15+540)%360-180)*Math.PI/180, dec=decDeg*Math.PI/180;
+  const ra0=raHours*15*Math.PI/180, dec0=decDeg*Math.PI/180;
+  const A=Math.cos(dec0)*Math.sin(ra0+zeta);
+  const B=Math.cos(theta)*Math.cos(dec0)*Math.cos(ra0+zeta)-Math.sin(theta)*Math.sin(dec0);
+  const C=Math.sin(theta)*Math.cos(dec0)*Math.cos(ra0+zeta)+Math.cos(theta)*Math.sin(dec0);
+  const ra=((Math.atan2(A,B)+z)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
+  const dec=Math.asin(Math.max(-1,Math.min(1,C)));
+  const ha=((lst-ra*180/Math.PI+540)%360-180)*Math.PI/180;
   const sinAlt=Math.sin(lat)*Math.sin(dec)+Math.cos(lat)*Math.cos(dec)*Math.cos(ha);
   const alt=Math.asin(Math.max(-1,Math.min(1,sinAlt)));
   if(alt<5*Math.PI/180 || mag>3.0)continue;
@@ -249,12 +259,30 @@ function renderActualNightSky(){
  for(const [constellation,names] of CONSTELLATION_LINES){
   for(let i=0;i<names.length-1;i++){
    const p1=points[names[i]],p2=points[names[i+1]];
-   if(!p1||!p2||Math.abs(p1.x-p2.x)>50)continue;
-   const path=document.createElementNS(ns,"path");
-   path.setAttribute("class","constellation");
-   path.setAttribute("d",`M ${p1.x*10} ${p1.y*5.3} L ${p2.x*10} ${p2.y*5.3}`);
-   path.setAttribute("data-constellation",constellation);
-   lineGroup.append(path);
+   if(!p1||!p2)continue;
+   const addSegment=(x1,y1,x2,y2)=>{
+    const path=document.createElementNS(ns,"path");
+    path.setAttribute("class","constellation");
+    path.setAttribute("d",`M ${x1*10} ${y1*5.3} L ${x2*10} ${y2*5.3}`);
+    path.setAttribute("data-constellation",constellation);
+    lineGroup.append(path);
+   };
+   if(Math.abs(p1.x-p2.x)<=50){
+    addSegment(p1.x,p1.y,p2.x,p2.y);
+   }else{
+    // Split a short connection crossing north into two edge segments.
+    const crossesRight=p1.x>p2.x;
+    const x1=crossesRight?p1.x:p1.x+100;
+    const x2=crossesRight?p2.x+100:p2.x;
+    const yEdge=p1.y+(p2.y-p1.y)*(100-x1)/(x2-x1);
+    if(crossesRight){
+     addSegment(p1.x,p1.y,100,yEdge);
+     addSegment(0,yEdge,p2.x,p2.y);
+    }else{
+     addSegment(p1.x,p1.y,0,yEdge);
+     addSegment(100,yEdge,p2.x,p2.y);
+    }
+   }
   }
  }
  svg.append(lineGroup);
