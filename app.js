@@ -314,12 +314,21 @@ function daylightChangeLabel(daily) {
     return index >= 0 ? daylightMinutes(daily, index) : null;
   };
   const calculatedDaylight = (key) => {
-    const date = new Date(`${key}T12:00:00+07:00`);
-    if (window.SunCalc) {
-      const times = SunCalc.getTimes(date, LOCATION.latitude, LOCATION.longitude);
-      if (times.sunrise instanceof Date && times.sunset instanceof Date &&
-          Number.isFinite(times.sunrise.getTime()) && Number.isFinite(times.sunset.getTime())) {
-        return Math.round((times.sunset.getTime() - times.sunrise.getTime()) / 60000);
+    // Start at local midnight so both solar events belong to the requested date.
+    const date = new Date(`${key}T00:00:00+07:00`);
+    if (window.Astronomy) {
+      const observer = new Astronomy.Observer(
+        LOCATION.latitude, LOCATION.longitude, 0
+      );
+      const sunrise = Astronomy.SearchRiseSet(
+        Astronomy.Body.Sun, observer, +1, date, 1, 0
+      );
+      const sunset = Astronomy.SearchRiseSet(
+        Astronomy.Body.Sun, observer, -1, date, 1, 0
+      );
+      if (sunrise?.date instanceof Date && sunset?.date instanceof Date &&
+          Number.isFinite(sunrise.date.getTime()) && Number.isFinite(sunset.date.getTime())) {
+        return Math.round((sunset.date.getTime() - sunrise.date.getTime()) / 60000);
       }
     }
     // NOAA-style solar declination fallback, used for BOTH dates to keep
