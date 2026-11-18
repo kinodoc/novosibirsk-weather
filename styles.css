@@ -102,8 +102,7 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .cityline{z-index:2;background:linear-gradient(90deg,rgba(6,15,29,.22),transparent 45%),linear-gradient(0deg,rgba(6,15,29,.48),transparent 58%),url("./cityscape.svg?v=citypanorama4") center 46%/cover no-repeat;filter:saturate(.9);transition:filter 1.5s ease,opacity 1.5s ease}
 .sun-glow{z-index:0;right:auto;left:calc(var(--sun-x) - 130px);top:calc(var(--sun-y) - 130px);opacity:.8}
 .sun-disc{position:absolute;z-index:0;left:var(--sun-x);top:var(--sun-y);width:clamp(34px,5vw,58px);height:clamp(34px,5vw,58px);transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8d7,#ffd28a 62%,#f4a96e);box-shadow:0 0 35px 10px rgba(255,202,132,.2);opacity:1;transition:left 1.5s ease,top 1.5s ease,opacity 1s ease}
-.moon-disc{position:absolute;z-index:0;left:var(--sun-x);top:var(--sun-y);width:42px;height:42px;transform:translate(-50%,-50%);border-radius:50%;background:#e0eaf8;box-shadow:0 0 30px rgba(203,225,255,.25);opacity:0;transition:left 1.5s ease,top 1.5s ease,opacity 1s ease}
-.moon-disc:after{content:"";position:absolute;left:12px;top:-4px;width:38px;height:38px;border-radius:50%;background:var(--moon-cutout,#243d58);transition:background 1.5s ease}
+.moon-disc{position:absolute;z-index:0;left:var(--moon-x,50%);top:var(--moon-y,57%);width:42px;height:42px;transform:translate(-50%,-50%);border-radius:50%;background:#e0eaf8;box-shadow:0 0 30px rgba(203,225,255,.25);opacity:0;transition:left 1.5s ease,top 1.5s ease,opacity 1s ease}
 .sky-stars{position:absolute;inset:0;z-index:0;opacity:0;overflow:hidden;pointer-events:none;transition:opacity 1.5s ease}
 .sky-stars svg{display:block;width:100%;height:100%;overflow:visible}
 .sky-stars .constellation{fill:none;stroke:#c5ddff;stroke-opacity:.22;stroke-width:.65;vector-effect:non-scaling-stroke}
