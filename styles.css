@@ -251,3 +251,10 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .season-event-row strong{color:#f1f6fc;font-size:12px;white-space:nowrap}
 .season-events-note{margin:12px 2px 0;color:#8296ae;font-size:10px;line-height:1.6}
 @media(max-width:760px){.season-events-panel{grid-template-columns:1fr;gap:10px;padding:18px;border-radius:19px}.season-next{padding:2px 0 15px;border-bottom:1px solid rgba(255,255,255,.08)}.season-next strong{font-size:22px}.season-event-row{padding:12px 0}}
+
+
+/* Show the live, horizon-filtered constellation stick figures. */
+.sky-stars .constellation{display:block!important;stroke:#c5ddff;stroke-opacity:.38;stroke-width:1.05;stroke-linecap:round;fill:none}
+.sky-stars .star{vector-effect:non-scaling-stroke}
+
+.hero.time-night .sky-stars .constellation{display:block!important}
