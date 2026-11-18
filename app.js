@@ -711,8 +711,6 @@ window.setInterval(loadAirQuality, AIR_QUALITY_REFRESH_MS);
 
 
 /* Moon phase is calculated locally. Eclipse data refreshes from a scheduled public catalog. */
-const LUNAR_MONTH_DAYS = 29.530588853;
-const KNOWN_NEW_MOON_UTC = Date.UTC(2000, 0, 6, 18, 14);
 const NOVOSIBIRSK_ECLIPSES = {
   lunar: [
     { date: "2027-02-20", type: "Полутеневое лунное затмение", time: null, detail: "По данным каталога затмений", visibility: "Видно в Новосибирске" },
