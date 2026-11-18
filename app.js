@@ -196,7 +196,30 @@ const SKY_STARS = [
  ["Arcturus",14.261,19.182,0.0],["Spica",13.420,-11.161,1.0],["Regulus",10.139,11.967,1.4],["Denebola",11.818,14.572,2.1],
  ["Fomalhaut",22.961,-29.622,1.2],["Markab",23.079,15.205,2.5],["Scheat",23.063,28.083,2.4],["Algenib",0.220,15.183,2.8],["Enif",21.736,9.875,2.4],
  ["Mirfak",3.405,49.861,1.8],["Algol",3.136,40.956,2.1],["Hamal",2.120,23.462,2.0],["Alpheratz",0.139,29.091,2.1],
+ ["Sadr",20.370,40.257,2.2],["Gienah Cyg",20.770,33.970,2.5],["Tarazed",19.771,10.613,2.7],
+ ["Algieba",10.332,19.842,2.0],["Zosma",11.235,20.524,2.6],
+ ["Shaula",17.560,-37.104,1.6],["Sargas",17.622,-42.998,1.9],
  ["Nunki",18.921,-26.297,2.0],["Kaus Australis",18.403,-34.384,1.8],["Antares",16.490,-26.432,1.1],["Rasalhague",17.582,12.560,2.1]
+];
+
+// Traditional constellation stick figures. Adjacent stars are connected only
+// when both are above the local horizon; these are not IAU boundary polygons.
+const CONSTELLATION_LINES = [
+ ["Большая Медведица",["Dubhe","Merak","Phecda","Megrez","Alioth","Mizar","Alkaid"]],
+ ["Большая Медведица",["Dubhe","Megrez"]],
+ ["Кассиопея",["Caph","Schedar","Gamma Cas","Ruchbah","Segin"]],
+ ["Лебедь",["Deneb","Sadr","Albireo"]],
+ ["Лебедь",["Sadr","Gienah Cyg"]],
+ ["Орион",["Betelgeuse","Bellatrix","Mintaka","Alnilam","Alnitak","Saiph","Rigel","Betelgeuse"]],
+ ["Близнецы",["Castor","Pollux"]],
+ ["Телец",["Aldebaran","Elnath"]],
+ ["Лев",["Regulus","Algieba","Denebola"]],
+ ["Лев",["Regulus","Denebola"]],
+ ["Пегас",["Markab","Scheat","Alpheratz","Algenib","Markab"]],
+ ["Персей",["Mirfak","Algol"]],
+ ["Орёл",["Altair","Tarazed"]],
+ ["Скорпион",["Antares","Shaula","Sargas"]],
+ ["Стрелец",["Nunki","Kaus Australis"]]
 ];
 
 function julianDate(date){return date.getTime()/86400000+2440587.5}
@@ -210,7 +233,7 @@ function renderActualNightSky(){
   const ha=((lst-raHours*15+540)%360-180)*Math.PI/180, dec=decDeg*Math.PI/180;
   const sinAlt=Math.sin(lat)*Math.sin(dec)+Math.cos(lat)*Math.cos(dec)*Math.cos(ha);
   const alt=Math.asin(Math.max(-1,Math.min(1,sinAlt)));
-  if(alt<5*Math.PI/180 || mag>2.35)continue;
+  if(alt<5*Math.PI/180 || mag>3.0)continue;
   const az=Math.atan2(-Math.sin(ha)*Math.cos(dec),Math.sin(dec)*Math.cos(lat)-Math.cos(dec)*Math.sin(lat)*Math.cos(ha));
   const azDeg=(az*180/Math.PI+360)%360;
   const x=azDeg/360*100, y=61-(alt*180/Math.PI)/90*53;
@@ -219,6 +242,22 @@ function renderActualNightSky(){
  const ns="http://www.w3.org/2000/svg", svg=document.createElementNS(ns,"svg");
  const width=Math.max(host.clientWidth,1), height=Math.max(host.clientHeight,1);
  svg.setAttribute("viewBox","0 0 1000 530");svg.setAttribute("preserveAspectRatio","none");svg.setAttribute("aria-hidden","true");
+ // Draw constellation segments behind the stars. Skip azimuth wrap-around
+ // so a constellation near north is not joined across the entire panorama.
+ const lineGroup=document.createElementNS(ns,"g");
+ lineGroup.setAttribute("class","constellation-lines");
+ for(const [constellation,names] of CONSTELLATION_LINES){
+  for(let i=0;i<names.length-1;i++){
+   const p1=points[names[i]],p2=points[names[i+1]];
+   if(!p1||!p2||Math.abs(p1.x-p2.x)>50)continue;
+   const path=document.createElementNS(ns,"path");
+   path.setAttribute("class","constellation");
+   path.setAttribute("d",`M ${p1.x*10} ${p1.y*5.3} L ${p2.x*10} ${p2.y*5.3}`);
+   path.setAttribute("data-constellation",constellation);
+   lineGroup.append(path);
+  }
+ }
+ svg.append(lineGroup);
  // Keep stars circular in CSS pixels even when the SVG is stretched on narrow mobile screens.
  for(const [name,p] of Object.entries(points)){
   const radius=Math.max(.8,2.05-p.mag*.48);
