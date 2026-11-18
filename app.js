@@ -732,26 +732,29 @@ const NOVOSIBIRSK_ECLIPSES = {
 };
 
 function moonPhaseAt(date = new Date()) {
-  let fraction;
-  let illumination;
-  let waxing;
-
-  // SunCalc is already loaded for the Moon's position. Use its astronomical
-  // illumination and phase instead of a fixed 2000 epoch and a mean lunar month,
-  // which drifted by about 15 hours from the real November 2026 new moon.
+  // Use one SunCalc snapshot for phase, illuminated fraction and bright-limb angle.
   const lunar = window.SunCalc?.getMoonIllumination?.(date);
-  if (lunar && Number.isFinite(lunar.phase) && Number.isFinite(lunar.fraction)) {
-    fraction = ((lunar.phase % 1) + 1) % 1;
-    illumination = Math.max(0, Math.min(1, lunar.fraction));
-    waxing = fraction < 0.5;
-  } else {
-    // Fallback for cases where the external SunCalc script cannot be loaded.
-    const age = ((date.getTime() - KNOWN_NEW_MOON_UTC) / 86400000 % LUNAR_MONTH_DAYS + LUNAR_MONTH_DAYS) % LUNAR_MONTH_DAYS;
-    fraction = age / LUNAR_MONTH_DAYS;
-    illumination = (1 - Math.cos(2 * Math.PI * fraction)) / 2;
-    waxing = fraction < 0.5;
+  if (lunar && Number.isFinite(lunar.phase) &&
+      Number.isFinite(lunar.fraction) && Number.isFinite(lunar.angle)) {
+    const fraction = ((lunar.phase % 1) + 1) % 1;
+    const illumination = Math.max(0, Math.min(1, lunar.fraction));
+    let name;
+    if (fraction < 0.035 || fraction >= 0.965) name = "Новолуние";
+    else if (fraction < 0.215) name = "Растущий серп";
+    else if (fraction < 0.285) name = "Первая четверть";
+    else if (fraction < 0.465) name = "Растущая Луна";
+    else if (fraction < 0.535) name = "Полнолуние";
+    else if (fraction < 0.715) name = "Убывающая Луна";
+    else if (fraction < 0.785) name = "Последняя четверть";
+    else name = "Убывающий серп";
+    return { fraction, illumination, waxing: fraction < 0.5, angle: lunar.angle, name };
   }
 
+  // Fallback: retain the known new-moon epoch if SunCalc is unavailable.
+  const age = ((date.getTime() - KNOWN_NEW_MOON_UTC) / 86400000 % LUNAR_MONTH_DAYS + LUNAR_MONTH_DAYS) % LUNAR_MONTH_DAYS;
+  const fraction = age / LUNAR_MONTH_DAYS;
+  const illumination = (1 - Math.cos(2 * Math.PI * fraction)) / 2;
+  const waxing = fraction < 0.5;
   let name;
   if (fraction < 0.035 || fraction >= 0.965) name = "Новолуние";
   else if (fraction < 0.215) name = "Растущий серп";
@@ -761,22 +764,39 @@ function moonPhaseAt(date = new Date()) {
   else if (fraction < 0.715) name = "Убывающая Луна";
   else if (fraction < 0.785) name = "Последняя четверть";
   else name = "Убывающий серп";
-  return { fraction, illumination, waxing, name };
+  return { fraction, illumination, waxing, angle: 0, name };
 }
 
 function updateMoonPhase() {
   const moon = $("moonDisc");
   const shadow = $("moonShadow");
   if (!moon || !shadow) return;
-  const phase = moonPhaseAt();
+
+  const phase = moonPhaseAt(new Date());
   const radius = 29;
-  const offset = 2 * radius * phase.illumination;
-  const shadowX = 32 + (phase.waxing ? -offset : offset);
-  shadow.setAttribute("cx", String(shadowX));
+  const terminatorRadius = Math.max(0.001, radius * Math.abs(Math.cos(2 * Math.PI * phase.fraction)));
+
+  // Draw the actual curved terminator: its projected ellipse collapses to a
+  // straight line at quarter phases and reverses at full moon.
+  let path;
+  if (phase.illumination <= 0.002) {
+    path = "M32 3 A29 29 0 1 0 32 61 A29 29 0 1 0 32 3 Z";
+  } else if (phase.illumination >= 0.998) {
+    path = "";
+  } else if (phase.waxing) {
+    const sweep = Math.cos(2 * Math.PI * phase.fraction) >= 0 ? 1 : 0;
+    path = `M32 3 A${terminatorRadius} 29 0 0 ${sweep} 32 61 A29 29 0 0 0 32 3 Z`;
+  } else {
+    const sweep = Math.cos(2 * Math.PI * phase.fraction) >= 0 ? 0 : 1;
+    path = `M32 3 A${terminatorRadius} 29 0 0 ${sweep} 32 61 A29 29 0 0 1 32 3 Z`;
+  }
+
+  shadow.setAttribute("d", path);
+  shadow.setAttribute("transform", `rotate(${phase.angle * 180 / Math.PI} 32 32)`);
+  shadow.setAttribute("fill", "#172b49");
   moon.setAttribute("aria-label", `${phase.name}; освещено ${Math.round(phase.illumination * 100)} процентов`);
   moon.setAttribute("title", `${phase.name} · ${Math.round(phase.illumination * 100)}% освещённости`);
 }
-
 
 function formatEclipseDate(dateString) {
   const date = new Date(`${dateString}T12:00:00+07:00`);
