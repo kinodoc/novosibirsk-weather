@@ -775,11 +775,13 @@ function updateMoonPhase() {
   } else if (phase.illumination >= 0.998) {
     path = "";
   } else if (phase.waxing) {
-    const sweep = Math.cos(2 * Math.PI * phase.phaseCycle) >= 0 ? 1 : 0;
-    path = `M32 3 A${terminatorRadius} 29 0 0 ${sweep} 32 61 A29 29 0 0 0 32 3 Z`;
-  } else {
+    // The path is the DARK region. Use the complementary arc sweep so the
+    // illuminated crescent remains on the Sun-facing side of the disc.
     const sweep = Math.cos(2 * Math.PI * phase.phaseCycle) >= 0 ? 0 : 1;
     path = `M32 3 A${terminatorRadius} 29 0 0 ${sweep} 32 61 A29 29 0 0 1 32 3 Z`;
+  } else {
+    const sweep = Math.cos(2 * Math.PI * phase.phaseCycle) >= 0 ? 1 : 0;
+    path = `M32 3 A${terminatorRadius} 29 0 0 ${sweep} 32 61 A29 29 0 0 0 32 3 Z`;
   }
 
   shadow.setAttribute("d", path);
