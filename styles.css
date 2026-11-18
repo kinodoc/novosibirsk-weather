@@ -135,7 +135,7 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .hero.weather-rain.time-night .cityline,.hero.weather-storm.time-night .cityline{filter:brightness(.48) saturate(.55)}
 .hero.weather-snow.time-night .cityline{filter:brightness(.68) saturate(.35)}
 @keyframes cloud-drift{from{translate:-8px 0}to{translate:24px 5px}}
-@media(max-width:760px){.sun-disc{width:39px;height:39px}.moon-disc{width:31px;height:31px}.moon-disc:after{left:9px;top:-3px;width:28px;height:28px}.cityline{background-position:54% center}}
+@media(max-width:760px){.sun-disc{width:39px;height:39px}.moon-disc{width:31px;height:31px}.cityline{background-position:54% center}}
 @media(prefers-reduced-motion:reduce){.cloud{animation:none}}
 
 /* Window illumination is drawn into the skyline SVG; no grid overlay. */
