@@ -736,6 +736,14 @@ function moonPhaseAt(date = new Date()) {
   const lunar = window.SunCalc?.getMoonIllumination?.(date);
   if (lunar && Number.isFinite(lunar.phase) &&
       Number.isFinite(lunar.fraction) && Number.isFinite(lunar.angle)) {
+    // Convert the celestial bright-limb angle to the observer's local zenith frame.
+    // SunCalc defines this as angle - parallacticAngle (anticlockwise).
+    const moonPosition = window.SunCalc?.getMoonPosition?.(
+      date, LOCATION.latitude, LOCATION.longitude
+    );
+    const zenithAngle = moonPosition && Number.isFinite(moonPosition.parallacticAngle)
+      ? lunar.angle - moonPosition.parallacticAngle
+      : lunar.angle;
     const fraction = ((lunar.phase % 1) + 1) % 1;
     const illumination = Math.max(0, Math.min(1, lunar.fraction));
     let name;
@@ -747,7 +755,7 @@ function moonPhaseAt(date = new Date()) {
     else if (fraction < 0.715) name = "Убывающая Луна";
     else if (fraction < 0.785) name = "Последняя четверть";
     else name = "Убывающий серп";
-    return { fraction, illumination, waxing: fraction < 0.5, angle: lunar.angle, name };
+    return { fraction, illumination, waxing: fraction < 0.5, angle: zenithAngle, name };
   }
 
   // Fallback: retain the known new-moon epoch if SunCalc is unavailable.
@@ -792,7 +800,8 @@ function updateMoonPhase() {
   }
 
   shadow.setAttribute("d", path);
-  shadow.setAttribute("transform", `rotate(${phase.angle * 180 / Math.PI} 32 32)`);
+  // SVG's positive rotation is clockwise; SunCalc's zenith angle is anticlockwise.
+  shadow.setAttribute("transform", `rotate(${-phase.angle * 180 / Math.PI} 32 32)`);
   shadow.setAttribute("fill", "#172b49");
   moon.setAttribute("aria-label", `${phase.name}; освещено ${Math.round(phase.illumination * 100)} процентов`);
   moon.setAttribute("title", `${phase.name} · ${Math.round(phase.illumination * 100)}% освещённости`);
