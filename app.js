@@ -223,6 +223,18 @@ const CONSTELLATION_LINES = [
 ];
 
 function julianDate(date){return date.getTime()/86400000+2440587.5}
+
+// One azimuth/altitude projection for every object in the sky panorama.
+// x: full 360° azimuth; y: 0–90° altitude, shared by stars and the Moon.
+function projectSkyPosition(azimuth, altitude){
+ const normalizedAzimuth=((azimuth%360)+360)%360;
+ const clampedAltitude=Math.max(0,Math.min(90,altitude));
+ return {
+  x:normalizedAzimuth/360*100,
+  y:61-clampedAltitude/90*53
+ };
+}
+
 function renderActualNightSky(){
  const host=$("skyStars"); if(!host)return;
  const now=new Date(), jd=julianDate(now), t=(jd-2451545)/36525;
@@ -246,7 +258,7 @@ function renderActualNightSky(){
   if(alt<5*Math.PI/180 || mag>3.0)continue;
   const az=Math.atan2(-Math.sin(ha)*Math.cos(dec),Math.sin(dec)*Math.cos(lat)-Math.cos(dec)*Math.sin(lat)*Math.cos(ha));
   const azDeg=(az*180/Math.PI+360)%360;
-  const x=azDeg/360*100, y=61-(alt*180/Math.PI)/90*53;
+  const {x,y}=projectSkyPosition(azDeg,alt*180/Math.PI);
   points[name]={x,y,mag};
  }
  const ns="http://www.w3.org/2000/svg", svg=document.createElementNS(ns,"svg");
@@ -347,13 +359,10 @@ function updateAtmosphere() {
   // Topocentric lunar position calculated for the fixed Novosibirsk observer.
   if (window.NovosibirskLunar && $("moonDisc")) {
     const lunarState = NovosibirskLunar.stateAt(new Date());
-    const southOffset = ((lunarState.azimuth - 180 + 540) % 360) - 180;
-    const moonVisible = lunarState.altitude > 0 && Math.abs(southOffset) <= 90;
-    const moonX = 50 + Math.max(-1, Math.min(1, southOffset / 90)) * 39;
-    const moonY = 57 - Math.max(0, Math.min(1, lunarState.altitude / 90)) * 43;
-    hero.style.setProperty("--moon-x", `${moonX}%`);
-    hero.style.setProperty("--moon-y", `${Math.max(13, Math.min(66, moonY))}%`);
-    hero.classList.toggle("moon-above-horizon", moonVisible);
+    const moonPosition = projectSkyPosition(lunarState.azimuth,lunarState.altitude);
+    hero.style.setProperty("--moon-x", `${moonPosition.x}%`);
+    hero.style.setProperty("--moon-y", `${moonPosition.y}%`);
+    hero.classList.toggle("moon-above-horizon", lunarState.altitude > 0);
   }
   const info = weatherInfo(latestWeatherCode);
   $("weatherSymbol").textContent = phase === "night" && info.theme === "clear" ? "✦" : info.icon;
@@ -819,13 +828,10 @@ function updateMoonPhase() {
   // Refresh the Moon's actual position in the local sky along with its phase.
   const hero = $("hero");
   if (hero) {
-    const southOffset = ((phase.azimuth - 180 + 540) % 360) - 180;
-    const moonVisible = phase.altitude > 0 && Math.abs(southOffset) <= 90;
-    const moonX = 50 + Math.max(-1, Math.min(1, southOffset / 90)) * 39;
-    const moonY = 57 - Math.max(0, Math.min(1, phase.altitude / 90)) * 43;
-    hero.style.setProperty("--moon-x", `${moonX}%`);
-    hero.style.setProperty("--moon-y", `${Math.max(13, Math.min(66, moonY))}%`);
-    hero.classList.toggle("moon-above-horizon", moonVisible);
+    const moonPosition = projectSkyPosition(phase.azimuth,phase.altitude);
+    hero.style.setProperty("--moon-x", `${moonPosition.x}%`);
+    hero.style.setProperty("--moon-y", `${moonPosition.y}%`);
+    hero.classList.toggle("moon-above-horizon", phase.altitude > 0);
   }
 
   const radius = 29;
