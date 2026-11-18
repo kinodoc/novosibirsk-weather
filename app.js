@@ -783,9 +783,10 @@ function updateMoonPhase() {
   }
 
   shadow.setAttribute("d", path);
-  // The vector-derived angle is measured clockwise from local zenith,
-  // matching the SVG coordinate system (positive y points down).
-  shadow.setAttribute("transform", `rotate(${phase.brightLimbAngle * 180 / Math.PI} 32 32)`);
+  // The base terminator path points its bright side to SVG-right (+90°
+  // from screen-up). Rotate by the difference to the vector-derived bearing.
+  const svgRotation = phase.brightLimbAngle * 180 / Math.PI - 90;
+  shadow.setAttribute("transform", `rotate(${svgRotation} 32 32)`);
   shadow.setAttribute("fill", "#172b49");
   moon.setAttribute("aria-label", `${phase.name}; освещено ${Math.round(phase.illumination * 100)} процентов`);
   moon.setAttribute("title", `${phase.name} · ${Math.round(phase.illumination * 100)}% освещённости`);
