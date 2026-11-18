@@ -277,15 +277,13 @@ function updateAtmosphere() {
   hero.style.setProperty("--sun-y", `${Math.max(14, Math.min(64, sunY))}%`);
   const cutout = phase === "night" ? "#172b49" : phase === "dawn" || phase === "evening" ? "#bd8490" : "#39749a";
   hero.style.setProperty("--moon-cutout", cutout);
-  // Use the Moon's real topocentric position for Novosibirsk, not the Sun's coordinates.
-  if (window.SunCalc && $("moonDisc")) {
-    const moonPosition = SunCalc.getMoonPosition(new Date(), 55.0084, 82.9357);
-    const moonAltitude = moonPosition.altitude;
-    const moonAzimuth = moonPosition.azimuth; // SunCalc: 0=south, negative=east, positive=west.
-    // Map the visible southern sky from east to west across the hero.
-    const moonVisible = moonAltitude > 0 && Math.abs(moonAzimuth) <= Math.PI / 2;
-    const moonX = 50 + Math.max(-1, Math.min(1, moonAzimuth / (Math.PI / 2))) * 39;
-    const moonY = 57 - Math.max(0, Math.min(1, moonAltitude / (Math.PI / 2))) * 43;
+  // Topocentric lunar position calculated for the fixed Novosibirsk observer.
+  if (window.NovosibirskLunar && $("moonDisc")) {
+    const lunarState = NovosibirskLunar.stateAt(new Date());
+    const southOffset = ((lunarState.azimuth - 180 + 540) % 360) - 180;
+    const moonVisible = lunarState.altitude > 0 && Math.abs(southOffset) <= 90;
+    const moonX = 50 + Math.max(-1, Math.min(1, southOffset / 90)) * 39;
+    const moonY = 57 - Math.max(0, Math.min(1, lunarState.altitude / 90)) * 43;
     hero.style.setProperty("--moon-x", `${moonX}%`);
     hero.style.setProperty("--moon-y", `${Math.max(13, Math.min(66, moonY))}%`);
     hero.classList.toggle("moon-above-horizon", moonVisible);
@@ -732,76 +730,43 @@ const NOVOSIBIRSK_ECLIPSES = {
 };
 
 function moonPhaseAt(date = new Date()) {
-  // Use one SunCalc snapshot for phase, illuminated fraction and bright-limb angle.
-  const lunar = window.SunCalc?.getMoonIllumination?.(date);
-  if (lunar && Number.isFinite(lunar.phase) &&
-      Number.isFinite(lunar.fraction) && Number.isFinite(lunar.angle)) {
-    // Convert the celestial bright-limb angle to the observer's local zenith frame.
-    // SunCalc defines this as angle - parallacticAngle (anticlockwise).
-    const moonPosition = window.SunCalc?.getMoonPosition?.(
-      date, LOCATION.latitude, LOCATION.longitude
-    );
-    const zenithAngle = moonPosition && Number.isFinite(moonPosition.parallacticAngle)
-      ? lunar.angle - moonPosition.parallacticAngle
-      : lunar.angle;
-    const fraction = ((lunar.phase % 1) + 1) % 1;
-    const illumination = Math.max(0, Math.min(1, lunar.fraction));
-    let name;
-    if (fraction < 0.035 || fraction >= 0.965) name = "Новолуние";
-    else if (fraction < 0.215) name = "Растущий серп";
-    else if (fraction < 0.285) name = "Первая четверть";
-    else if (fraction < 0.465) name = "Растущая Луна";
-    else if (fraction < 0.535) name = "Полнолуние";
-    else if (fraction < 0.715) name = "Убывающая Луна";
-    else if (fraction < 0.785) name = "Последняя четверть";
-    else name = "Убывающий серп";
-    return { fraction, illumination, waxing: fraction < 0.5, angle: zenithAngle, name };
-  }
-
-  // Fallback: retain the known new-moon epoch if SunCalc is unavailable.
-  const age = ((date.getTime() - KNOWN_NEW_MOON_UTC) / 86400000 % LUNAR_MONTH_DAYS + LUNAR_MONTH_DAYS) % LUNAR_MONTH_DAYS;
-  const fraction = age / LUNAR_MONTH_DAYS;
-  const illumination = (1 - Math.cos(2 * Math.PI * fraction)) / 2;
-  const waxing = fraction < 0.5;
-  let name;
-  if (fraction < 0.035 || fraction >= 0.965) name = "Новолуние";
-  else if (fraction < 0.215) name = "Растущий серп";
-  else if (fraction < 0.285) name = "Первая четверть";
-  else if (fraction < 0.465) name = "Растущая Луна";
-  else if (fraction < 0.535) name = "Полнолуние";
-  else if (fraction < 0.715) name = "Убывающая Луна";
-  else if (fraction < 0.785) name = "Последняя четверть";
-  else name = "Убывающий серп";
-  return { fraction, illumination, waxing, angle: 0, name };
+  if (!window.NovosibirskLunar) return null;
+  return NovosibirskLunar.stateAt(date);
 }
 
 function updateMoonPhase() {
   const moon = $("moonDisc");
   const shadow = $("moonShadow");
-  if (!moon || !shadow) return;
+  if (!moon || !shadow || !window.NovosibirskLunar) return;
 
   const phase = moonPhaseAt(new Date());
-  const radius = 29;
-  const terminatorRadius = Math.max(0.001, radius * Math.abs(Math.cos(2 * Math.PI * phase.fraction)));
+  if (!phase) return;
 
-  // Draw the actual curved terminator: its projected ellipse collapses to a
-  // straight line at quarter phases and reverses at full moon.
+  const radius = 29;
+  // For a spherical Moon, the terminator's projected semi-width is
+  // R * |cos(phase angle)|: 0 at quarter, R near new/full moon.
+  const terminatorRadius = Math.max(
+    0.001,
+    radius * Math.abs(Math.cos(phase.phaseAngle * Math.PI / 180))
+  );
+
   let path;
   if (phase.illumination <= 0.002) {
     path = "M32 3 A29 29 0 1 0 32 61 A29 29 0 1 0 32 3 Z";
   } else if (phase.illumination >= 0.998) {
     path = "";
   } else if (phase.waxing) {
-    const sweep = Math.cos(2 * Math.PI * phase.fraction) >= 0 ? 1 : 0;
+    const sweep = Math.cos(2 * Math.PI * phase.phaseCycle) >= 0 ? 1 : 0;
     path = `M32 3 A${terminatorRadius} 29 0 0 ${sweep} 32 61 A29 29 0 0 0 32 3 Z`;
   } else {
-    const sweep = Math.cos(2 * Math.PI * phase.fraction) >= 0 ? 0 : 1;
+    const sweep = Math.cos(2 * Math.PI * phase.phaseCycle) >= 0 ? 0 : 1;
     path = `M32 3 A${terminatorRadius} 29 0 0 ${sweep} 32 61 A29 29 0 0 1 32 3 Z`;
   }
 
   shadow.setAttribute("d", path);
-  // SVG's positive rotation is clockwise; SunCalc's zenith angle is anticlockwise.
-  shadow.setAttribute("transform", `rotate(${-phase.angle * 180 / Math.PI} 32 32)`);
+  // The vector-derived angle is measured clockwise from local zenith,
+  // matching the SVG coordinate system (positive y points down).
+  shadow.setAttribute("transform", `rotate(${phase.brightLimbAngle * 180 / Math.PI} 32 32)`);
   shadow.setAttribute("fill", "#172b49");
   moon.setAttribute("aria-label", `${phase.name}; освещено ${Math.round(phase.illumination * 100)} процентов`);
   moon.setAttribute("title", `${phase.name} · ${Math.round(phase.illumination * 100)}% освещённости`);
