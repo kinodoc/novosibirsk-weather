@@ -222,8 +222,6 @@ const CONSTELLATION_LINES = [
  ["Стрелец",["Nunki","Kaus Australis"]]
 ];
 
-function julianDate(date){return date.getTime()/86400000+2440587.5}
-
 // One azimuth/altitude projection for every object in the sky panorama.
 // x: full 360° azimuth; y: 0–90° altitude, shared by stars and the Moon.
 function projectSkyPosition(azimuth, altitude){
@@ -237,28 +235,27 @@ function projectSkyPosition(azimuth, altitude){
 
 function renderActualNightSky(){
  const host=$("skyStars"); if(!host)return;
- const now=new Date(), jd=julianDate(now), t=(jd-2451545)/36525;
- const gmst=(280.46061837+360.98564736629*(jd-2451545)+0.000387933*t*t-t*t*t/38710000+360)%360;
- const lst=((gmst+LOCATION.longitude)%360+360)%360, lat=LOCATION.latitude*Math.PI/180;
+ if(!window.Astronomy) return;
+ const now=new Date();
+ const observer=new Astronomy.Observer(LOCATION.latitude,LOCATION.longitude,0);
+ const eqjToHorizontal=Astronomy.Rotation_EQJ_HOR(now,observer);
  const points={};
- // Precess J2000 catalogue coordinates to the observation date (Meeus).
- const zeta=(2306.2181*t+0.30188*t*t+0.017998*t*t*t)/3600*Math.PI/180;
- const z=(2306.2181*t+1.09468*t*t+0.018203*t*t*t)/3600*Math.PI/180;
- const theta=(2004.3109*t-0.42665*t*t-0.041833*t*t*t)/3600*Math.PI/180;
+ // Catalogue RA/Dec values are J2000 equatorial coordinates (EQJ).
+ // Convert each fixed-star direction with the same EQJ→HOR transform used
+ // for the topocentric Moon in lunar-model.js.
  for(const [name,raHours,decDeg,mag] of SKY_STARS){
-  const ra0=raHours*15*Math.PI/180, dec0=decDeg*Math.PI/180;
-  const A=Math.cos(dec0)*Math.sin(ra0+zeta);
-  const B=Math.cos(theta)*Math.cos(dec0)*Math.cos(ra0+zeta)-Math.sin(theta)*Math.sin(dec0);
-  const C=Math.sin(theta)*Math.cos(dec0)*Math.cos(ra0+zeta)+Math.cos(theta)*Math.sin(dec0);
-  const ra=((Math.atan2(A,B)+z)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
-  const dec=Math.asin(Math.max(-1,Math.min(1,C)));
-  const ha=((lst-ra*180/Math.PI+540)%360-180)*Math.PI/180;
-  const sinAlt=Math.sin(lat)*Math.sin(dec)+Math.cos(lat)*Math.cos(dec)*Math.cos(ha);
-  const alt=Math.asin(Math.max(-1,Math.min(1,sinAlt)));
-  if(alt<5*Math.PI/180 || mag>3.0)continue;
-  const az=Math.atan2(-Math.sin(ha)*Math.cos(dec),Math.sin(dec)*Math.cos(lat)-Math.cos(dec)*Math.sin(lat)*Math.cos(ha));
-  const azDeg=(az*180/Math.PI+360)%360;
-  const {x,y}=projectSkyPosition(azDeg,alt*180/Math.PI);
+  const ra=raHours*15*Math.PI/180, dec=decDeg*Math.PI/180;
+  const cosDec=Math.cos(dec);
+  const equatorialVector=new Astronomy.Vector(
+   cosDec*Math.cos(ra),
+   cosDec*Math.sin(ra),
+   Math.sin(dec),
+   now
+  );
+  const horizontalVector=Astronomy.RotateVector(eqjToHorizontal,equatorialVector);
+  const horizontal=Astronomy.HorizonFromVector(horizontalVector,"normal");
+  if(horizontal.lat<5 || mag>3.0)continue;
+  const {x,y}=projectSkyPosition(horizontal.lon,horizontal.lat);
   points[name]={x,y,mag};
  }
  const ns="http://www.w3.org/2000/svg", svg=document.createElementNS(ns,"svg");
