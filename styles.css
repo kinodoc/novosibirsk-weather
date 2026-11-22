@@ -261,3 +261,9 @@ h2{margin:0;font-size:24px;font-weight:700;letter-spacing:-.045em}
 .sky-stars .star{vector-effect:non-scaling-stroke}
 
 .hero.time-night .sky-stars .constellation{display:block!important}
+
+
+/* Keep the sky's transparent star hit areas above the hero text on touch devices. */
+.hero-sky{z-index:4!important;pointer-events:none!important}
+.sky-stars{z-index:1!important;pointer-events:none!important}
+.sky-stars .star-hit{pointer-events:all!important;touch-action:manipulation}
