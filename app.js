@@ -849,10 +849,12 @@ function updateMoonPhase() {
   } else if (phase.illumination >= 0.998) {
     path = "";
   } else {
-    // Base geometry: dark crescent/half-disc is on SVG-left, bright limb
-    // points to SVG-right. The terminator arc and lunar-limb arc use
-    // opposite sweep directions so the path encloses only the dark region.
-    path = `M32 3 A${terminatorRadius} 29 0 0 1 32 61 A29 29 0 0 0 32 3 Z`;
+    // Base geometry: the bright limb points to SVG-right and the dark
+    // crescent is on SVG-left. Both arcs must travel along the LEFT side:
+    // first the terminator ellipse, then the outer lunar limb. Reversing
+    // either sweep fills the large illuminated region instead of the
+    // narrow unilluminated crescent near full Moon.
+    path = `M32 3 A${terminatorRadius} 29 0 0 0 32 61 A29 29 0 0 1 32 3 Z`;
   }
 
   shadow.setAttribute("d", path);
