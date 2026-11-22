@@ -310,11 +310,13 @@ function renderActualNightSky(){
   svg.append(star);
 
   // Larger transparent hit target makes stars easy to tap on touch screens.
-  const hit=document.createElementNS(ns,"circle");
+  // Keep a generous 44px touch target in CSS pixels on every screen size.
+  const hit=document.createElementNS(ns,"ellipse");
   hit.setAttribute("class","star-hit");
   hit.setAttribute("cx",p.x*10);
   hit.setAttribute("cy",p.y*5.3);
-  hit.setAttribute("r","12");
+  hit.setAttribute("rx",String(22*1000/width));
+  hit.setAttribute("ry",String(22*530/height));
   hit.setAttribute("fill","transparent");
   hit.setAttribute("stroke","none");
   hit.setAttribute("data-star",name);
