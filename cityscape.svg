@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 620" preserveAspectRatio="xMidYMax meet" role="img" aria-label="Упрощённая геометрическая панорама городских зданий Новосибирска">
+<defs>
+ <linearGradient id="buildings" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9bb6ca" stop-opacity=".72"/><stop offset="1" stop-color="#263f5b" stop-opacity=".95"/></linearGradient>
+ <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#314e68" stop-opacity=".65"/><stop offset="1" stop-color="#14263e" stop-opacity=".96"/></linearGradient>
+</defs>
+<!-- Simple layered city skyline: geometric buildings, no photo and no bridge -->
+<path d="M0 450V350h65v-42h48v142h32V330h66v120h38V285h70v165h32V365h72v85h35V325h65v125h42V350h68v100h35V300h72v150h38V342h78v108h36V270h74v180h42V330h80v120h36V355h68v95h37V315h73v135h40V350h73v100h40V300h76v150h26v170H0Z" fill="url(#buildings)" opacity=".78"/>
+<!-- Simple geometric skyline only; no windows or landmark illustration -->
+<path d="M0 470Q180 452 360 470T720 466T1080 470T1440 462V620H0Z" fill="url(#ground)"/>
+<path d="M0 500Q200 486 400 500T800 496T1200 500T1440 493" fill="none" stroke="#b6d0df" stroke-opacity=".18" stroke-width="3"/>
+<path d="M0 540Q240 525 480 542T960 538T1440 534" fill="none" stroke="#b6d0df" stroke-opacity=".12" stroke-width="2"/>
+</svg>

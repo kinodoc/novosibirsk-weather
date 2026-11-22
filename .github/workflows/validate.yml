@@ -1,0 +1,71 @@
+name: Validate static site
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check app.js
+          node --check counter-worker/src/index.js
+
+      - name: Validate HTML references and SVG
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+          import xml.etree.ElementTree as ET
+
+          class PageParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.ids = set()
+                  self.duplicates = set()
+                  self.script_found = False
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  value = attrs.get("id")
+                  if value:
+                      if value in self.ids:
+                          self.duplicates.add(value)
+                      self.ids.add(value)
+                  if tag == "script" and attrs.get("src", "").split("?", 1)[0] == "app.js":
+                      self.script_found = True
+
+          html = Path("index.html").read_text(encoding="utf-8")
+          js = Path("app.js").read_text(encoding="utf-8")
+          parser = PageParser()
+          parser.feed(html)
+
+          references = set(re.findall(r'\$\(["\']([^"\']+)["\']\)', js))
+          missing = sorted(references - parser.ids)
+          if missing:
+              raise SystemExit(f"JavaScript IDs missing from HTML: {missing}")
+          if parser.duplicates:
+              raise SystemExit(f"Duplicate HTML IDs: {sorted(parser.duplicates)}")
+          if not parser.script_found:
+              raise SystemExit("index.html does not include app.js")
+          if not Path("cityscape.svg").is_file():
+              raise SystemExit("cityscape.svg is missing")
+          ET.parse("cityscape.svg")
+          print(f"OK: {len(parser.ids)} HTML IDs, {len(references)} JavaScript references, SVG is valid.")
+          PY
