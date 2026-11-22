@@ -835,12 +835,12 @@ function updateMoonPhase() {
   }
 
   const radius = 29;
-  // The terminator is the projected ellipse of the lunar day/night
-  // boundary. Its semi-width is R * |sin(phase angle)|:
-  // zero at new/full Moon and one lunar radius at quarter phase.
+  // The terminator's projected semi-width is R * |cos(phase angle)|.
+  // It approaches the lunar limb at new/full Moon and collapses to a
+  // diameter at quarter phase.
   const terminatorRadius = Math.max(
     0.001,
-    radius * Math.abs(Math.sin(phase.phaseAngle * Math.PI / 180))
+    radius * Math.abs(Math.cos(phase.phaseAngle * Math.PI / 180))
   );
 
   let path;
@@ -849,15 +849,16 @@ function updateMoonPhase() {
   } else if (phase.illumination >= 0.998) {
     path = "";
   } else {
-    // Draw only the unilluminated region. During waxing it is on the
-    // left-hand side of the disc; during waning it is on the right.
-    const darkSideSweep = phase.waxing ? 0 : 1;
-    path = `M32 3 A${terminatorRadius} 29 0 0 ${darkSideSweep} 32 61 A29 29 0 0 ${darkSideSweep} 32 3 Z`;
+    // Base geometry: dark crescent/half-disc is on SVG-left, bright limb
+    // points to SVG-right. The terminator arc and lunar-limb arc use
+    // opposite sweep directions so the path encloses only the dark region.
+    path = `M32 3 A${terminatorRadius} 29 0 0 1 32 61 A29 29 0 0 0 32 3 Z`;
   }
 
   shadow.setAttribute("d", path);
-  // The base terminator path points its bright side to SVG-right (+90°
-  // from screen-up). Rotate by the difference to the vector-derived bearing.
+  // brightLimbAngle is measured from screen-up toward screen-right.
+  // The base bright direction is SVG-right (+90 degrees), so rotate it
+  // onto the actual Sun-facing direction calculated by Astronomy Engine.
   const svgRotation = phase.brightLimbAngle * 180 / Math.PI - 90;
   shadow.setAttribute("transform", `rotate(${svgRotation} 32 32)`);
   shadow.setAttribute("fill", "#172b49");
