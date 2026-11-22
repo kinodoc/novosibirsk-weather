@@ -835,11 +835,12 @@ function updateMoonPhase() {
   }
 
   const radius = 29;
-  // For a spherical Moon, the terminator's projected semi-width is
-  // R * |cos(phase angle)|: 0 at quarter, R near new/full moon.
+  // The terminator is the projected ellipse of the lunar day/night
+  // boundary. Its semi-width is R * |sin(phase angle)|:
+  // zero at new/full Moon and one lunar radius at quarter phase.
   const terminatorRadius = Math.max(
     0.001,
-    radius * Math.abs(Math.cos(phase.phaseAngle * Math.PI / 180))
+    radius * Math.abs(Math.sin(phase.phaseAngle * Math.PI / 180))
   );
 
   let path;
@@ -847,14 +848,11 @@ function updateMoonPhase() {
     path = "M32 3 A29 29 0 1 0 32 61 A29 29 0 1 0 32 3 Z";
   } else if (phase.illumination >= 0.998) {
     path = "";
-  } else if (phase.waxing) {
-    // The path is the DARK region. Use the complementary arc sweep so the
-    // illuminated crescent remains on the Sun-facing side of the disc.
-    const sweep = Math.cos(2 * Math.PI * phase.phaseCycle) >= 0 ? 0 : 1;
-    path = `M32 3 A${terminatorRadius} 29 0 0 ${sweep} 32 61 A29 29 0 0 1 32 3 Z`;
   } else {
-    const sweep = Math.cos(2 * Math.PI * phase.phaseCycle) >= 0 ? 1 : 0;
-    path = `M32 3 A${terminatorRadius} 29 0 0 ${sweep} 32 61 A29 29 0 0 0 32 3 Z`;
+    // Draw only the unilluminated region. During waxing it is on the
+    // left-hand side of the disc; during waning it is on the right.
+    const darkSideSweep = phase.waxing ? 0 : 1;
+    path = `M32 3 A${terminatorRadius} 29 0 0 ${darkSideSweep} 32 61 A29 29 0 0 ${darkSideSweep} 32 3 Z`;
   }
 
   shadow.setAttribute("d", path);
