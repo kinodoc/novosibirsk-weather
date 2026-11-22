@@ -315,6 +315,8 @@ function renderActualNightSky(){
   hit.setAttribute("cx",p.x*10);
   hit.setAttribute("cy",p.y*5.3);
   hit.setAttribute("r","12");
+  hit.setAttribute("fill","transparent");
+  hit.setAttribute("stroke","none");
   hit.setAttribute("data-star",name);
   hit.setAttribute("role","button");
   hit.setAttribute("tabindex","0");
