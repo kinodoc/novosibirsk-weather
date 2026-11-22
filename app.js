@@ -260,7 +260,7 @@ function renderActualNightSky(){
  }
  const ns="http://www.w3.org/2000/svg", svg=document.createElementNS(ns,"svg");
  const width=Math.max(host.clientWidth,1), height=Math.max(host.clientHeight,1);
- svg.setAttribute("viewBox","0 0 1000 530");svg.setAttribute("preserveAspectRatio","none");svg.setAttribute("aria-hidden","true");
+ svg.setAttribute("viewBox","0 0 1000 530");svg.setAttribute("preserveAspectRatio","none");svg.setAttribute("aria-label","Звёзды и линии созвездий");
  // Draw constellation segments behind the stars. Skip azimuth wrap-around
  // so a constellation near north is not joined across the entire panorama.
  const lineGroup=document.createElementNS(ns,"g");
@@ -306,7 +306,37 @@ function renderActualNightSky(){
   star.setAttribute("ry",radius*530/height);
   star.setAttribute("opacity",String(Math.max(.38,1-p.mag*.19)));
   star.setAttribute("data-star",name);
+  star.setAttribute("aria-label",name);
   svg.append(star);
+
+  // Larger transparent hit target makes stars easy to tap on touch screens.
+  const hit=document.createElementNS(ns,"circle");
+  hit.setAttribute("class","star-hit");
+  hit.setAttribute("cx",p.x*10);
+  hit.setAttribute("cy",p.y*5.3);
+  hit.setAttribute("r","12");
+  hit.setAttribute("data-star",name);
+  hit.setAttribute("role","button");
+  hit.setAttribute("tabindex","0");
+  hit.setAttribute("aria-label","Показать название звезды: "+name);
+  const toggleLabel=()=>{
+   const existing=svg.querySelector(".star-name");
+   if(existing?.getAttribute("data-star")===name){existing.remove();return;}
+   existing?.remove();
+   const label=document.createElementNS(ns,"text");
+   label.setAttribute("class","star-name");
+   label.setAttribute("x",p.x*10);
+   label.setAttribute("y",Math.max(16,p.y*5.3-13));
+   label.setAttribute("text-anchor","middle");
+   label.setAttribute("data-star",name);
+   label.textContent=name;
+   svg.append(label);
+  };
+  hit.addEventListener("click",toggleLabel);
+  hit.addEventListener("keydown",event=>{
+   if(event.key==="Enter"||event.key===" "){event.preventDefault();toggleLabel();}
+  });
+  svg.append(hit);
  }
  host.replaceChildren(svg);
 }
